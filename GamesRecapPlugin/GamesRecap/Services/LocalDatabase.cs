@@ -70,7 +70,7 @@ namespace GamesRecap.Services
                 CREATE TABLE IF NOT EXISTS Showcases (
                     Id          INTEGER PRIMARY KEY,
                     Name        TEXT NOT NULL,
-                    Slug        TEXT NOT NULL UNIQUE,
+                    Slug        TEXT,
                     SeriesKey   TEXT,
                     EventName   TEXT,
                     EventId     INTEGER,
@@ -197,6 +197,14 @@ namespace GamesRecap.Services
             cmd.ExecuteNonQuery();
         }
 
+        private void SetInertiaVersionInTransaction(SQLiteConnection conn, string version)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT OR REPLACE INTO AppMeta (Key, Value) VALUES ('inertia_version', @v)";
+            cmd.Parameters.AddWithValue("@v", version);
+            cmd.ExecuteNonQuery();
+        }
+
         public void UpsertFromApiResponse(Models.HomeProps props, string inertiaVersion)
         {
             using var conn = GetConnection();
@@ -205,7 +213,7 @@ namespace GamesRecap.Services
             try
             {
                 UpsertTaxonomy(conn, props.Options);
-                SetInertiaVersion(inertiaVersion);
+                SetInertiaVersionInTransaction(conn, inertiaVersion);
 
                 if (props.Pages?.Data != null)
                 {
@@ -276,12 +284,17 @@ namespace GamesRecap.Services
 
         private void UpsertShowcase(SQLiteConnection conn, Models.Showcase s)
         {
+            if (s == null) return;
+            var slug = s.Slug;
+            if (string.IsNullOrEmpty(slug))
+                slug = s.Name?.ToLower().Replace(" ", "-").Replace("'", "") ?? "showcase-" + s.Id;
+
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"INSERT OR REPLACE INTO Showcases (Id, Name, Slug, SeriesKey, EventName, EventId, StartAt, EndAt, StreamUrl, CachedAt)
                 VALUES (@id, @name, @slug, @sk, @en, @ei, @start, @end, @url, @cached)";
             cmd.Parameters.AddWithValue("@id", s.Id);
             cmd.Parameters.AddWithValue("@name", s.Name);
-            cmd.Parameters.AddWithValue("@slug", s.Slug);
+            cmd.Parameters.AddWithValue("@slug", slug);
             cmd.Parameters.AddWithValue("@sk", (object)s.SeriesKey ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@en", (object)s.EventName ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@ei", s.EventId ?? (object)DBNull.Value);
@@ -398,6 +411,8 @@ namespace GamesRecap.Services
 
         private void UpsertCard(SQLiteConnection conn, Models.Card card)
         {
+            UpsertShowcase(conn, card.Showcase);
+
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"INSERT OR REPLACE INTO Cards (Id, GameId, ShowcaseId, SortAt, IsDraft)
                 VALUES (@id, @gid, @sid, @sort, @draft)";

@@ -5,6 +5,21 @@ using System.Windows.Data;
 
 namespace GamesRecap.Converters
 {
+    public class YearToDisplayConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int year && year == 0)
+                return "All Years";
+            return value?.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -32,7 +47,13 @@ namespace GamesRecap.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !string.IsNullOrEmpty(value as string) ? Visibility.Visible : Visibility.Collapsed;
+            if (value is string s)
+                return string.IsNullOrEmpty(s) ? Visibility.Collapsed : Visibility.Visible;
+
+            if (value is System.Collections.ICollection col)
+                return col.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            return value != null ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

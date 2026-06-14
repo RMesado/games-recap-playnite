@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,6 +22,9 @@ namespace GamesRecap
         private GamesRecapSettingsViewModel settings;
         internal LocalDatabase Database { get; private set; }
         internal GamesRecapApiClient ApiClient { get; private set; }
+
+        private BrowserView browserView;
+        private BrowserViewModel browserViewModel;
 
         public override Guid Id { get; } = Guid.Parse("01af564c-edf6-49ba-b6e1-32a12fb28bec");
 
@@ -50,31 +54,6 @@ namespace GamesRecap
             {
                 new MainMenuItem
                 {
-                    Description = "Explorar Games Recap",
-                    MenuSection = "@Games Recap",
-                    Action = args2 =>
-                    {
-                        var window = PlayniteApi.Dialogs.CreateWindow(new WindowCreationOptions
-                        {
-                            ShowMinimizeButton = true,
-                            ShowMaximizeButton = true,
-                            ShowCloseButton = true
-                        });
-                        window.Title = "Games Recap — Explorar";
-                        window.Width = 1100;
-                        window.Height = 750;
-                        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        window.Owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
-
-                        var view = new BrowserView();
-                        var viewModel = new BrowserViewModel(ApiClient, Database);
-                        view.DataContext = viewModel;
-                        window.Content = view;
-                        window.ShowDialog();
-                    }
-                },
-                new MainMenuItem
-                {
                     Description = "Test API: fetch desde gamesrecap.io",
                     MenuSection = "@Games Recap",
                     Action = args2 =>
@@ -84,17 +63,38 @@ namespace GamesRecap
                 },
                 new MainMenuItem
                 {
-                    Description = "Ver estado de caché local",
+                    Description = "Ver estado de wishlist",
                     MenuSection = "@Games Recap",
                     Action = args2 =>
                     {
-                        var cards = Database.GetCachedCardCount();
-                        var games = Database.GetCachedGameCount();
+                        var wishlisted = Database.GetWishlistedIds().Count;
+                        var seen = Database.GetSeenIds().Count;
+                        var hidden = Database.GetHiddenIds().Count;
                         var version = Database.GetInertiaVersion() ?? "(none)";
                         PlayniteApi.Dialogs.ShowMessage(
-                            $"Cards en caché: {cards}\nJuegos en caché: {games}\nVersión Inertia: {version}",
-                            "Games Recap - Caché");
+                            $"Wishlist: {wishlisted} juegos\nVistos: {seen}\nOcultos: {hidden}\nVersión Inertia: {version}",
+                            "Games Recap - Estado");
                     }
+                }
+            };
+        }
+
+        public override IEnumerable<SidebarItem> GetSidebarItems()
+        {
+            yield return new SidebarItem
+            {
+                Title = "Games Recap",
+                Type = SiderbarItemType.View,
+                Icon = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon.png"),
+                Opened = () =>
+                {
+                    if (browserView == null)
+                    {
+                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi);
+                        browserView = new BrowserView();
+                        browserView.DataContext = browserViewModel;
+                    }
+                    return browserView;
                 }
             };
         }
@@ -121,8 +121,7 @@ namespace GamesRecap
                     $"Respuesta recibida correctamente.\n\n" +
                     $"Cards en página: {count}\nTotal: {total}\n" +
                     $"Versión Inertia: {Database.GetInertiaVersion()}\n" +
-                    $"Cards en caché local: {Database.GetCachedCardCount()}\n" +
-                    $"Juegos en caché local: {Database.GetCachedGameCount()}",
+                    $"Juegos en wishlist: {Database.GetWishlistedIds().Count}",
                     "Games Recap - API Test");
 
                 logger.Info($"TestApiFetch: OK, got {count} cards, total {total}");

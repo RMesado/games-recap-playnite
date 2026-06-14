@@ -5,64 +5,784 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:conv="clr-namespace:GamesRecap.Converters"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="1100">
+             d:DesignHeight="700" d:DesignWidth="1100"
+             Background="Transparent">
     <UserControl.Resources>
-        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
-        <conv:StringNotNullToVisibilityConverter x:Key="StringNotNullToVis" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/GamesRecap;component/Resources/BadgeIcons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+            <conv:StringNotNullToVisibilityConverter x:Key="StringNotNullToVis" />
+            <conv:YearToDisplayConverter x:Key="YearToDisplayConverter" />
+            <conv:TagIconToGeometryConverter x:Key="TagIconConverter" />
+            <conv:TailwindColorToBrushConverter x:Key="TailwindColorConverter" />
+
+        <Style x:Key="FilterSearchBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="4,3" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+        </Style>
+
+        <Style x:Key="FilterItemCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Margin" Value="4,1" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+        </Style>
+
+        <Style x:Key="ChipBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="7,2" />
+            <Setter Property="Margin" Value="2,1" />
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource GridItemBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush"
+                                        Value="{DynamicResource GlyphBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ChipRemoveButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrushDarker}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Padding" Value="3,0" />
+            <Setter Property="Margin" Value="3,0,0,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="CardItemStyle" TargetType="ListBoxItem">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid Margin="5" x:Name="ItemGrid"
+                              RenderTransformOrigin="0.5, 0.85">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </Grid.RenderTransform>
+                            <Border CornerRadius="8"
+                                    Background="{DynamicResource GridItemBackgroundBrush}">
+                                <ContentPresenter />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Canvas.ZIndex" Value="90" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0:0:0.25"
+                                                             Storyboard.TargetName="ItemGrid"
+                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                             To="1.04">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Duration="0:0:0.25"
+                                                             Storyboard.TargetName="ItemGrid"
+                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                             To="1.04">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0:0:0.25"
+                                                             Storyboard.TargetName="ItemGrid"
+                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                             To="1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation Duration="0:0:0.25"
+                                                             Storyboard.TargetName="ItemGrid"
+                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                             To="1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NavigationButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="17"
+                                Width="34" Height="34">
+                            <TextBlock Text="{TemplateBinding Content}"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background"
+                                        Value="{DynamicResource HoverBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="{DynamicResource WindowBackgourndBrush}">
+
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="260" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="{DynamicResource PopupBackgroundBrush}" BorderBrush="{DynamicResource PopupBorderBrush}" BorderThickness="0,0,1,0">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Grid.Column="0" Background="Transparent"
+                BorderBrush="{DynamicResource PanelSeparatorBrush}" BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="10">
 
-                    <TextBlock Text="Buscar" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,0,4" />
-                    <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" KeyDown="SearchBox_KeyDown"
-                             Background="{DynamicResource ControlBackgroundBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource NormalBorderBrush}"
-                             BorderThickness="1" Padding="6" />
+                    <TextBlock Text="Search" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,0,4" />
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource {x:Type TextBox}}"
+                             FontSize="{DynamicResource FontSizeSmall}" Padding="6,4" />
 
-                    <TextBlock Text="Ordenar" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,4" />
-                    <ComboBox ItemsSource="{Binding SortOptions}" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding SelectedSort}"
-                              Background="{DynamicResource ControlBackgroundBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource NormalBorderBrush}"
-                              BorderThickness="1" Padding="4" />
+                    <TextBlock Text="Sort" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,4" />
+                    <ComboBox ItemsSource="{Binding SortOptions}" DisplayMemberPath="Label"
+                              SelectedValuePath="Value" SelectedValue="{Binding SelectedSort}"
+                              FontSize="{DynamicResource FontSizeSmall}" Padding="4,2" />
 
-                    <TextBlock Text="Plataformas" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,4" />
-                    <ItemsControl ItemsSource="{Binding PlatformFilters}" Margin="0,0,0,4">
+                    <TextBlock Text="Platforms" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,2" />
+
+                    <Border Style="{DynamicResource HighlightBorder}"
+                            Background="{DynamicResource ControlBackgroundBrush}"
+                            BorderThickness="{DynamicResource ControlBorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Height="26">
+                        <Grid>
+                            <DockPanel>
+                                <Viewbox Margin="0,0,4,0" DockPanel.Dock="Right">
+                                    <TextBlock Text="6" FontFamily="Marlett"
+                                               Foreground="{DynamicResource GlyphBrush}" VerticalAlignment="Center" />
+                                </Viewbox>
+                                <TextBlock Text="{Binding PlatformFilterHeader}"
+                                           Style="{StaticResource BaseTextBlockStyle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" FontSize="{DynamicResource FontSizeSmall}" />
+                            </DockPanel>
+                            <ToggleButton x:Name="PlatformToggle"
+                                          BorderThickness="0" Focusable="False"
+                                          HorizontalContentAlignment="Stretch"
+                                          Background="Transparent">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Popup Placement="Bottom" Focusable="False" AllowsTransparency="True"
+                                   IsOpen="{Binding IsChecked, ElementName=PlatformToggle, Mode=TwoWay}"
+                                   StaysOpen="False"
+                                   MaxHeight="300" MinWidth="{Binding ActualWidth, ElementName=PlatformToggle}">
+                                <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                        BorderThickness="{DynamicResource PopupBorderThickness}"
+                                        BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
+                                    <StackPanel>
+                                        <TextBox Text="{Binding PlatformFilterSearch, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <ListBox ItemsSource="{Binding PlatformFilters}"
+                                                 Background="Transparent" BorderThickness="0"
+                                                 MaxHeight="200"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 VirtualizingPanel.ScrollUnit="Pixel">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                                                  Style="{StaticResource FilterItemCheckBox}">
+                                                            <CheckBox.Content>
+                                                                <TextBlock Text="{Binding Name}">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                                    <Setter Property="Foreground" Value="Red" />
+                                                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </CheckBox.Content>
+                                                        </CheckBox>
+                                                        <ToggleButton Grid.Column="1" Content="&#x2295;"
+                                                                       IsChecked="{Binding IsExcluded}"
+                                                                       FontSize="11" Padding="2,0" Margin="1"
+                                                                       MinHeight="16" MaxHeight="16"
+                                                                       ToolTip="Exclude">
+                                                            <ToggleButton.Style>
+                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                            <Setter Property="Foreground" Value="Red" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ToggleButton.Style>
+                                                        </ToggleButton>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding PlatformFilters}" Margin="2,3,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}" Foreground="{DynamicResource TextBrush}" Margin="2,1" />
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border" BasedOn="{StaticResource ChipBorder}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource TextBrush}"
+                                                   FontSize="11" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Content="&#x2715;"
+                                                Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ChipRemoveButton}" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Géneros" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,4" />
-                    <ItemsControl ItemsSource="{Binding GenreFilters}" Margin="0,0,0,4">
+                    <TextBlock Text="Genres" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
+
+                    <Border Style="{DynamicResource HighlightBorder}"
+                            Background="{DynamicResource ControlBackgroundBrush}"
+                            BorderThickness="{DynamicResource ControlBorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Height="26">
+                        <Grid>
+                            <DockPanel>
+                                <Viewbox Margin="0,0,4,0" DockPanel.Dock="Right">
+                                    <TextBlock Text="6" FontFamily="Marlett"
+                                               Foreground="{DynamicResource GlyphBrush}" VerticalAlignment="Center" />
+                                </Viewbox>
+                                <TextBlock Text="{Binding GenreFilterHeader}"
+                                           Style="{StaticResource BaseTextBlockStyle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" FontSize="{DynamicResource FontSizeSmall}" />
+                            </DockPanel>
+                            <ToggleButton x:Name="GenreToggle"
+                                          BorderThickness="0" Focusable="False"
+                                          HorizontalContentAlignment="Stretch"
+                                          Background="Transparent">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Popup Placement="Bottom" Focusable="False" AllowsTransparency="True"
+                                   IsOpen="{Binding IsChecked, ElementName=GenreToggle, Mode=TwoWay}"
+                                   StaysOpen="False"
+                                   MaxHeight="300" MinWidth="{Binding ActualWidth, ElementName=GenreToggle}">
+                                <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                        BorderThickness="{DynamicResource PopupBorderThickness}"
+                                        BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
+                                    <StackPanel>
+                                        <TextBox Text="{Binding GenreFilterSearch, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <ListBox ItemsSource="{Binding GenreFilters}"
+                                                 Background="Transparent" BorderThickness="0"
+                                                 MaxHeight="200"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 VirtualizingPanel.ScrollUnit="Pixel">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                                                  Style="{StaticResource FilterItemCheckBox}">
+                                                            <CheckBox.Content>
+                                                                <TextBlock Text="{Binding Name}">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                                    <Setter Property="Foreground" Value="Red" />
+                                                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </CheckBox.Content>
+                                                        </CheckBox>
+                                                        <ToggleButton Grid.Column="1" Content="&#x2295;"
+                                                                       IsChecked="{Binding IsExcluded}"
+                                                                       FontSize="11" Padding="2,0" Margin="1"
+                                                                       MinHeight="16" MaxHeight="16"
+                                                                       ToolTip="Exclude">
+                                                            <ToggleButton.Style>
+                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                            <Setter Property="Foreground" Value="Red" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ToggleButton.Style>
+                                                        </ToggleButton>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding GenreFilters}" Margin="2,3,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}" Foreground="{DynamicResource TextBrush}" Margin="2,1" />
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border" BasedOn="{StaticResource ChipBorder}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource TextBrush}"
+                                                   FontSize="11" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Content="&#x2715;"
+                                                Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ChipRemoveButton}" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Tags" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,4" />
-                    <ItemsControl ItemsSource="{Binding TagFilters}" Margin="0,0,0,4">
+                    <TextBlock Text="Tags" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
+
+                    <Border Style="{DynamicResource HighlightBorder}"
+                            Background="{DynamicResource ControlBackgroundBrush}"
+                            BorderThickness="{DynamicResource ControlBorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Height="26">
+                        <Grid>
+                            <DockPanel>
+                                <Viewbox Margin="0,0,4,0" DockPanel.Dock="Right">
+                                    <TextBlock Text="6" FontFamily="Marlett"
+                                               Foreground="{DynamicResource GlyphBrush}" VerticalAlignment="Center" />
+                                </Viewbox>
+                                <TextBlock Text="{Binding TagFilterHeader}"
+                                           Style="{StaticResource BaseTextBlockStyle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" FontSize="{DynamicResource FontSizeSmall}" />
+                            </DockPanel>
+                            <ToggleButton x:Name="TagToggle"
+                                          BorderThickness="0" Focusable="False"
+                                          HorizontalContentAlignment="Stretch"
+                                          Background="Transparent">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Popup Placement="Bottom" Focusable="False" AllowsTransparency="True"
+                                   IsOpen="{Binding IsChecked, ElementName=TagToggle, Mode=TwoWay}"
+                                   StaysOpen="False"
+                                   MaxHeight="300" MinWidth="{Binding ActualWidth, ElementName=TagToggle}">
+                                <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                        BorderThickness="{DynamicResource PopupBorderThickness}"
+                                        BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
+                                    <StackPanel>
+                                        <TextBox Text="{Binding TagFilterSearch, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <ListBox ItemsSource="{Binding TagFilters}"
+                                                 Background="Transparent" BorderThickness="0"
+                                                 MaxHeight="200"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 VirtualizingPanel.ScrollUnit="Pixel">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                                                  Style="{StaticResource FilterItemCheckBox}">
+                                                            <CheckBox.Content>
+                                                                <TextBlock Text="{Binding Name}">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                                    <Setter Property="Foreground" Value="Red" />
+                                                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </CheckBox.Content>
+                                                        </CheckBox>
+                                                        <ToggleButton Grid.Column="1" Content="&#x2295;"
+                                                                       IsChecked="{Binding IsExcluded}"
+                                                                       FontSize="11" Padding="2,0" Margin="1"
+                                                                       MinHeight="16" MaxHeight="16"
+                                                                       ToolTip="Exclude">
+                                                            <ToggleButton.Style>
+                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                            <Setter Property="Foreground" Value="Red" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ToggleButton.Style>
+                                                        </ToggleButton>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding TagFilters}" Margin="2,3,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}" Foreground="{DynamicResource TextBrush}" Margin="2,1" />
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border" BasedOn="{StaticResource ChipBorder}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource TextBrush}"
+                                                   FontSize="11" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Content="&#x2715;"
+                                                Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ChipRemoveButton}" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Showcases" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,4" />
-                    <ItemsControl ItemsSource="{Binding ShowcaseFilters}">
+                    <TextBlock Text="Showcases" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
+
+                    <Border Style="{DynamicResource HighlightBorder}"
+                            Background="{DynamicResource ControlBackgroundBrush}"
+                            BorderThickness="{DynamicResource ControlBorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Height="26">
+                        <Grid>
+                            <DockPanel>
+                                <Viewbox Margin="0,0,4,0" DockPanel.Dock="Right">
+                                    <TextBlock Text="6" FontFamily="Marlett"
+                                               Foreground="{DynamicResource GlyphBrush}" VerticalAlignment="Center" />
+                                </Viewbox>
+                                <TextBlock Text="{Binding ShowcaseFilterHeader}"
+                                           Style="{StaticResource BaseTextBlockStyle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" FontSize="{DynamicResource FontSizeSmall}" />
+                            </DockPanel>
+                            <ToggleButton x:Name="ShowcaseToggle"
+                                          BorderThickness="0" Focusable="False"
+                                          HorizontalContentAlignment="Stretch"
+                                          Background="Transparent">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="Transparent" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <Popup Placement="Bottom" Focusable="False" AllowsTransparency="True"
+                                   IsOpen="{Binding IsChecked, ElementName=ShowcaseToggle, Mode=TwoWay}"
+                                   StaysOpen="False"
+                                   MaxHeight="300" MinWidth="{Binding ActualWidth, ElementName=ShowcaseToggle}">
+                                <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                        BorderThickness="{DynamicResource PopupBorderThickness}"
+                                        BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
+                                    <StackPanel>
+                                        <ComboBox ItemsSource="{Binding AvailableYears}"
+                                                  SelectedItem="{Binding SelectedShowcaseYear}"
+                                                  FontSize="{DynamicResource FontSizeSmall}" Padding="4,2" Margin="0,0,0,3">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Converter={StaticResource YearToDisplayConverter}}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <CheckBox IsChecked="{Binding ShowcaseSelectAllState, Mode=OneWay}" IsThreeState="True"
+                                                  Command="{Binding ToggleSelectAllShowcasesCommand}"
+                                                  Content="Select all in year"
+                                                  Margin="2,0,2,4"
+                                                  Style="{StaticResource FilterItemCheckBox}" />
+                                        <TextBox Text="{Binding ShowcaseFilterSearch, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <ListBox ItemsSource="{Binding ShowcaseFilters}"
+                                                 Background="Transparent" BorderThickness="0"
+                                                 MaxHeight="200"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 VirtualizingPanel.ScrollUnit="Pixel">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsSelected}"
+                                                              Content="{Binding Name}"
+                                                              Style="{StaticResource FilterItemCheckBox}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <TextBlock Text="Release Date" Style="{StaticResource BaseTextBlockStyle}"
+                               Foreground="{DynamicResource TextBrushDarker}"
+                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,2" />
+                    <DockPanel Margin="0,0,0,3">
+                        <Button Content="&#x2715;" Command="{Binding ClearReleaseDateFromCommand}"
+                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
+                                ToolTip="Clear date" />
+                        <DatePicker SelectedDate="{Binding ReleaseDateFrom}"
+                                    FontSize="{DynamicResource FontSizeSmall}" />
+                    </DockPanel>
+                    <DockPanel Margin="0,0,0,3">
+                        <Button Content="&#x2715;" Command="{Binding ClearReleaseDateToCommand}"
+                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
+                                ToolTip="Clear date" />
+                        <DatePicker SelectedDate="{Binding ReleaseDateTo}"
+                                    FontSize="{DynamicResource FontSizeSmall}" />
+                    </DockPanel>
+
+                    <Button Content="Clear Filters"
+                            Command="{Binding ClearAllFiltersCommand}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            FontSize="{DynamicResource FontSizeSmall}"
+                            Foreground="{DynamicResource TextBrush}"
+                            Padding="6,4"
+                            Margin="0,8,0,0"
+                            HorizontalAlignment="Stretch" />
+
+                    <ItemsControl ItemsSource="{Binding ShowcaseYearChips}" Margin="2,8,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}" Foreground="{DynamicResource TextBrush}" Margin="2,1" />
+                                <Border Style="{StaticResource ChipBorder}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding ChipText}"
+                                                   Foreground="{DynamicResource GlyphBrush}"
+                                                   FontSize="11" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Content="&#x2715;"
+                                                Command="{Binding DeselectAllInYearCommand}"
+                                                CommandParameter="{Binding Year}"
+                                                Style="{StaticResource ChipRemoveButton}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding ShowcaseIndividualChips}" Margin="2,0,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource ChipBorder}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource TextBrush}"
+                                                   FontSize="11" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Content="&#x2715;"
+                                                Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ChipRemoveButton}" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -72,131 +792,460 @@
         </Border>
 
         <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                      Background="{DynamicResource PanelSeparatorBrush}" ShowsPreview="False" ResizeBehavior="PreviousAndNext" />
+                      Background="{DynamicResource PanelSeparatorBrush}"
+                      ShowsPreview="False" ResizeBehavior="PreviousAndNext" />
 
-        <Grid Grid.Column="2" Margin="10">
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding ErrorMessage}" Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" Margin="0,0,0,8"
-                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringNotNullToVis}}" />
-
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding Cards}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Width="200" Margin="8" Background="{DynamicResource GridItemBackgroundBrush}" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" CornerRadius="4">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="120" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <Border Grid.Row="0" Background="{DynamicResource NormalBrushDark}" CornerRadius="4,4,0,0" ClipToBounds="True">
-                                        <Image Source="{Binding CoverUrl}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" MaxHeight="120" />
-                                    </Border>
-
-                                    <TextBlock Grid.Row="1" Text="{Binding Title}" Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrush}"
-                                               FontSize="{DynamicResource FontSize}" FontWeight="Bold" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                                               Margin="8,6,8,2" ToolTip="{Binding Title}" />
-
-                                    <TextBlock Grid.Row="2" Text="{Binding ShowcaseName}" Foreground="{DynamicResource GlyphBrush}" FontSize="11"
-                                               Margin="8,0,8,2" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                                               Visibility="{Binding ShowcaseName, Converter={StaticResource StringNotNullToVis}}" />
-
-                                    <TextBlock Grid.Row="3" Text="{Binding PlatformNames}" Foreground="{DynamicResource TextBrushDarker}" FontSize="11"
-                                               Margin="8,0,8,2" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                                               Visibility="{Binding PlatformNames, Converter={StaticResource StringNotNullToVis}}" />
-
-                                    <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="8,0,8,4">
-                                        <TextBlock Text="{Binding ReleaseDate}" Foreground="{DynamicResource TextBrushDarker}" FontSize="11"
-                                                   Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}" />
-                                        <TextBlock Text="{Binding GenreNames}" Foreground="{DynamicResource TextBrushDarker}" FontSize="11"
-                                                   Margin="4,0,0,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                                                   Visibility="{Binding GenreNames, Converter={StaticResource StringNotNullToVis}}" />
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="6,0,6,6" HorizontalAlignment="Center">
-                                        <Button Content="Ver tráiler" Command="{Binding DataContext.OpenTrailerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding TrailerUrl}" Padding="8,3" Margin="2"
-                                                Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource NormalBorderBrush}"
-                                                Visibility="{Binding HasTrailer, Converter={StaticResource BoolToVis}}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-
-                                        <Button Content="♥" Command="{Binding DataContext.ToggleWishlistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding GameId}" Padding="8,3" Margin="2" FontSize="16"
-                                                BorderBrush="{DynamicResource NormalBorderBrush}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
-                                                    <Setter Property="Foreground" Value="{DynamicResource TextBrushDarker}" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsWishlisted}" Value="True">
-                                                            <Setter Property="Foreground" Value="#ff506e" />
-                                                            <Setter Property="Background" Value="{DynamicResource NormalBrushDark}" />
-                                                        </DataTrigger>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                    </StackPanel>
-
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <Border Grid.Row="2" Background="{DynamicResource PopupBackgroundBrush}" BorderBrush="{DynamicResource PopupBorderBrush}" BorderThickness="0,1,0,0" Padding="10,6">
+            <Border Grid.Row="0"
+                    Background="{DynamicResource ControlBackgroundBrush}"
+                    BorderBrush="{DynamicResource PanelSeparatorBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="12,0,150,0"
+                    WindowChrome.IsHitTestVisibleInChrome="True">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                        <Button Content="◀ Anterior" Command="{Binding PrevPageCommand}" Padding="10,4" Margin="0,0,8,0"
-                                        Background="{DynamicResource NormalBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource NormalBorderBrush}" />
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="&#xE72B;"
+                                Command="{Binding GoBackToLibraryCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"
+                                ToolTip="Back to Library" />
+                        <TextBlock Text="Games Recap"
+                                   Style="{StaticResource BaseTextBlockStyle}"
+                                   FontWeight="Bold" FontSize="18"
+                                   Foreground="{DynamicResource TextBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="12,0,0,0" />
+                    </StackPanel>
+
+                    <Button Grid.Column="2"
+                            Command="{Binding ToggleWishlistFilterCommand}"
+                            Padding="12,6" Margin="0,6"
+                            VerticalAlignment="Center">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsWishlistFilterActive}" Value="True">
+                                        <Setter Property="Background" Value="#20ff506e" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#x2665;" Foreground="#ff506e"
+                                       FontSize="16" VerticalAlignment="Center"
+                                       Margin="0,0,6,0" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding WishlistCount}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           FontWeight="Bold" FontSize="14"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text=" wishlisted"
+                                           Foreground="{DynamicResource TextBrushDarker}"
+                                           FontSize="12" VerticalAlignment="Center"
+                                           Margin="3,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="1" Margin="6,6,6,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            Height="20" Margin="0,6"
+                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
+                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
+                        <Ellipse.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                      Duration="0:0:1.5">
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
+                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:0.25" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0.5" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
+                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
+                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
+                        <Ellipse.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                      Duration="0:0:1.5">
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0.5" />
+                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:0.75" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.0" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
+                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
+                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
+                        <Ellipse.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                      Duration="0:0:1.5">
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.0" />
+                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:1.25" />
+                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
+                </StackPanel>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource WarningBrush}"
+                           HorizontalAlignment="Center"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringNotNullToVis}}" />
+            </StackPanel>
+
+            <ListBox x:Name="CardList" Grid.Row="2" ItemsSource="{Binding Cards}" Margin="6,0,6,0"
+                     ItemContainerStyle="{StaticResource CardItemStyle}"
+                     Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     VirtualizingPanel.ScrollUnit="Pixel"
+                     SelectionMode="Single">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" ItemWidth="300" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="CardRoot"
+                              Height="165"
+                              Margin="4"
+                              ClipToBounds="True"
+                               PreviewMouseDown="CardRoot_PreviewMouseDown"
+                              Loaded="CardRoot_OnLoaded">
+
+                            <!-- FRONT FACE -->
+                            <Grid x:Name="FrontFace">
+                                <Image Source="{Binding DisplayImageUrl}"
+                                       Stretch="UniformToFill"
+                                       VerticalAlignment="Center" />
+
+                                <Border VerticalAlignment="Bottom" Height="90">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                            <GradientStop Color="#E6000000" Offset="0" />
+                                            <GradientStop Color="#00000000" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <Border VerticalAlignment="Top" HorizontalAlignment="Left"
+                                        Margin="4" Padding="2"
+                                        Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
+                                    <ItemsControl ItemsSource="{Binding Tags}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="22" Height="22" CornerRadius="3"
+                                                        Background="#66000000" Margin="1"
+                                                        ToolTipService.InitialShowDelay="0"
+                                                        ToolTipService.BetweenShowDelay="0">
+                                                    <Border.ToolTip>
+                                                        <ToolTip>
+                                                            <ToolTip.Template>
+                                                                <ControlTemplate TargetType="ToolTip">
+                                                                    <Border Background="#1a1a2e" BorderBrush="#333"
+                                                                            BorderThickness="1" CornerRadius="4"
+                                                                            Padding="12,6">
+                                                                        <ContentPresenter TextBlock.Foreground="White"
+                                                                                          TextBlock.FontSize="11" />
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </ToolTip.Template>
+                                                            <TextBlock Text="{Binding Name}" Foreground="White"
+                                                                       FontSize="11" />
+                                                        </ToolTip>
+                                                    </Border.ToolTip>
+                                                    <Path Data="{Binding Icon, Converter={StaticResource TagIconConverter}}"
+                                                          Stroke="{Binding Color, Converter={StaticResource TailwindColorConverter}}"
+                                                          StrokeThickness="1.5" Fill="Transparent"
+                                                          Stretch="Uniform" Margin="3" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+
+                                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                            Margin="8,0,8,8">
+                                    <Border CornerRadius="3" Background="#22FFFFFF"
+                                            Padding="6,2" Margin="0,0,0,4"
+                                            Visibility="{Binding HasShowcase, Converter={StaticResource BoolToVis}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding ShowcaseName}"
+                                                       Foreground="White" FontSize="9"
+                                                       FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding ShowcaseDate, StringFormat=' · {0}'}"
+                                                       Foreground="#CCFFFFFF" FontSize="9"
+                                                       Margin="3,0,0,0" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <TextBlock Text="{Binding Title}"
+                                               Foreground="White" FontWeight="Bold" FontSize="14"
+                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Title}" />
+                                </StackPanel>
+
+                                <Button Command="{Binding DataContext.ToggleWishlistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding GameId}"
+                                        Width="24" Height="24" BorderThickness="0"
+                                        Background="#80000000" Cursor="Hand"
+                                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                                        Margin="4"
+                                        ToolTip="Add to wishlist">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="4"
+                                                    Width="24" Height="24">
+                                                <Path Data="{StaticResource IconHeart}"
+                                                      Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
+                                                      StrokeThickness="1.5" Fill="Transparent"
+                                                      Stretch="Uniform"
+                                                      Width="16" Height="16" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Foreground" Value="#D9FFFFFF" />
+                                            <Setter Property="Opacity" Value="0" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Value="True">
+                                                    <Setter Property="Opacity" Value="1" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsWishlisted}" Value="True">
+                                                    <Setter Property="Foreground" Value="#ff506e" />
+                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#B3000000" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Grid>
+
+                            <!-- BACK FACE -->
+                            <Grid x:Name="BackFace" Visibility="Hidden"
+                                  Background="#DD181818">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0"
+                                        BorderBrush="#33FFFFFF" BorderThickness="0,0,0,1"
+                                        Padding="10,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}"
+                                                       Foreground="White" FontWeight="Bold" FontSize="12"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding PublisherName}"
+                                                       Foreground="#AAFFFFFF" FontSize="10"
+                                                       Visibility="{Binding PublisherName, Converter={StaticResource StringNotNullToVis}}" />
+                                        </StackPanel>
+                                        <Border Grid.Column="1"
+                                                Width="18" Height="18" CornerRadius="2"
+                                                Background="#33FFFFFF"
+                                                ToolTip="{Binding ReleaseDate}"
+                                                Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}">
+                                            <Path Data="{StaticResource IconCalendarClock}"
+                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                  Fill="Transparent" Stretch="Uniform" Margin="2" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <ScrollViewer Grid.Row="1"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              Padding="10,6">
+                                    <StackPanel>
+                                        <StackPanel Margin="0,0,0,8"
+                                                    Visibility="{Binding PlatformsList, Converter={StaticResource StringNotNullToVis}}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                                <Path Data="{StaticResource IconGamepad2}"
+                                                      Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                      Fill="Transparent" Stretch="Uniform"
+                                                      Width="11" Height="11" Margin="0,0,4,0" />
+                                                <TextBlock Text="Platforms" Foreground="#AAFFFFFF" FontSize="9" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding PlatformNames}"
+                                                       Foreground="White" FontSize="10"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <StackPanel Margin="0,0,0,8"
+                                                    Visibility="{Binding GenresList, Converter={StaticResource StringNotNullToVis}}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                                <Path Data="{StaticResource IconTags}"
+                                                      Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                      Fill="Transparent" Stretch="Uniform"
+                                                      Width="11" Height="11" Margin="0,0,4,0" />
+                                                <TextBlock Text="Genres" Foreground="#AAFFFFFF" FontSize="9" />
+                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding GenresList}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Foreground="White" FontSize="10"
+                                                                   Margin="0,0,6,0" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
                                     </StackPanel>
+                                </ScrollViewer>
 
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Style="{DynamicResource BaseTextBlockStyle}" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center">
-                                    <Run Text="Página" /><Run Text=" " /><Run Text="{Binding CurrentPage}" /><Run Text=" de " /><Run Text="{Binding TotalPages}" />
-                                        </TextBlock>
-                                        <TextBlock Text="{Binding TotalCards, StringFormat='  ({0} cards)'}" Foreground="{DynamicResource TextBrushDarker}" FontSize="{DynamicResource FontSizeSmall}" VerticalAlignment="Center" Margin="4,0,0,0" />
-                                    </StackPanel>
+                                <Border Grid.Row="2" Padding="10,6"
+                                        BorderBrush="#33FFFFFF" BorderThickness="0,1,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <Button Grid.Column="2" Content="Siguiente ▶" Command="{Binding NextPageCommand}" Padding="10,4"
-                                    Background="{DynamicResource NormalBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource NormalBorderBrush}" />
-                                </Grid>
-                            </Border>
+                                        <Button Content="&#x25B6; Trailer"
+                                                Command="{Binding DataContext.OpenTrailerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding TrailerUrl}"
+                                                Padding="8,4" FontSize="11"
+                                                Foreground="White"
+                                                BorderBrush="#44FFFFFF" BorderThickness="1"
+                                                Background="#22FFFFFF"
+                                                Cursor="Hand"
+                                                HorizontalAlignment="Left"
+                                                Visibility="{Binding HasTrailer, Converter={StaticResource BoolToVis}}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                                        CornerRadius="4"
+                                                                        Padding="{TemplateBinding Padding}">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#44FFFFFF" />
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <Button Grid.Column="1"
+                                                Width="24" Height="24"
+                                                BorderThickness="0" Background="Transparent"
+                                                Cursor="Hand"
+                                                ToolTip="Flip back"
+                                                Click="FlipBackButton_Click">
+                                            <Path Data="{StaticResource IconRotateCcw}"
+                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                  Fill="Transparent" Stretch="Uniform" Margin="4" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Border Grid.Row="3" Margin="6,0,6,0"
+                    Background="{DynamicResource GridItemBackgroundBrush}"
+                    BorderBrush="{DynamicResource PanelSeparatorBrush}"
+                    BorderThickness="0,1,0,0" Padding="8,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="&#x25C0; Previous"
+                            Command="{Binding PrevPageCommand}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextBrush}" />
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                                   Foreground="{DynamicResource TextBrush}"
+                                   VerticalAlignment="Center"
+                                   FontSize="{DynamicResource FontSizeSmall}">
+                            <Run Text="Page" /><Run Text=" " />
+                            <Run Text="{Binding CurrentPage}" /><Run Text=" of " />
+                            <Run Text="{Binding TotalPages}" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding TotalCards, StringFormat='  ({0} cards)'}"
+                                   Foreground="{DynamicResource TextBrushDarker}"
+                                   FontSize="11" VerticalAlignment="Center" Margin="4,0,0,0" />
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Content="Next &#x25B6;"
+                            Command="{Binding NextPageCommand}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextBrush}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

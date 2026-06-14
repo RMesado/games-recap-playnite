@@ -67,6 +67,8 @@
       <DependentUpon>BrowserView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\TagIconToGeometryConverter.cs" />
+    <Compile Include="Converters\TailwindColorToBrushConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +98,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BrowserView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\BadgeIcons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

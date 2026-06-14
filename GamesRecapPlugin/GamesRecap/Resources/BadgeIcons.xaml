@@ -1,0 +1,179 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- bot -->
+    <GeometryGroup x:Key="IconBot">
+        <StreamGeometry>M12 8V4H8</StreamGeometry>
+        <StreamGeometry>M6 8L18 8A2 2 0 0 1 20 10L20 18A2 2 0 0 1 18 20L6 20A2 2 0 0 1 4 18L4 10A2 2 0 0 1 6 8Z</StreamGeometry>
+        <StreamGeometry>M2 14L4 14</StreamGeometry>
+        <StreamGeometry>M20 14L22 14</StreamGeometry>
+        <StreamGeometry>M15 13L15 15</StreamGeometry>
+        <StreamGeometry>M9 13L9 15</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- brush -->
+    <GeometryGroup x:Key="IconBrush">
+        <StreamGeometry>M11 10L14 13</StreamGeometry>
+        <StreamGeometry>M6.5 21A3.5 3.5 0 1 0 3 17.5C2.716 18.442 2.292 19.292 1.708 19.792A1 1 0 0 0 3 21Z</StreamGeometry>
+        <StreamGeometry>M9.969 17.031L21.378 5.624A1 1 0 0 0 20.376 2.622L6.967 14.031</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- columns-2 -->
+    <GeometryGroup x:Key="IconColumns2">
+        <StreamGeometry>M5 3L19 3A2 2 0 0 1 21 5L21 19A2 2 0 0 1 19 21L5 21A2 2 0 0 1 3 19L3 5A2 2 0 0 1 5 3Z</StreamGeometry>
+        <StreamGeometry>M12 3L12 21</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- crown -->
+    <GeometryGroup x:Key="IconCrown">
+        <StreamGeometry>M11.562 3.266C11.763 2.911 12.237 2.911 12.438 3.266L15.39 8.87C15.562 9.168 15.928 9.308 16.254 9.164L21.183 5.5C21.5 5.345 21.8 5.6 21.798 5.981L19.6 16.227C19.531 16.595 19.206 16.961 18.644 16.961L5.81 16.961C5.248 16.961 4.923 16.595 4.854 16.227L2.02 6.02C1.802 5.519 2.202 5.345 2.5 5.5L7.429 9.164C7.755 9.308 8.121 9.168 8.293 8.87Z</StreamGeometry>
+        <StreamGeometry>M5 21L19 21</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- flame -->
+    <StreamGeometry x:Key="IconFlame">M12 3Q13 7 16 9.5T19 15A7 7 0 0 1 5 15C5 13 5.5 12 6 11A5 5 0 0 0 11 11C11 9 9.5 8 9.5 6Q9.5 4 12 3</StreamGeometry>
+
+    <!-- glasses -->
+    <GeometryGroup x:Key="IconGlasses">
+        <EllipseGeometry Center="6,15" RadiusX="4" RadiusY="4" />
+        <EllipseGeometry Center="18,15" RadiusX="4" RadiusY="4" />
+        <StreamGeometry>M14 15A2 2 0 0 0 12 13A2 2 0 0 0 10 15</StreamGeometry>
+        <StreamGeometry>M2.5 13L5 7C5.7 5.7 6.4 5 8 5</StreamGeometry>
+        <StreamGeometry>M21.5 13L19 7C18.3 5.7 17.5 5 16 5</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- globe -->
+    <GeometryGroup x:Key="IconGlobe">
+        <EllipseGeometry Center="12,12" RadiusX="10" RadiusY="10" />
+        <StreamGeometry>M12 2A14.5 14.5 0 0 0 12 22A14.5 14.5 0 0 0 12 2</StreamGeometry>
+        <StreamGeometry>M2 12L22 12</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- hourglass -->
+    <GeometryGroup x:Key="IconHourglass">
+        <StreamGeometry>M5 22L19 22</StreamGeometry>
+        <StreamGeometry>M5 2L19 2</StreamGeometry>
+        <StreamGeometry>M17 22L17 17.828A2 2 0 0 0 16.414 16.414L12 12L7.586 16.414A2 2 0 0 0 7 17.828L7 22</StreamGeometry>
+        <StreamGeometry>M7 2L7 6.172A2 2 0 0 0 7.586 7.586L12 12L16.414 7.586A2 2 0 0 0 17 6.172L17 2</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- map -->
+    <GeometryGroup x:Key="IconMap">
+        <StreamGeometry>M14.106 5.553A2 2 0 0 0 15.894 5.553L19.553 3.723A1 1 0 0 1 21 4.619L21 17.383A1 1 0 0 1 20.447 18.277L15.894 20.554A2 2 0 0 1 14.106 20.554L9.894 18.448A2 2 0 0 0 8.106 18.448L4.447 20.278A1 1 0 0 1 3 19.381L3 6.618A1 1 0 0 1 3.553 5.724L8.106 3.447A2 2 0 0 1 9.894 3.447Z</StreamGeometry>
+        <StreamGeometry>M15 5.764L15 20.764</StreamGeometry>
+        <StreamGeometry>M9 3.236L9 18.236</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- music -->
+    <GeometryGroup x:Key="IconMusic">
+        <StreamGeometry>M9 18L9 5L21 3L21 16</StreamGeometry>
+        <EllipseGeometry Center="6,18" RadiusX="3" RadiusY="3" />
+        <EllipseGeometry Center="18,16" RadiusX="3" RadiusY="3" />
+    </GeometryGroup>
+
+    <!-- puzzle -->
+    <StreamGeometry x:Key="IconPuzzle">M15.39 4.39A1 1 0 0 0 17.07 3.916C17.484 2.454 18.916 2 20 2C21.5 2 22.5 3 22.5 4.5C22.5 5.584 22.046 7.016 20.584 7.43A1 1 0 0 0 20.11 9.11L21.793 10.793C22.578 11.578 22.578 12.836 21.793 13.621L19.61 15.39A1 1 0 0 0 17.93 14.916C17.516 16.378 16.084 16.832 15 16.832C13.5 16.832 12.5 15.832 12.5 14.332C12.5 13.248 12.954 11.816 14.416 11.402A1 1 0 0 0 14.89 9.61L13.207 7.927C12.422 7.142 12.422 5.884 13.207 5.099Z</StreamGeometry>
+
+    <!-- rectangle-goggles -->
+    <StreamGeometry x:Key="IconRectangleGoggles">M20 6A2 2 0 0 1 22 8L22 16A2 2 0 0 1 20 18L16 18A2 2 0 0 1 14.4 17.2L12.8 15.07A1 1 0 0 0 11.2 15.07L9.6 17.2A2 2 0 0 1 8 18L4 18A2 2 0 0 1 2 16L2 8A2 2 0 0 1 4 6Z</StreamGeometry>
+
+    <!-- shuffle -->
+    <GeometryGroup x:Key="IconShuffle">
+        <StreamGeometry>M18 14L22 18L18 22</StreamGeometry>
+        <StreamGeometry>M18 2L22 6L18 10</StreamGeometry>
+        <StreamGeometry>M2 18L3.973 18A4 4 0 0 0 7.273 16.3L12.727 7.7A4 4 0 0 1 16.027 6L22 6</StreamGeometry>
+        <StreamGeometry>M2 6L3.972 6A4 4 0 0 1 7.572 8.2</StreamGeometry>
+        <StreamGeometry>M22 18L15.959 18A4 4 0 0 1 12.659 16.2L12.3 15.75</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- star -->
+    <StreamGeometry x:Key="IconStar">M11.525 2.295C11.729 1.902 12.271 1.902 12.475 2.295L14.785 6.974C14.909 7.217 15.141 7.382 15.41 7.414L20.576 8.17C21.011 8.228 21.218 8.759 20.911 9.074L17.175 12.712C16.986 12.906 16.898 13.174 16.934 13.44L17.816 18.58C17.888 19.02 17.432 19.354 17.045 19.14L12.427 16.712C12.164 16.57 11.836 16.57 11.573 16.712L6.955 19.14C6.568 19.354 6.112 19.02 6.184 18.58L7.066 13.44C7.102 13.174 7.014 12.906 6.825 12.712L3.089 9.074C2.782 8.759 2.989 8.228 3.424 8.17L8.59 7.414C8.859 7.382 9.091 7.217 9.215 6.974Z</StreamGeometry>
+
+    <!-- sword -->
+    <GeometryGroup x:Key="IconSword">
+        <StreamGeometry>M11 19L5 13</StreamGeometry>
+        <StreamGeometry>M5 21L3 19</StreamGeometry>
+        <StreamGeometry>M8 16L4 20</StreamGeometry>
+        <StreamGeometry>M9.5 17.5L21 6L21 3L18 3L6.5 14.5</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- tag -->
+    <GeometryGroup x:Key="IconTag">
+        <StreamGeometry>M12.586 2.586A2 2 0 0 0 11.172 2L4 2A2 2 0 0 0 2 4L2 11.172A2 2 0 0 0 2.586 12.586L11.29 21.29C12.461 22.461 14.281 22.461 15.452 21.29L21.452 15.29C22.623 14.119 22.623 12.299 21.452 11.128Z</StreamGeometry>
+        <EllipseGeometry Center="7.5,7.5" RadiusX="0.5" RadiusY="0.5" />
+    </GeometryGroup>
+
+    <!-- trophy -->
+    <GeometryGroup x:Key="IconTrophy">
+        <StreamGeometry>M10 14.66L10 16.286A2 2 0 0 1 9.024 17.982A5 5 0 0 0 7 21.978</StreamGeometry>
+        <StreamGeometry>M14 14.66L14 16.286A2 2 0 0 0 14.976 17.982A5 5 0 0 1 17 21.978</StreamGeometry>
+        <StreamGeometry>M18 9L19.5 9A1 1 0 0 0 19.5 4L18 4</StreamGeometry>
+        <StreamGeometry>M4 22L20 22</StreamGeometry>
+        <StreamGeometry>M6 9A6 6 0 0 0 18 9L18 3A1 1 0 0 0 17 2L7 2A1 1 0 0 0 6 3Z</StreamGeometry>
+        <StreamGeometry>M6 9L4.5 9A1 1 0 0 1 4.5 4L6 4</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- user-plus -->
+    <GeometryGroup x:Key="IconUserPlus">
+        <StreamGeometry>M16 21L16 19A4 4 0 0 0 12 15L6 15A4 4 0 0 0 2 19L2 21</StreamGeometry>
+        <EllipseGeometry Center="9,7" RadiusX="4" RadiusY="4" />
+        <StreamGeometry>M19 8L19 14</StreamGeometry>
+        <StreamGeometry>M22 11L16 11</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- user -->
+    <GeometryGroup x:Key="IconUser">
+        <StreamGeometry>M19 21L19 19A4 4 0 0 0 15 15L9 15A4 4 0 0 0 5 19L5 21</StreamGeometry>
+        <EllipseGeometry Center="12,7" RadiusX="4" RadiusY="4" />
+    </GeometryGroup>
+
+    <!-- users -->
+    <GeometryGroup x:Key="IconUsers">
+        <StreamGeometry>M16 21L16 19A4 4 0 0 0 12 15L6 15A4 4 0 0 0 2 19L2 21</StreamGeometry>
+        <StreamGeometry>M16 3.128A4 4 0 0 1 16 10.872</StreamGeometry>
+        <StreamGeometry>M22 21L22 19A4 4 0 0 0 19 15.13</StreamGeometry>
+        <EllipseGeometry Center="9,7" RadiusX="4" RadiusY="4" />
+    </GeometryGroup>
+
+    <!-- zap -->
+    <StreamGeometry x:Key="IconZap">M4 14A1 1 0 0 1 3.22 12.37L13.12 2.17A0.5 0.5 0 0 1 13.98 2.63L12.06 8.65A1 1 0 0 0 13 10L20 10A1 1 0 0 1 20.78 11.63L10.88 21.83A0.5 0.5 0 0 1 10.02 21.37L11.94 15.35A1 1 0 0 0 11 14Z</StreamGeometry>
+
+    <!-- fallback tag icon (same as tag but always available) -->
+    <GeometryGroup x:Key="IconTagDefault">
+        <StreamGeometry>M12.586 2.586A2 2 0 0 0 11.172 2L4 2A2 2 0 0 0 2 4L2 11.172A2 2 0 0 0 2.586 12.586L11.29 21.29C12.461 22.461 14.281 22.461 15.452 21.29L21.452 15.29C22.623 14.119 22.623 12.299 21.452 11.128Z</StreamGeometry>
+        <EllipseGeometry Center="7.5,7.5" RadiusX="0.5" RadiusY="0.5" />
+    </GeometryGroup>
+
+    <!-- play (for trailer button) -->
+    <StreamGeometry x:Key="IconPlay">M5 5L5 19L19 12Z</StreamGeometry>
+
+    <!-- rotate-ccw (for flip back) -->
+    <GeometryGroup x:Key="IconRotateCcw">
+        <StreamGeometry>M3 12A9 9 0 1 0 12 3A9.75 9.75 0 0 0 5.26 5.74L3 8</StreamGeometry>
+        <StreamGeometry>M3 3L3 8L8 8</StreamGeometry>
+    </GeometryGroup>
+
+    <!-- gamepad2 (for platforms back face) -->
+    <StreamGeometry x:Key="IconGamepad2">M17.32 5H6.68A4 4 0 0 0 2.702 8.59C2.696 8.642 2.692 8.691 2.685 8.742C2.604 9.416 2 14.456 2 16A3 3 0 0 0 5 19C6 19 6.5 18.5 7 18L8.414 16.586A2 2 0 0 1 9.828 16H14.172A2 2 0 0 1 15.586 16.586L17 18C17.5 18.5 18 19 19 19A3 3 0 0 0 22 16C22 14.455 21.396 9.416 21.315 8.742C21.308 8.691 21.304 8.642 21.298 8.59A4 4 0 0 0 17.32 5Z</StreamGeometry>
+
+    <!-- calendar-clock (for release date back face) -->
+    <GeometryGroup x:Key="IconCalendarClock">
+        <StreamGeometry>M16 14L16 16.2L17.6 17.2</StreamGeometry>
+        <StreamGeometry>M16 2L16 4</StreamGeometry>
+        <StreamGeometry>M21 7.5L21 6A2 2 0 0 0 19 4L5 4A2 2 0 0 0 3 6L3 20A2 2 0 0 0 5 22L8.5 22</StreamGeometry>
+        <StreamGeometry>M3 10L8 10</StreamGeometry>
+        <StreamGeometry>M8 2L8 4</StreamGeometry>
+        <EllipseGeometry Center="16,16" RadiusX="6" RadiusY="6" />
+    </GeometryGroup>
+
+    <!-- tags (for genres back face) -->
+    <GeometryGroup x:Key="IconTags">
+        <StreamGeometry>M13.172 2A2 2 0 0 1 14.586 2.586L21.296 9.296A2.4 2.4 0 0 1 21.296 12.704L16.704 17.296A2.4 2.4 0 0 1 13.296 17.296L6.586 10.586A2 2 0 0 1 6 9.172L6 3A1 1 0 0 1 7 2Z</StreamGeometry>
+        <StreamGeometry>M2 7L2 13.172A2 2 0 0 0 2.586 14.586L9.296 21.296C10.477 22.477 12.297 22.477 13.487 21.489</StreamGeometry>
+        <EllipseGeometry Center="10.5,6.5" RadiusX="0.5" RadiusY="0.5" />
+    </GeometryGroup>
+
+    <!-- heart (for wishlist) -->
+    <StreamGeometry x:Key="IconHeart">M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5</StreamGeometry>
+
+</ResourceDictionary>

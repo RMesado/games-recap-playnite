@@ -52,12 +52,16 @@ namespace GamesRecap.Services
                 return null;
             }
 
-            var props = await ParseResponseAsync(response);
+            var json = await response.Content.ReadAsStringAsync();
+            var fullResponse = Deserialize<InertiaResponse>(json);
 
-            var inertiaVersion = db.GetInertiaVersion() ?? DefaultInertiaVersion;
-            db.UpsertFromApiResponse(props, inertiaVersion);
+            if (fullResponse?.Version != null && fullResponse.Version != version)
+            {
+                db.SetInertiaVersion(fullResponse.Version);
+                logger.Info($"Updated Inertia version from response: {fullResponse.Version}");
+            }
 
-            return props;
+            return fullResponse?.Props;
         }
 
         private async Task<HttpResponseMessage> SendWithVersionAsync(string url, string version)
@@ -125,13 +129,6 @@ namespace GamesRecap.Services
                 logger.Error(ex, "Failed to scrape version from HTML");
                 return null;
             }
-        }
-
-        private async Task<HomeProps> ParseResponseAsync(HttpResponseMessage response)
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            var fullResponse = Deserialize<InertiaResponse>(json);
-            return fullResponse?.Props;
         }
 
         private string BuildQuery(ActiveFilters filters)

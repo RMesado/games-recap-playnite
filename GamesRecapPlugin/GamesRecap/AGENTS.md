@@ -49,6 +49,13 @@ GamesRecapPlugin/GamesRecap/
    - Ahora `GetGames()` devuelve lista vacía (sin implementar aún)
    - Menú "Ver estado de caché local" → "Ver estado de wishlist"
 
+2. **Cards con esquinas redondeadas sobre la imagen** (`Views/BrowserView.xaml`, `Views/BrowserView.xaml.cs`):
+   - Eliminado `Background="{DynamicResource GridItemBackgroundBrush}"` del `Border` en `CardItemStyle` — ya no hay color sólido entre la imagen y el borde redondeado
+   - Eliminado `Margin="4"` del `CardRoot` Grid — la imagen ahora ocupa todo el ancho del card
+   - Aumentado `Height` de 165 a 173 para compensar el espacio perdido y mantener el mismo tamaño visual
+   - El clipping con `RectangleGeometry` redondeado (aplicado en `CardRoot_OnLoaded`) recorta la imagen directamente, creando el efecto de que la imagen misma tiene `CornerRadius="8"`
+   - El hover (scale 1.04x) y flip animation no se vieron afectados
+
 ### ⚠️ Pendiente / Bloqueado
 - Nada bloqueado actualmente. API responde 200 OK con versión `fe5cfce8e2cfdd6009a9f870a43fdbc1`.
 - Siguiente: Fase 3 — BrowserView WPF con filtros, grid de cards, paginación.
@@ -192,17 +199,18 @@ Stop-Process -Name "Playnite.DesktopApp" -Force; Start-Sleep 2
 - `UpdateShowcaseChips()` agrupa `ShowcaseFilters.Where(f.IsSelected)` por año, decide año-chip vs individual
 - `DeselectAllInYearCommand` (RelayCommand<int>) deselecciona todos los showcases de un año específico
 
-### Card Grid (Playnite-Native Style via ListBox)
-- `ListBox` con `WrapPanel` horizontal (reemplazó `ItemsControl` para que `ListBoxItem` contenedor exista)
-- `ItemContainerStyle="{StaticResource CardItemStyle}"` replica `GridViewItemStyle`:
+### Card Grid (ListBox + WrapPanel, corner-radius clipping)
+- `ListBox` con `WrapPanel` horizontal (`ItemWidth="300"`)
+- `ItemContainerStyle="{StaticResource CardItemStyle}"`:
   - `OverridesDefaultStyle="True"`, `FocusVisualStyle="{x:Null}"`
-  - Template: `Grid` con `GridItemBackgroundBrush`, `Border "SelectionBorder"` (border 3px, margin -3), `ContentPresenter`
-  - Triggers: `IsMouseOver`/`IsSelected` → `BorderBrush = GlyphBrush`, `Canvas.ZIndex = 90`
-- Card DataTemplate (200×267 cover = 3:4 ratio):
-  - `Grid Height="267"` con `Image Stretch="Uniform" Fant` que llena el área
-  - Hover overlay: `Border#99000000 Opacity="0→1"` via `DataTrigger IsMouseOver ListBoxItem`
-  - Botones: Trailer + Wishlist (♥, #ff506e cuando wishlisted)
-  - Nombre, showcase, plataformas debajo con `BaseTextBlockStyle`
+  - Template: `Grid` (ItemGrid, `Margin="5"`) → `Border` (`CornerRadius="8"`, sin `Background`) → `ContentPresenter`
+  - Clip aplicado al `Border` vía `RectangleGeometry` con las esquinas redondeadas (`CardRoot_OnLoaded`)
+  - Triggers: `IsMouseOver` → scale 1.04x con `QuadraticEase EaseOut` 250ms, `Canvas.ZIndex = 90`
+- Card DataTemplate (`Grid` `Height="173"`, `Margin="0"`, `ClipToBounds="True"`):
+  - `Image Stretch="UniformToFill"` — ocupa todo el card y se recorta con las esquinas redondeadas del Border padre
+  - Front face: gradient overlay, tag badges, showcase+title, wishlist/flip buttons
+  - Back face: release info, platforms, genres, trailer button
+  - Flip: `ScaleTransform.ScaleX` 1→-1 con `CubicEase EaseInOut` 400ms
 - `ListBox` con `SelectionMode="Single"`, `Background="Transparent"`, `ScrollViewer.HorizontalScrollBarVisibility="Disabled"`
 
 ### Release Date Range
@@ -247,3 +255,18 @@ Stop-Process -Name "Playnite.DesktopApp" -Force; Start-Sleep 2
   - Card DataTemplate redesigned: cover 200×267 (3:4 ratio), Image fill sin max height, texto debajo sin Grid.RowDefinitions
   - Hover overlay binding now works because `ListBoxItem` ancestor exists
   - Showcase chips: reemplazado `ShowAllShowcasesChip` Border + `ShowcaseFilters` ItemsControl por `ShowcaseYearChips` ItemsControl + `ShowcaseIndividualChips` ItemsControl
+
+### Files Modified (Sesión 2026-06-15 — search icons, placeholders, AGENTS.md)
+- `Views/BrowserView.xaml`:
+  - Main search: revertido a `Style="{DynamicResource {x:Type TextBox}}"` (sin inline Style), placeholder vía StackPanel overlay + code-behind (IsHitTestVisible=False) → clickability fix
+  - Todos los placeholders: emoji 🔍 reemplazado por icono `&#xed11;` con `FontFamily="{DynamicResource FontIcoFont}"` (icono lupa nativo de Playnite)
+  - Filter search TextBoxes (platform, genre, tag, showcase): `Trigger` → `MultiTrigger` con `IsKeyboardFocused=False` (placeholder desaparece al focus)
+- `Views/BrowserView.xaml.cs`:
+  - Added `MainSearch_TextChanged/GotFocus/LostFocus` + `UpdateMainSearchPlaceholder()` (toggle visibility según Text vacío + focus)
+
+## Playnite Theme Resources
+- **Default theme path**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\`
+- **Search icon**: `Media.xaml:44` — `SearchTextIconTemplate` con `&#xed11;` en `FontIcoFont`
+- **IcoFont**: `FontFamily="{DynamicResource FontIcoFont}"`
+- **Theme XAML dir**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\CustomControls\SearchBox.xaml`
+- Para usar el icono de búsqueda nativo en placeholders: `<TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" />`

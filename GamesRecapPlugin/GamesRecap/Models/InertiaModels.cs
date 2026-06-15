@@ -241,6 +241,15 @@ namespace GamesRecap.Models
         [DataMember(Name = "date")]
         public string Date { get; set; }
 
+        [DataMember(Name = "label")]
+        public string Label { get; set; }
+
+        [DataMember(Name = "label_start")]
+        public string LabelStart { get; set; }
+
+        [DataMember(Name = "label_end")]
+        public string LabelEnd { get; set; }
+
         [DataMember(Name = "platform_ids")]
         public List<int> PlatformIds { get; set; }
 

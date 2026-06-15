@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using GamesRecap.ViewModels;
 
 namespace GamesRecap.Views
 {
@@ -13,6 +14,21 @@ namespace GamesRecap.Views
         {
             InitializeComponent();
             IsVisibleChanged += OnIsVisibleChanged;
+            Loaded += (_, _) =>
+            {
+                if (DataContext is BrowserViewModel vm)
+                {
+                    vm.OnLoadingChanged = OnLoadingChanged;
+                    if (vm.IsLoading)
+                        StartProgress();
+                }
+            };
+        }
+
+        private void OnLoadingChanged(bool isLoading)
+        {
+            if (isLoading) StartProgress();
+            else CompleteProgress();
         }
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -46,9 +62,46 @@ namespace GamesRecap.Views
                             new Rect(0, 0, border.ActualWidth, border.ActualHeight), r, r);
                     }
                 };
-                updateClip();
+                border.Dispatcher.BeginInvoke(new Action(() => updateClip()),
+                    System.Windows.Threading.DispatcherPriority.Loaded);
                 border.SizeChanged += (_, _) => updateClip();
             }
+        }
+
+        private void StartProgress()
+        {
+            ProgressBar.BeginAnimation(UIElement.OpacityProperty, null);
+            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            ((ScaleTransform)ProgressBar.RenderTransform).ScaleX = 0;
+            ProgressBar.Opacity = 1;
+
+            var anim = new DoubleAnimation(0, 0.9, TimeSpan.FromSeconds(4))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, anim, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private void CompleteProgress()
+        {
+            var currentX = ((ScaleTransform)ProgressBar.RenderTransform).ScaleX;
+            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+
+            var sb = new Storyboard();
+
+            var fill = new DoubleAnimation(currentX, 1, TimeSpan.FromSeconds(0.25));
+            fill.EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut };
+            Storyboard.SetTarget(fill, ProgressBar);
+            Storyboard.SetTargetProperty(fill, new PropertyPath("RenderTransform.ScaleX"));
+            sb.Children.Add(fill);
+
+            var fade = new DoubleAnimation(0, TimeSpan.FromSeconds(0.3))
+                { BeginTime = TimeSpan.FromSeconds(0.25) };
+            Storyboard.SetTarget(fade, ProgressBar);
+            Storyboard.SetTargetProperty(fade, new PropertyPath(UIElement.OpacityProperty));
+            sb.Children.Add(fade);
+
+            sb.Begin();
         }
 
         private static T FindVisualParent<T>(DependencyObject child, Func<T, bool> predicate = null)

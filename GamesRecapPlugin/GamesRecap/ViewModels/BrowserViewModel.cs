@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -34,6 +35,8 @@ namespace GamesRecap.ViewModels
         private DateTime? releaseDateTo;
         private int requestGeneration;
         private bool isWishlistFilterActive;
+
+        public Action<bool> OnLoadingChanged;
 
         private string platformFilterSearch;
         private string genreFilterSearch;
@@ -150,11 +153,14 @@ namespace GamesRecap.ViewModels
                 if (selectedShowcaseYear == value) return;
                 selectedShowcaseYear = value;
                 OnPropertyChanged(nameof(SelectedShowcaseYear));
+                OnPropertyChanged(nameof(IsShowcaseYearSelected));
                 OnPropertyChanged(nameof(ShowcaseFilterHeader));
                 RefreshShowcaseFilter();
                 OnPropertyChanged(nameof(ShowcaseSelectAllState));
             }
         }
+
+        public bool IsShowcaseYearSelected => selectedShowcaseYear > 0;
 
         public DateTime? ReleaseDateFrom
         {
@@ -224,7 +230,7 @@ namespace GamesRecap.ViewModels
                 if (showcaseFilterSearch == value) return;
                 showcaseFilterSearch = value;
                 OnPropertyChanged(nameof(ShowcaseFilterSearch));
-                ApplyFilterText(showcaseView, value);
+                UpdateShowcaseViewFilter();
             }
         }
 
@@ -254,6 +260,7 @@ namespace GamesRecap.ViewModels
         public ICommand PrevPageCommand { get; }
         public ICommand GoBackToLibraryCommand { get; }
         public ICommand ToggleWishlistFilterCommand { get; }
+        public ICommand RefreshCommand { get; }
         public RelayCommand<int> ToggleWishlistCommand { get; }
         public RelayCommand<string> OpenTrailerCommand { get; }
         public RelayCommand<FilterItem> RemoveFilterCommand { get; }
@@ -292,6 +299,7 @@ namespace GamesRecap.ViewModels
             ClearReleaseDateToCommand = new RelayCommand(() => ReleaseDateTo = null);
             GoBackToLibraryCommand = new RelayCommand(() => playniteApi.MainView.SwitchToLibraryView());
             ToggleWishlistFilterCommand = new RelayCommand(() => IsWishlistFilterActive = !IsWishlistFilterActive);
+            RefreshCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
 
             LoadWishlistState();
             _ = LoadCardsAsync(1);
@@ -362,6 +370,7 @@ namespace GamesRecap.ViewModels
         {
             var currentGen = System.Threading.Interlocked.Increment(ref requestGeneration);
             IsLoading = true;
+            OnLoadingChanged?.Invoke(true);
             ErrorMessage = null;
 
             try
@@ -409,7 +418,11 @@ namespace GamesRecap.ViewModels
             }
             finally
             {
-                IsLoading = false;
+                if (currentGen == requestGeneration)
+                {
+                    IsLoading = false;
+                    OnLoadingChanged?.Invoke(false);
+                }
             }
         }
 
@@ -482,11 +495,13 @@ namespace GamesRecap.ViewModels
                     var year = ParseYear(s.StartAt);
                     if (year > 0) years.Add(year);
 
-                    var fi = new FilterItem { Id = s.Id, Name = s.Name, Year = year };
+                    var fi = new FilterItem { Id = s.Id, Name = s.Name, Year = year, StartAt = s.StartAt };
                     fi.PropertyChanged += OnFilterChanged;
                     ShowcaseFilters.Add(fi);
                 }
             }
+
+            RefreshFilterViews();
 
             AvailableYears.Clear();
             AvailableYears.Add(0);
@@ -500,6 +515,8 @@ namespace GamesRecap.ViewModels
                 SelectedShowcaseYear = closest;
                 SelectShowcasesForYear(closest);
                 UpdateShowcaseChips();
+                OnPropertyChanged(nameof(ShowcaseFilterHeader));
+                OnPropertyChanged(nameof(ShowcaseSelectAllState));
             }
 
             SortOptions.Clear();
@@ -508,8 +525,6 @@ namespace GamesRecap.ViewModels
                 foreach (var s in options.Sorts)
                     SortOptions.Add(s);
             }
-
-            RefreshFilterViews();
         }
 
         private void RefreshFilterViews()
@@ -521,17 +536,27 @@ namespace GamesRecap.ViewModels
             RefreshShowcaseFilter();
         }
 
-        private void RefreshShowcaseFilter()
+        private void UpdateShowcaseViewFilter()
         {
             if (showcaseView == null) return;
-            if (SelectedShowcaseYear > 0)
-                showcaseView.Filter = item => item is FilterItem fi && fi.Year == SelectedShowcaseYear;
-            else
-                showcaseView.Filter = null;
+            var year = selectedShowcaseYear;
+            var search = showcaseFilterSearch;
+            showcaseView.Filter = item =>
+            {
+                if (item is not FilterItem fi) return false;
+                if (year > 0 && fi.Year != year) return false;
+                if (!string.IsNullOrEmpty(search) &&
+                    fi.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+                return true;
+            };
         }
+
+        private void RefreshShowcaseFilter() => UpdateShowcaseViewFilter();
 
         private void OnFilterChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (!hasLoadedOnce) return;
             if (e.PropertyName != nameof(FilterItem.IsSelected) &&
                 e.PropertyName != nameof(FilterItem.IsExcluded))
                 return;
@@ -539,9 +564,13 @@ namespace GamesRecap.ViewModels
             OnPropertyChanged(nameof(PlatformFilterHeader));
             OnPropertyChanged(nameof(GenreFilterHeader));
             OnPropertyChanged(nameof(TagFilterHeader));
-            OnPropertyChanged(nameof(ShowcaseFilterHeader));
-            OnPropertyChanged(nameof(ShowcaseSelectAllState));
-            UpdateShowcaseChips();
+
+            if (sender is FilterItem fi && ShowcaseFilters.Contains(fi))
+            {
+                OnPropertyChanged(nameof(ShowcaseFilterHeader));
+                OnPropertyChanged(nameof(ShowcaseSelectAllState));
+                UpdateShowcaseChips();
+            }
 
             _ = LoadCardsAsync(1);
         }
@@ -555,7 +584,7 @@ namespace GamesRecap.ViewModels
         private static int ParseYear(string dateStr)
         {
             if (string.IsNullOrEmpty(dateStr)) return 0;
-            if (DateTime.TryParse(dateStr, out var dt))
+            if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
                 return dt.Year;
             return 0;
         }
@@ -655,6 +684,20 @@ namespace GamesRecap.ViewModels
         public int Id { get; set; }
         public string Name { get; set; }
         public int Year { get; set; }
+        public string StartAt { get; set; }
+
+        public string DisplayDate
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(StartAt)) return null;
+                if (DateTime.TryParse(StartAt, out var dt))
+                    return dt.ToString("d MMM yyyy").ToUpper();
+                return null;
+            }
+        }
+
+        public string DisplayName => Year > 0 ? $"{Name} ({Year})" : Name;
 
         private bool isSelected;
         public bool IsSelected
@@ -688,6 +731,12 @@ namespace GamesRecap.ViewModels
         public ICommand DeselectAllInYearCommand { get; set; }
     }
 
+    public class ReleaseWindowDisplay
+    {
+        public string Kind { get; set; }
+        public string Label { get; set; }
+    }
+
     public class CardViewModel : ObservableObject
     {
         private readonly Card card;
@@ -704,6 +753,29 @@ namespace GamesRecap.ViewModels
         public string TrailerUrl => card.Media?.FirstOrDefault()?.Url;
         public bool HasTrailer => !string.IsNullOrEmpty(TrailerUrl);
         public string ReleaseDate => card.Game?.ReleaseDate;
+
+        public List<ReleaseWindowDisplay> ReleaseWindowsDisplay
+        {
+            get
+            {
+                if (card.Game?.ReleaseWindows == null || card.Game.ReleaseWindows.Count == 0)
+                    return null;
+                return card.Game.ReleaseWindows
+                    .Where(rw => !string.IsNullOrEmpty(rw.Label))
+                    .Select(rw => new ReleaseWindowDisplay
+                    {
+                        Kind = FormatReleaseKind(rw.Kind),
+                        Label = rw.Label
+                    })
+                    .ToList();
+            }
+        }
+
+        private static string FormatReleaseKind(string kind)
+        {
+            if (string.IsNullOrEmpty(kind)) return "Release Date";
+            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(kind.Replace("_", " "));
+        }
 
         public bool IsWishlisted => parent != null && parent.IsGameWishlisted(GameId);
 
@@ -733,7 +805,17 @@ namespace GamesRecap.ViewModels
             {
                 if (card.Game?.Platforms == null || card.Game.Platforms.Count == 0)
                     return null;
-                return string.Join(", ", card.Game.Platforms.Select(p => p.Name));
+                return string.Join(" · ", card.Game.Platforms.Select(p => p.Name));
+            }
+        }
+
+        public string GenreNames
+        {
+            get
+            {
+                if (card.Game?.Genres == null || card.Game.Genres.Count == 0)
+                    return null;
+                return string.Join(" · ", card.Game.Genres.Select(g => g.Name));
             }
         }
 

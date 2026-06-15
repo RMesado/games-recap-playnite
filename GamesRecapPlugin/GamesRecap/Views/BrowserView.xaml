@@ -58,8 +58,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush"
-                                        Value="{DynamicResource GlyphBrush}" />
+                                <Setter TargetName="border" Property="Background"
+                                        Value="#20FFFFFF" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -91,8 +91,7 @@
                             <Grid.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1" />
                             </Grid.RenderTransform>
-                            <Border CornerRadius="8"
-                                    Background="{DynamicResource GridItemBackgroundBrush}">
+                            <Border CornerRadius="8">
                                 <ContentPresenter />
                             </Border>
                         </Grid>
@@ -176,7 +175,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="Background"
-                                        Value="{DynamicResource HoverBrush}" />
+                                        Value="#20FFFFFF" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -198,12 +197,40 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="10">
 
-                    <TextBlock Text="Search" Style="{StaticResource BaseTextBlockStyle}"
-                               Foreground="{DynamicResource TextBrushDarker}"
-                               FontSize="{DynamicResource FontSizeSmall}" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{DynamicResource {x:Type TextBox}}"
-                             FontSize="{DynamicResource FontSizeSmall}" Padding="6,4" />
+                    <TextBox x:Name="MainSearch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+                                <Setter Property="Padding" Value="6,4" />
+                                <Style.Triggers>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="Text" Value="" />
+                                            <Condition Property="IsKeyboardFocused" Value="False" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                    <VisualBrush.Visual>
+                                                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                                            <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                                                       Foreground="{DynamicResource TextBrushDarker}"
+                                                                       FontSize="{DynamicResource FontSizeSmall}"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock Text=" Search by game" 
+                                                                       Foreground="{DynamicResource TextBrushDarker}"
+                                                                       FontSize="{DynamicResource FontSizeSmall}"
+                                                                       VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
 
                     <TextBlock Text="Sort" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
@@ -257,8 +284,38 @@
                                         BorderThickness="{DynamicResource PopupBorderThickness}"
                                         BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
                                     <StackPanel>
-                                        <TextBox Text="{Binding PlatformFilterSearch, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <TextBox x:Name="PlatformSearch" Text="{Binding PlatformFilterSearch, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource FilterSearchBox}">
+                                                    <Style.Triggers>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Text" Value="" />
+                                                                <Condition Property="IsKeyboardFocused" Value="False" />
+                                                            </MultiTrigger.Conditions>
+                                                            <Setter Property="Background">
+                                                                <Setter.Value>
+                                                                    <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                                        <VisualBrush.Visual>
+                                                                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                                                                <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                                <TextBlock Text=" Search by platform" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                            </StackPanel>
+                                                                        </VisualBrush.Visual>
+                                                                    </VisualBrush>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </MultiTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <ListBox ItemsSource="{Binding PlatformFilters}"
                                                  Background="Transparent" BorderThickness="0"
                                                  MaxHeight="200"
@@ -395,8 +452,38 @@
                                         BorderThickness="{DynamicResource PopupBorderThickness}"
                                         BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
                                     <StackPanel>
-                                        <TextBox Text="{Binding GenreFilterSearch, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <TextBox x:Name="GenreSearch" Text="{Binding GenreFilterSearch, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource FilterSearchBox}">
+                                                    <Style.Triggers>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Text" Value="" />
+                                                                <Condition Property="IsKeyboardFocused" Value="False" />
+                                                            </MultiTrigger.Conditions>
+                                                            <Setter Property="Background">
+                                                                <Setter.Value>
+                                                                    <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                                        <VisualBrush.Visual>
+                                                                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                                                                <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                                <TextBlock Text=" Search by genre" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                            </StackPanel>
+                                                                        </VisualBrush.Visual>
+                                                                    </VisualBrush>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </MultiTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <ListBox ItemsSource="{Binding GenreFilters}"
                                                  Background="Transparent" BorderThickness="0"
                                                  MaxHeight="200"
@@ -533,8 +620,38 @@
                                         BorderThickness="{DynamicResource PopupBorderThickness}"
                                         BorderBrush="{DynamicResource PopupBorderBrush}" Padding="4">
                                     <StackPanel>
-                                        <TextBox Text="{Binding TagFilterSearch, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <TextBox x:Name="TagSearch" Text="{Binding TagFilterSearch, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource FilterSearchBox}">
+                                                    <Style.Triggers>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Text" Value="" />
+                                                                <Condition Property="IsKeyboardFocused" Value="False" />
+                                                            </MultiTrigger.Conditions>
+                                                            <Setter Property="Background">
+                                                                <Setter.Value>
+                                                                    <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                                        <VisualBrush.Visual>
+                                                                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                                                                <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                                <TextBlock Text=" Search by tag" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                            </StackPanel>
+                                                                        </VisualBrush.Visual>
+                                                                    </VisualBrush>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </MultiTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <ListBox ItemsSource="{Binding TagFilters}"
                                                  Background="Transparent" BorderThickness="0"
                                                  MaxHeight="200"
@@ -684,9 +801,40 @@
                                                   Command="{Binding ToggleSelectAllShowcasesCommand}"
                                                   Content="Select all in year"
                                                   Margin="2,0,2,4"
+                                                  Visibility="{Binding IsShowcaseYearSelected, Converter={StaticResource BoolToVis}}"
                                                   Style="{StaticResource FilterItemCheckBox}" />
-                                        <TextBox Text="{Binding ShowcaseFilterSearch, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource FilterSearchBox}" />
+                                        <TextBox x:Name="ShowcaseSearch" Text="{Binding ShowcaseFilterSearch, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource FilterSearchBox}">
+                                                    <Style.Triggers>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Text" Value="" />
+                                                                <Condition Property="IsKeyboardFocused" Value="False" />
+                                                            </MultiTrigger.Conditions>
+                                                            <Setter Property="Background">
+                                                                <Setter.Value>
+                                                                    <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                                        <VisualBrush.Visual>
+                                                                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                                                                <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                                <TextBlock Text=" Search by showcase" 
+                                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                                           FontSize="{DynamicResource FontSizeSmall}"
+                                                                                           VerticalAlignment="Center" />
+                                                                            </StackPanel>
+                                                                        </VisualBrush.Visual>
+                                                                    </VisualBrush>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </MultiTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <ListBox ItemsSource="{Binding ShowcaseFilters}"
                                                  Background="Transparent" BorderThickness="0"
                                                  MaxHeight="200"
@@ -695,8 +843,17 @@
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <CheckBox IsChecked="{Binding IsSelected}"
-                                                              Content="{Binding Name}"
-                                                              Style="{StaticResource FilterItemCheckBox}" />
+                                                              Style="{StaticResource FilterItemCheckBox}">
+                                                        <CheckBox.Content>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding Name}"
+                                                                           FontSize="{DynamicResource FontSizeSmall}" />
+                                                                <TextBlock Text="{Binding DisplayDate}"
+                                                                           Foreground="{DynamicResource TextBrushDarker}"
+                                                                           FontSize="10" />
+                                                            </StackPanel>
+                                                        </CheckBox.Content>
+                                                    </CheckBox>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
@@ -774,7 +931,7 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Name}"
+                                        <TextBlock Text="{Binding DisplayName}"
                                                    Foreground="{DynamicResource TextBrush}"
                                                    FontSize="11" VerticalAlignment="Center" />
                                         <Button Grid.Column="1" Content="&#x2715;"
@@ -810,6 +967,10 @@
                     Padding="12,0,150,0"
                     WindowChrome.IsHitTestVisibleInChrome="True">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -827,6 +988,11 @@
                                    Foreground="{DynamicResource TextBrush}"
                                    VerticalAlignment="Center"
                                    Margin="12,0,0,0" />
+                        <Button Content="&#xE72C;"
+                                Command="{Binding RefreshCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"
+                                ToolTip="Refresh"
+                                Margin="4,0,0,0" />
                     </StackPanel>
 
                     <Button Grid.Column="2"
@@ -862,66 +1028,19 @@
                 </Grid>
             </Border>
 
+            <Rectangle Grid.Row="0"
+                       Height="2" Fill="#ff506e"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Bottom"
+                       x:Name="ProgressBar"
+                       RenderTransformOrigin="0,0.5"
+                       IsHitTestVisible="False">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform ScaleX="0" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
             <StackPanel Grid.Row="1" Margin="6,6,6,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                            Height="20" Margin="0,6"
-                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
-                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
-                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
-                        <Ellipse.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard RepeatBehavior="Forever">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                                                      Duration="0:0:1.5">
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
-                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:0.25" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0.5" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Ellipse.Triggers>
-                    </Ellipse>
-                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
-                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
-                        <Ellipse.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard RepeatBehavior="Forever">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                                                      Duration="0:0:1.5">
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0.5" />
-                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:0.75" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.0" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Ellipse.Triggers>
-                    </Ellipse>
-                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GlyphBrush}"
-                             Margin="3,0" VerticalAlignment="Center" Opacity="0.3">
-                        <Ellipse.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard RepeatBehavior="Forever">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
-                                                                      Duration="0:0:1.5">
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:0" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.0" />
-                                            <LinearDoubleKeyFrame Value="1" KeyTime="0:0:1.25" />
-                                            <LinearDoubleKeyFrame Value="0.3" KeyTime="0:0:1.5" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Ellipse.Triggers>
-                    </Ellipse>
-                </StackPanel>
                 <TextBlock Text="{Binding ErrorMessage}"
                            Foreground="{DynamicResource WarningBrush}"
                            HorizontalAlignment="Center"
@@ -943,8 +1062,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid x:Name="CardRoot"
-                              Height="165"
-                              Margin="4"
+                               Height="173"
+                              Margin="0"
                               ClipToBounds="True"
                                PreviewMouseDown="CardRoot_PreviewMouseDown"
                               Loaded="CardRoot_OnLoaded">
@@ -1059,7 +1178,41 @@
                                                     <Setter Property="Foreground" Value="#ff506e" />
                                                 </DataTrigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#B3000000" />
+                                                    <Setter Property="Background" Value="#20FFFFFF" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Width="24" Height="24" BorderThickness="0"
+                                        Background="#80000000"
+                                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                        Margin="4"
+                                        IsHitTestVisible="False"
+                                        ToolTip="Flip card">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="4"
+                                                    Width="24" Height="24">
+                                                <Path Data="{StaticResource IconRotateCcw}"
+                                                      Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
+                                                      StrokeThickness="1.5" Fill="Transparent"
+                                                      Stretch="Uniform"
+                                                      Width="16" Height="16" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Foreground" Value="#D9FFFFFF" />
+                                            <Setter Property="Opacity" Value="0" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Value="True">
+                                                    <Setter Property="Opacity" Value="1" />
+                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#20FFFFFF" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -1073,7 +1226,6 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Border Grid.Row="0"
@@ -1092,118 +1244,187 @@
                                                        Foreground="#AAFFFFFF" FontSize="10"
                                                        Visibility="{Binding PublisherName, Converter={StaticResource StringNotNullToVis}}" />
                                         </StackPanel>
-                                        <Border Grid.Column="1"
-                                                Width="18" Height="18" CornerRadius="2"
-                                                Background="#33FFFFFF"
-                                                ToolTip="{Binding ReleaseDate}"
-                                                Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}">
-                                            <Path Data="{StaticResource IconCalendarClock}"
-                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
-                                                  Fill="Transparent" Stretch="Uniform" Margin="2" />
-                                        </Border>
-                                    </Grid>
-                                </Border>
-
-                                <ScrollViewer Grid.Row="1"
-                                              VerticalScrollBarVisibility="Auto"
-                                              HorizontalScrollBarVisibility="Disabled"
-                                              Padding="10,6">
-                                    <StackPanel>
-                                        <StackPanel Margin="0,0,0,8"
-                                                    Visibility="{Binding PlatformsList, Converter={StaticResource StringNotNullToVis}}">
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
-                                                <Path Data="{StaticResource IconGamepad2}"
-                                                      Stroke="#AAFFFFFF" StrokeThickness="1.5"
-                                                      Fill="Transparent" Stretch="Uniform"
-                                                      Width="11" Height="11" Margin="0,0,4,0" />
-                                                <TextBlock Text="Platforms" Foreground="#AAFFFFFF" FontSize="9" />
-                                            </StackPanel>
-                                            <TextBlock Text="{Binding PlatformNames}"
-                                                       Foreground="White" FontSize="10"
-                                                       TextWrapping="Wrap" />
-                                        </StackPanel>
-
-                                        <StackPanel Margin="0,0,0,8"
-                                                    Visibility="{Binding GenresList, Converter={StaticResource StringNotNullToVis}}">
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
-                                                <Path Data="{StaticResource IconTags}"
-                                                      Stroke="#AAFFFFFF" StrokeThickness="1.5"
-                                                      Fill="Transparent" Stretch="Uniform"
-                                                      Width="11" Height="11" Margin="0,0,4,0" />
-                                                <TextBlock Text="Genres" Foreground="#AAFFFFFF" FontSize="9" />
-                                            </StackPanel>
-                                            <ItemsControl ItemsSource="{Binding GenresList}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel Orientation="Horizontal" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Name}"
-                                                                   Foreground="White" FontSize="10"
-                                                                   Margin="0,0,6,0" />
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </ScrollViewer>
-
-                                <Border Grid.Row="2" Padding="10,6"
-                                        BorderBrush="#33FFFFFF" BorderThickness="0,1,0,0">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button Content="&#x25B6; Trailer"
-                                                Command="{Binding DataContext.OpenTrailerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding TrailerUrl}"
-                                                Padding="8,4" FontSize="11"
-                                                Foreground="White"
-                                                BorderBrush="#44FFFFFF" BorderThickness="1"
-                                                Background="#22FFFFFF"
-                                                Cursor="Hand"
-                                                HorizontalAlignment="Left"
-                                                Visibility="{Binding HasTrailer, Converter={StaticResource BoolToVis}}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="Button">
-                                                                <Border Background="{TemplateBinding Background}"
-                                                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                                                        CornerRadius="4"
-                                                                        Padding="{TemplateBinding Padding}">
-                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                                </Border>
-                                                                <ControlTemplate.Triggers>
-                                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                                        <Setter Property="Background" Value="#44FFFFFF" />
-                                                                    </Trigger>
-                                                                </ControlTemplate.Triggers>
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-
                                         <Button Grid.Column="1"
                                                 Width="24" Height="24"
                                                 BorderThickness="0" Background="Transparent"
                                                 Cursor="Hand"
-                                                ToolTip="Flip back"
-                                                Click="FlipBackButton_Click">
-                                            <Path Data="{StaticResource IconRotateCcw}"
-                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
-                                                  Fill="Transparent" Stretch="Uniform" Margin="4" />
+                                                ToolTip="Add to calendar"
+                                                Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                            CornerRadius="4"
+                                                            Width="24" Height="24">
+                                                        <Path Data="{StaticResource IconCalendarClock}"
+                                                              Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
+                                                              StrokeThickness="1.5" Fill="Transparent"
+                                                              Stretch="Uniform"
+                                                              Width="16" Height="16" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Foreground" Value="#D9FFFFFF" />
+                                                    <Setter Property="Opacity" Value="1" />
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#20FFFFFF" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
                                         </Button>
                                     </Grid>
                                 </Border>
+
+                                <Grid Grid.Row="1" Margin="8,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+
+                                        <Grid Margin="0,0,0,6"
+                                              Visibility="{Binding ReleaseWindowsDisplay, Converter={StaticResource StringNotNullToVis}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Path Data="{StaticResource IconCalendarClock}"
+                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                  Fill="Transparent" Stretch="Uniform"
+                                                  Width="14" Height="14" Margin="0,2,8,0"
+                                                  VerticalAlignment="Top" />
+                                            <StackPanel Grid.Column="1">
+                                                <ItemsControl ItemsSource="{Binding ReleaseWindowsDisplay}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Margin="0,0,0,4">
+                                                                <TextBlock Text="{Binding Kind}"
+                                                                           Foreground="#AAFFFFFF" FontSize="9"
+                                                                           FontWeight="Medium"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Text="{Binding Label}"
+                                                                           Foreground="White" FontSize="10"
+                                                                           FontWeight="SemiBold"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid Margin="0,0,0,6"
+                                              Visibility="{Binding PlatformNames, Converter={StaticResource StringNotNullToVis}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Path Data="{StaticResource IconGamepad2}"
+                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                  Fill="Transparent" Stretch="Uniform"
+                                                  Width="14" Height="14" Margin="0,2,8,0"
+                                                  VerticalAlignment="Top" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding PlatformNames}"
+                                                       Foreground="White" FontSize="10"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+
+                                        <Grid Margin="0,0,0,6"
+                                              Visibility="{Binding GenreNames, Converter={StaticResource StringNotNullToVis}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Path Data="{StaticResource IconTags}"
+                                                  Stroke="#AAFFFFFF" StrokeThickness="1.5"
+                                                  Fill="Transparent" Stretch="Uniform"
+                                                  Width="14" Height="14" Margin="0,2,8,0"
+                                                  VerticalAlignment="Top" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding GenreNames}"
+                                                       Foreground="White" FontSize="10"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                                        <Button Command="{Binding DataContext.OpenTrailerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding TrailerUrl}"
+                                                Cursor="Hand"
+                                                Visibility="{Binding HasTrailer, Converter={StaticResource BoolToVis}}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="#22FFFFFF"
+                                                            BorderBrush="#44FFFFFF"
+                                                            BorderThickness="1"
+                                                            CornerRadius="4"
+                                                            Padding="10,7">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Path Data="{StaticResource IconPlay}"
+                                                                  Stroke="White" StrokeThickness="1.5"
+                                                                  Fill="Transparent" Stretch="Uniform"
+                                                                  Width="12" Height="12" Margin="0,0,6,0" />
+                                                            <TextBlock Text="Trailer"
+                                                                       Foreground="White" FontSize="11" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#33FFFFFF" />
+                                                            <Setter Property="BorderBrush" Value="#66FFFFFF" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <Button Width="20" Height="20"
+                                            Grid.ColumnSpan="2"
+                                            BorderThickness="0" Background="Transparent"
+                                            ToolTip="Flip back"
+                                            IsHitTestVisible="False"
+                                            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                            Margin="0,0,2,2">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Width="20" Height="20">
+                                                    <Path Data="{StaticResource IconRotateCcw}"
+                                                          Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
+                                                          StrokeThickness="1.5" Fill="Transparent"
+                                                          Stretch="Uniform"
+                                                          Width="14" Height="14" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Foreground" Value="#D9FFFFFF" />
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Value="True">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </DataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#20FFFFFF" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </DataTemplate>

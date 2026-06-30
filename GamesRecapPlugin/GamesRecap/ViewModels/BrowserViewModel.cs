@@ -118,6 +118,7 @@ namespace GamesRecap.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
                 OnPropertyChanged(nameof(HasPreviousPage));
                 OnPropertyChanged(nameof(HasNextPage));
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -131,6 +132,7 @@ namespace GamesRecap.ViewModels
                 OnPropertyChanged(nameof(TotalPages));
                 OnPropertyChanged(nameof(HasPreviousPage));
                 OnPropertyChanged(nameof(HasNextPage));
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -302,7 +304,6 @@ namespace GamesRecap.ViewModels
             RefreshCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
 
             LoadWishlistState();
-            _ = LoadCardsAsync(1);
         }
 
         private void ClearAllFilters()

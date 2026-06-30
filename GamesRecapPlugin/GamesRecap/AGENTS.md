@@ -41,20 +41,21 @@ GamesRecapPlugin/GamesRecap/
 - Menús de prueba: "Test API", "Ver estado de wishlist"
 - Icono actualizado a #ff506e
 
-### 🛠️ Últimos Cambios (Sesión actual)
-1. **Eliminada caché redundante de API** (`LocalDatabase.cs`, `GamesRecapApiClient.cs`):
-   - Schema reducido de 14 a 2 tablas (solo `UserGameState` + `AppMeta`)
-   - Eliminado `UpsertFromApiResponse` y todos los métodos de caché de datos de API
-   - Las tablas antiguas se eliminan automáticamente en `Initialize()` con `DROP TABLE IF EXISTS`
-   - Ahora `GetGames()` devuelve lista vacía (sin implementar aún)
-   - Menú "Ver estado de caché local" → "Ver estado de wishlist"
+### 🛠️ Últimos Cambios (Sesión 2026-06-30 — Wishlist filter fix)
+1. **Filtro Wishlist movido de query params a HTTP headers**:
+   - El filtro wishlist se enviaba como query params (`?wishlisted_ids=...&wishlisted_mode=include`) pero la API espera cabeceras HTTP (`X-Wishlisted-Ids`, `X-Wishlisted-Mode`)
+   - `Services/GamesRecapApiClient.cs`: `FetchCardsAsync` extrae wishlisted IDs y mode de `ActiveFilters`, los pasa a `SendWithVersionAsync` que los añade como headers
+   - `Services/GamesRecapApiClient.cs`: Eliminados `wishlisted_ids` y `wishlisted_mode` de `BuildQuery`
+   - `ViewModels/BrowserViewModel.cs`: `WishlistedMode = "include"` (no `"only"` — el modo correcto según los headers de la web)
 
-2. **Cards con esquinas redondeadas sobre la imagen** (`Views/BrowserView.xaml`, `Views/BrowserView.xaml.cs`):
-   - Eliminado `Background="{DynamicResource GridItemBackgroundBrush}"` del `Border` en `CardItemStyle` — ya no hay color sólido entre la imagen y el borde redondeado
-   - Eliminado `Margin="4"` del `CardRoot` Grid — la imagen ahora ocupa todo el ancho del card
-   - Aumentado `Height` de 165 a 173 para compensar el espacio perdido y mantener el mismo tamaño visual
-   - El clipping con `RectangleGeometry` redondeado (aplicado en `CardRoot_OnLoaded`) recorta la imagen directamente, creando el efecto de que la imagen misma tiene `CornerRadius="8"`
-   - El hover (scale 1.04x) y flip animation no se vieron afectados
+### 🛠️ Últimos Cambios (Sesión 2026-06-26)
+1. **Barra de Progreso con trompicones** (`Views/BrowserView.xaml.cs`):
+   - Reemplazado `Action<bool>` delegate por suscripción a `PropertyChanged` del ViewModel (más confiable)
+   - `StartProgress`: nudge inicial a ScaleX=0.08 para visibilidad inmediata
+   - Timer con `DispatcherTimer`: primer tick rápido (100-300ms), siguientes a 400-1800ms, cap 75%
+   - `CompleteProgress`: fill current→1 en 600ms (QuadraticEase), fade 1→0 en 400ms tras fill
+   - Animación diferida a `DispatcherPriority.Background` para evitar stuttering
+   - Dual hook (`DataContextChanged` + `Loaded`) + cleanup en `Unloaded`
 
 ### ⚠️ Pendiente / Bloqueado
 - Nada bloqueado actualmente. API responde 200 OK con versión `fe5cfce8e2cfdd6009a9f870a43fdbc1`.
@@ -100,8 +101,9 @@ GamesRecapPlugin/GamesRecap/
 - `genres` / `exclude_genres` - IDs separados por coma
 - `tags` / `exclude_tags` - IDs separados por coma
 - `showcases` - IDs separados por coma
-- `hidden_ids` / `seen_ids` / `wishlisted_ids` - IDs separados por coma
-- `seen_mode` / `wishlisted_mode` - string
+- `hidden_ids` / `seen_ids` - IDs separados por coma
+- `seen_mode` - string
+- `wishlisted_ids` / `wishlisted_mode` - **NO se envían como query params**. Se envían como headers HTTP: `X-Wishlisted-Ids` y `X-Wishlisted-Mode` (ver `GamesRecapApiClient.FetchCardsAsync`)
 - `release_from` / `release_to` - fechas
 - `sort` - string (default "newest")
 - `view` - string (default "cards")
@@ -263,6 +265,16 @@ Stop-Process -Name "Playnite.DesktopApp" -Force; Start-Sleep 2
   - Filter search TextBoxes (platform, genre, tag, showcase): `Trigger` → `MultiTrigger` con `IsKeyboardFocused=False` (placeholder desaparece al focus)
 - `Views/BrowserView.xaml.cs`:
   - Added `MainSearch_TextChanged/GotFocus/LostFocus` + `UpdateMainSearchPlaceholder()` (toggle visibility según Text vacío + focus)
+
+### Files Modified (Sesión 2026-06-26 — Progress Bar)
+- `Views/BrowserView.xaml.cs`: Implementación completa de la barra de progreso
+  - `BrowserView.xaml`:260 — `<Rectangle>` en Grid.Row="0", VerticalAlignment="Bottom", Height="2", Fill="#ff506e", ScaleTransform con ScaleX=0
+- Reemplazado `Action<bool>` delegate por suscripción a `PropertyChanged` del ViewModel en `OnDataContextChanged` + `OnViewLoaded`
+- Añadido `Unloaded` handler para cleanup del evento
+- `CompleteProgress` diferido a `DispatcherPriority.Background` para evitar stuttering con el layout de cards
+- Timer `DispatcherTimer` para chunks aleatorios: primer tick a 100-300ms, siguientes a 400-1800ms, cap 75%
+- `StartProgress`: nudge inicial a ScaleX=0.08 para visibilidad inmediata
+- `CompleteProgress`: fill current→1 en 600ms (QuadraticEase), fade 1→0 en 400ms tras fill
 
 ## Playnite Theme Resources
 - **Default theme path**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\`

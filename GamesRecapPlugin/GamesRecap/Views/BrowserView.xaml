@@ -6,7 +6,7 @@
              xmlns:conv="clr-namespace:GamesRecap.Converters"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="Transparent">
+             Background="{x:Null}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -186,51 +186,119 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <Border Grid.Column="0" Background="Transparent"
-                BorderBrush="{DynamicResource PanelSeparatorBrush}" BorderThickness="0,0,1,0">
+        <Border Grid.Row="0"
+                Background="{DynamicResource ControlBackgroundBrush}"
+                BorderBrush="{DynamicResource PanelSeparatorBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="12,0,150,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="&#xE72B;"
+                            Command="{Binding GoBackToLibraryCommand}"
+                            Style="{StaticResource NavigationButtonStyle}"
+                            ToolTip="Back to Library"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                    <TextBlock Text="Games Recap"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               FontWeight="Bold" FontSize="18"
+                               Foreground="{DynamicResource TextBrush}"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0" />
+                    <Button Content="&#xE72C;"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource NavigationButtonStyle}"
+                            ToolTip="Refresh"
+                            Margin="4,0,0,0"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                        Command="{Binding ToggleWishlistFilterCommand}"
+                        Padding="12,6" Margin="0,6"
+                        VerticalAlignment="Center"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsWishlistFilterActive}" Value="True">
+                                    <Setter Property="Background" Value="#20ff506e" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#x2665;" Foreground="#ff506e"
+                                   FontSize="16" VerticalAlignment="Center"
+                                   Margin="0,0,6,0" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding WishlistCount}"
+                                       Foreground="{DynamicResource TextBrush}"
+                                       FontWeight="Bold" FontSize="14"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text=" wishlisted"
+                                       Foreground="{DynamicResource TextBrushDarker}"
+                                       FontSize="12" VerticalAlignment="Center"
+                                       Margin="3,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <Rectangle Grid.Row="0"
+                   Height="2" Fill="#ff506e"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Bottom"
+                   x:Name="ProgressBar"
+                   RenderTransformOrigin="0,0.5"
+                   IsHitTestVisible="False">
+            <Rectangle.RenderTransform>
+                <ScaleTransform ScaleX="0" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="Transparent"
+                    BorderBrush="{DynamicResource PanelSeparatorBrush}" BorderThickness="0,0,1,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="10">
 
-                    <TextBox x:Name="MainSearch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
-                                <Setter Property="Padding" Value="6,4" />
-                                <Style.Triggers>
-                                    <MultiTrigger>
-                                        <MultiTrigger.Conditions>
-                                            <Condition Property="Text" Value="" />
-                                            <Condition Property="IsKeyboardFocused" Value="False" />
-                                        </MultiTrigger.Conditions>
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                                    <VisualBrush.Visual>
-                                                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
-                                                            <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
-                                                                       Foreground="{DynamicResource TextBrushDarker}"
-                                                                       FontSize="{DynamicResource FontSizeSmall}"
-                                                                       VerticalAlignment="Center" />
-                                                            <TextBlock Text=" Search by game" 
-                                                                       Foreground="{DynamicResource TextBrushDarker}"
-                                                                       FontSize="{DynamicResource FontSizeSmall}"
-                                                                       VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </VisualBrush.Visual>
-                                                </VisualBrush>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </MultiTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                    <Grid>
+                        <TextBox x:Name="MainSearch" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 GotFocus="MainSearch_GotFocus" LostFocus="MainSearch_LostFocus"
+                                 TextChanged="MainSearch_TextChanged"
+                                 FontSize="{DynamicResource FontSizeSmall}" Padding="6,4" />
+                        <StackPanel x:Name="MainSearchPlaceholder" Orientation="Horizontal" IsHitTestVisible="False"
+                                    Visibility="Visible" Margin="8,0,0,0"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" 
+                                       Foreground="{DynamicResource TextBrushDarker}"
+                                       FontSize="{DynamicResource FontSizeSmall}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text=" Search by game" 
+                                       Foreground="{DynamicResource TextBrushDarker}"
+                                       FontSize="{DynamicResource FontSizeSmall}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
 
                     <TextBlock Text="Sort" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
@@ -955,99 +1023,20 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0"
-                    Background="{DynamicResource ControlBackgroundBrush}"
-                    BorderBrush="{DynamicResource PanelSeparatorBrush}"
-                    BorderThickness="0,0,0,1"
-                    Padding="12,0,150,0"
-                    WindowChrome.IsHitTestVisibleInChrome="True">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Content="&#xE72B;"
-                                Command="{Binding GoBackToLibraryCommand}"
-                                Style="{StaticResource NavigationButtonStyle}"
-                                ToolTip="Back to Library" />
-                        <TextBlock Text="Games Recap"
-                                   Style="{StaticResource BaseTextBlockStyle}"
-                                   FontWeight="Bold" FontSize="18"
-                                   Foreground="{DynamicResource TextBrush}"
-                                   VerticalAlignment="Center"
-                                   Margin="12,0,0,0" />
-                        <Button Content="&#xE72C;"
-                                Command="{Binding RefreshCommand}"
-                                Style="{StaticResource NavigationButtonStyle}"
-                                ToolTip="Refresh"
-                                Margin="4,0,0,0" />
-                    </StackPanel>
 
-                    <Button Grid.Column="2"
-                            Command="{Binding ToggleWishlistFilterCommand}"
-                            Padding="12,6" Margin="0,6"
-                            VerticalAlignment="Center">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsWishlistFilterActive}" Value="True">
-                                        <Setter Property="Background" Value="#20ff506e" />
-                                        <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#x2665;" Foreground="#ff506e"
-                                       FontSize="16" VerticalAlignment="Center"
-                                       Margin="0,0,6,0" />
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding WishlistCount}"
-                                           Foreground="{DynamicResource TextBrush}"
-                                           FontWeight="Bold" FontSize="14"
-                                           VerticalAlignment="Center" />
-                                <TextBlock Text=" wishlisted"
-                                           Foreground="{DynamicResource TextBrushDarker}"
-                                           FontSize="12" VerticalAlignment="Center"
-                                           Margin="3,0,0,0" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </Border>
-
-            <Rectangle Grid.Row="0"
-                       Height="2" Fill="#ff506e"
-                       HorizontalAlignment="Stretch"
-                       VerticalAlignment="Bottom"
-                       x:Name="ProgressBar"
-                       RenderTransformOrigin="0,0.5"
-                       IsHitTestVisible="False">
-                <Rectangle.RenderTransform>
-                    <ScaleTransform ScaleX="0" />
-                </Rectangle.RenderTransform>
-            </Rectangle>
-
-            <StackPanel Grid.Row="1" Margin="6,6,6,0">
+            <StackPanel Grid.Row="0" Margin="6,6,6,0">
                 <TextBlock Text="{Binding ErrorMessage}"
                            Foreground="{DynamicResource WarningBrush}"
                            HorizontalAlignment="Center"
                            Visibility="{Binding ErrorMessage, Converter={StaticResource StringNotNullToVis}}" />
             </StackPanel>
 
-            <ListBox x:Name="CardList" Grid.Row="2" ItemsSource="{Binding Cards}" Margin="6,0,6,0"
+            <ListBox x:Name="CardList" Grid.Row="1" ItemsSource="{Binding Cards}" Margin="6,0,6,0"
                      ItemContainerStyle="{StaticResource CardItemStyle}"
                      Background="Transparent" BorderThickness="0"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -1431,7 +1420,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Border Grid.Row="3" Margin="6,0,6,0"
+            <Border Grid.Row="2" Margin="6,0,6,0"
                     Background="{DynamicResource GridItemBackgroundBrush}"
                     BorderBrush="{DynamicResource PanelSeparatorBrush}"
                     BorderThickness="0,1,0,0" Padding="8,4">
@@ -1467,6 +1456,7 @@
                             FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextBrush}" />
                 </Grid>
             </Border>
+        </Grid>
         </Grid>
     </Grid>
 </UserControl>

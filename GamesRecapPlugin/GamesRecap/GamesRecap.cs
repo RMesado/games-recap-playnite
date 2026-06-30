@@ -93,6 +93,7 @@ namespace GamesRecap
                         browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi);
                         browserView = new BrowserView();
                         browserView.DataContext = browserViewModel;
+                        _ = browserViewModel.LoadCardsAsync(1);
                     }
                     return browserView;
                 }

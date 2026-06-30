@@ -44,7 +44,11 @@ namespace GamesRecap.Services
             var url = BuildQuery(filters);
             var version = db.GetInertiaVersion() ?? DefaultInertiaVersion;
 
-            var response = await SendWithVersionAsync(url, version);
+            var wishlistedIds = (filters.WishlistedIds != null && filters.WishlistedIds.Count > 0)
+                ? string.Join(",", filters.WishlistedIds) : null;
+            var wishlistedMode = !string.IsNullOrEmpty(filters.WishlistedMode) ? filters.WishlistedMode : null;
+
+            var response = await SendWithVersionAsync(url, version, wishlistedIds, wishlistedMode);
 
             if (response == null)
             {
@@ -64,7 +68,7 @@ namespace GamesRecap.Services
             return fullResponse?.Props;
         }
 
-        private async Task<HttpResponseMessage> SendWithVersionAsync(string url, string version)
+        private async Task<HttpResponseMessage> SendWithVersionAsync(string url, string version, string wishlistedIds = null, string wishlistedMode = null)
         {
             const int maxRetries = 2;
 
@@ -73,6 +77,18 @@ namespace GamesRecap.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Remove("X-Inertia-Version");
                 request.Headers.Add("X-Inertia-Version", version);
+
+                if (!string.IsNullOrEmpty(wishlistedIds))
+                {
+                    request.Headers.Remove("X-Wishlisted-Ids");
+                    request.Headers.Add("X-Wishlisted-Ids", wishlistedIds);
+                }
+
+                if (!string.IsNullOrEmpty(wishlistedMode))
+                {
+                    request.Headers.Remove("X-Wishlisted-Mode");
+                    request.Headers.Add("X-Wishlisted-Mode", wishlistedMode);
+                }
 
                 var response = await http.SendAsync(request);
 
@@ -147,13 +163,9 @@ namespace GamesRecap.Services
             AddIntList(parts, "showcases", filters.Showcases);
             AddIntList(parts, "hidden_ids", filters.HiddenIds);
             AddIntList(parts, "seen_ids", filters.SeenIds);
-            AddIntList(parts, "wishlisted_ids", filters.WishlistedIds);
 
             if (!string.IsNullOrEmpty(filters.SeenMode))
                 parts.Add("seen_mode=" + Uri.EscapeDataString(filters.SeenMode));
-
-            if (!string.IsNullOrEmpty(filters.WishlistedMode))
-                parts.Add("wishlisted_mode=" + Uri.EscapeDataString(filters.WishlistedMode));
 
             if (filters.Page.HasValue && filters.Page.Value > 1)
                 parts.Add("page=" + filters.Page.Value);

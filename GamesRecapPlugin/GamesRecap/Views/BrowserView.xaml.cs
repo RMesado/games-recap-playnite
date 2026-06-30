@@ -4,31 +4,66 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using GamesRecap.ViewModels;
+using Playnite.SDK;
 
 namespace GamesRecap.Views
 {
     public partial class BrowserView : UserControl
     {
+        private DispatcherTimer progressTimer;
+        private double progressValue;
+        private bool isFirstTick;
+        private static readonly Random rng = new Random();
+
         public BrowserView()
         {
             InitializeComponent();
             IsVisibleChanged += OnIsVisibleChanged;
-            Loaded += (_, _) =>
-            {
-                if (DataContext is BrowserViewModel vm)
-                {
-                    vm.OnLoadingChanged = OnLoadingChanged;
-                    if (vm.IsLoading)
-                        StartProgress();
-                }
-            };
+            DataContextChanged += OnDataContextChanged;
+            Loaded += OnViewLoaded;
+            Unloaded += OnViewUnloaded;
         }
 
-        private void OnLoadingChanged(bool isLoading)
+        private void OnViewLoaded(object sender, RoutedEventArgs e)
         {
-            if (isLoading) StartProgress();
-            else CompleteProgress();
+            if (DataContext is BrowserViewModel vm && vm.IsLoading)
+                StartProgress();
+        }
+
+        private void OnViewUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is BrowserViewModel vm)
+                vm.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is BrowserViewModel oldVm)
+                oldVm.PropertyChanged -= OnViewModelPropertyChanged;
+
+            if (DataContext is BrowserViewModel vm)
+            {
+                vm.PropertyChanged += OnViewModelPropertyChanged;
+                if (vm.IsLoading)
+                    StartProgress();
+            }
+        }
+
+        private static readonly ILogger progressLogger = LogManager.GetLogger();
+
+        private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(BrowserViewModel.IsLoading))
+                return;
+
+            var isLoading = ((BrowserViewModel)sender).IsLoading;
+            progressLogger.Debug($"Progress: PropertyChanged IsLoading={isLoading}");
+            if (isLoading)
+                StartProgress();
+            else
+                CompleteProgress();
         }
 
         private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -70,38 +105,84 @@ namespace GamesRecap.Views
 
         private void StartProgress()
         {
+            progressLogger.Debug("Progress: StartProgress");
+            progressTimer?.Stop();
+            progressTimer = null;
             ProgressBar.BeginAnimation(UIElement.OpacityProperty, null);
             ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            ((ScaleTransform)ProgressBar.RenderTransform).ScaleX = 0;
-            ProgressBar.Opacity = 1;
 
-            var anim = new DoubleAnimation(0, 0.9, TimeSpan.FromSeconds(4))
+            progressValue = 0.08;
+            ((ScaleTransform)ProgressBar.RenderTransform).ScaleX = 0.08;
+            ProgressBar.Opacity = 1;
+            isFirstTick = true;
+
+            ScheduleNextProgressTick();
+        }
+
+        private void ScheduleNextProgressTick()
+        {
+            if (progressValue >= 0.75) return;
+
+            progressTimer = new DispatcherTimer();
+            progressTimer.Interval = isFirstTick
+                ? TimeSpan.FromMilliseconds(rng.Next(100, 300))
+                : TimeSpan.FromMilliseconds(rng.Next(400, 1800));
+            isFirstTick = false;
+            progressTimer.Tick += OnProgressTick;
+            progressTimer.Start();
+        }
+
+        private void OnProgressTick(object sender, EventArgs e)
+        {
+            var timer = sender as DispatcherTimer;
+            if (timer == null || timer != progressTimer) return;
+
+            timer.Stop();
+            timer.Tick -= OnProgressTick;
+
+            double increment = 0.06 + rng.NextDouble() * 0.14;
+            progressValue = Math.Min(progressValue + increment, 0.75);
+
+            var anim = new DoubleAnimation(progressValue, TimeSpan.FromMilliseconds(300))
             {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
             };
-            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, anim, HandoffBehavior.SnapshotAndReplace);
+            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, anim);
+
+            if (progressValue < 0.75)
+                ScheduleNextProgressTick();
         }
 
         private void CompleteProgress()
         {
+            progressTimer?.Stop();
+            progressTimer = null;
+
+            Dispatcher.CurrentDispatcher.BeginInvoke(
+                new Action(AnimateCompletion),
+                System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void AnimateCompletion()
+        {
+            if (DataContext is BrowserViewModel vm && vm.IsLoading)
+                return;
+
             var currentX = ((ScaleTransform)ProgressBar.RenderTransform).ScaleX;
             ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            ((ScaleTransform)ProgressBar.RenderTransform).ScaleX = currentX;
 
-            var sb = new Storyboard();
+            var fill = new DoubleAnimation(currentX, 1, TimeSpan.FromSeconds(0.6))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+            };
+            ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, fill);
 
-            var fill = new DoubleAnimation(currentX, 1, TimeSpan.FromSeconds(0.25));
-            fill.EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut };
-            Storyboard.SetTarget(fill, ProgressBar);
-            Storyboard.SetTargetProperty(fill, new PropertyPath("RenderTransform.ScaleX"));
-            sb.Children.Add(fill);
-
-            var fade = new DoubleAnimation(0, TimeSpan.FromSeconds(0.3))
-                { BeginTime = TimeSpan.FromSeconds(0.25) };
-            Storyboard.SetTarget(fade, ProgressBar);
-            Storyboard.SetTargetProperty(fade, new PropertyPath(UIElement.OpacityProperty));
-            sb.Children.Add(fade);
-
-            sb.Begin();
+            var fade = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.4))
+            {
+                BeginTime = TimeSpan.FromSeconds(0.6)
+            };
+            ProgressBar.BeginAnimation(UIElement.OpacityProperty, fade);
         }
 
         private static T FindVisualParent<T>(DependencyObject child, Func<T, bool> predicate = null)
@@ -190,6 +271,17 @@ namespace GamesRecap.Views
                 element = VisualTreeHelper.GetParent(element);
             }
             return false;
+        }
+
+        private void MainSearch_TextChanged(object sender, TextChangedEventArgs e) => UpdateMainSearchPlaceholder();
+        private void MainSearch_GotFocus(object sender, RoutedEventArgs e) => UpdateMainSearchPlaceholder();
+        private void MainSearch_LostFocus(object sender, RoutedEventArgs e) => UpdateMainSearchPlaceholder();
+
+        private void UpdateMainSearchPlaceholder()
+        {
+            MainSearchPlaceholder.Visibility =
+                string.IsNullOrEmpty(MainSearch.Text) && !MainSearch.IsKeyboardFocused
+                ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ResetAllCards()

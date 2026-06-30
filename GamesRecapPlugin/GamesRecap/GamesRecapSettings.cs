@@ -2,9 +2,6 @@
 using Playnite.SDK.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GamesRecap
 {
@@ -25,7 +22,7 @@ namespace GamesRecap
     public class GamesRecapSettingsViewModel : ObservableObject, ISettings
     {
         private readonly GamesRecap plugin;
-        private GamesRecapSettings editingClone { get; set; }
+        private GamesRecapSettings editingClone;
 
         private GamesRecapSettings settings;
         public GamesRecapSettings Settings

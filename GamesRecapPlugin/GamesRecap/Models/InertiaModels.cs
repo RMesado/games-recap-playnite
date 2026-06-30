@@ -451,6 +451,12 @@ namespace GamesRecap.Models
         public string Slug { get; set; }
     }
 
+    public class ReleaseWindowDisplay
+    {
+        public string Kind { get; set; }
+        public string Label { get; set; }
+    }
+
     [DataContract]
     public class SortOption
     {

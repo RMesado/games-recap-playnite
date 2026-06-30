@@ -1113,27 +1113,28 @@
                                     </ItemsControl>
                                 </Border>
 
-                                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                                            Margin="8,0,8,8">
-                                    <Border CornerRadius="3" Background="#22FFFFFF"
-                                            Padding="6,2" Margin="0,0,0,4"
-                                            Visibility="{Binding HasShowcase, Converter={StaticResource BoolToVis}}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding ShowcaseName}"
-                                                       Foreground="White" FontSize="9"
-                                                       FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{Binding ShowcaseDate, StringFormat=' · {0}'}"
-                                                       Foreground="#CCFFFFFF" FontSize="9"
-                                                       Margin="3,0,0,0" />
-                                        </StackPanel>
-                                    </Border>
+                                 <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                        Margin="8,0,8,32"
+                                        CornerRadius="3" Background="#22FFFFFF"
+                                        Padding="4,2"
+                                        Visibility="{Binding HasShowcase, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding ShowcaseName}"
+                                                   Foreground="White" FontSize="9" />
+                                        <TextBlock Text="{Binding ShowcaseDate, StringFormat=' · {0}'}"
+                                                   Foreground="#CCFFFFFF" FontSize="9"
+                                                   Margin="1,0,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                                    <TextBlock Text="{Binding Title}"
-                                               Foreground="White" FontWeight="Bold" FontSize="14"
-                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Title}" />
-                                </StackPanel>
+                                <TextBlock VerticalAlignment="Bottom"
+                                           Margin="8,0,8,8"
+                                           Text="{Binding Title}"
+                                           Foreground="White" FontWeight="Bold"
+                                           FontSize="14"
+                                           TextWrapping="NoWrap"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Title}" />
 
                                 <Button Command="{Binding DataContext.ToggleWishlistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding GameId}"
@@ -1358,7 +1359,7 @@
                                                             BorderThickness="1"
                                                             CornerRadius="4"
                                                             Padding="10,7">
-                                                        <StackPanel Orientation="Horizontal">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                                             <Path Data="{StaticResource IconPlay}"
                                                                   Stroke="White" StrokeThickness="1.5"
                                                                   Fill="Transparent" Stretch="Uniform"

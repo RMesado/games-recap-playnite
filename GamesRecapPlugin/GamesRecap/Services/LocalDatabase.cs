@@ -46,22 +46,7 @@ namespace GamesRecap.Services
                 CREATE TABLE IF NOT EXISTS AppMeta (
                     Key   TEXT PRIMARY KEY,
                     Value TEXT NOT NULL
-                );
-
-                DROP TABLE IF EXISTS Platforms;
-                DROP TABLE IF EXISTS Genres;
-                DROP TABLE IF EXISTS Tags;
-                DROP TABLE IF EXISTS Showcases;
-                DROP TABLE IF EXISTS Companies;
-                DROP TABLE IF EXISTS Games;
-                DROP TABLE IF EXISTS GamePlatforms;
-                DROP TABLE IF EXISTS GameGenres;
-                DROP TABLE IF EXISTS GameTags;
-                DROP TABLE IF EXISTS GameDevelopers;
-                DROP TABLE IF EXISTS ReleaseWindows;
-                DROP TABLE IF EXISTS Cards;
-                DROP TABLE IF EXISTS CardMedia;
-                DROP TABLE IF EXISTS SyncLog;";
+                );";
 
             cmd.ExecuteNonQuery();
         }
@@ -103,16 +88,33 @@ namespace GamesRecap.Services
         {
             using var conn = GetConnection();
             using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT Wishlisted, Seen, Hidden FROM UserGameState WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            var now = DateTime.UtcNow.ToString("O");
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    var oldW = reader.GetInt32(0) == 1;
+                    var oldS = reader.GetInt32(1) == 1;
+                    var oldH = reader.GetInt32(2) == 1;
+                    if (oldW == wishlisted && oldS == seen && oldH == hidden)
+                        return;
+                }
+            }
+
+            cmd.Parameters.Clear();
             cmd.CommandText = @"
                 INSERT OR REPLACE INTO UserGameState (GameId, Wishlisted, WishlistedAt, Seen, SeenAt, Hidden, HiddenAt)
                 VALUES (@gid, @w, @wa, @s, @sa, @h, @ha)";
             cmd.Parameters.AddWithValue("@gid", gameId);
             cmd.Parameters.AddWithValue("@w", wishlisted ? 1 : 0);
-            cmd.Parameters.AddWithValue("@wa", wishlisted ? (object)DateTime.UtcNow.ToString("O") : DBNull.Value);
+            cmd.Parameters.AddWithValue("@wa", wishlisted ? (object)now : DBNull.Value);
             cmd.Parameters.AddWithValue("@s", seen ? 1 : 0);
-            cmd.Parameters.AddWithValue("@sa", seen ? (object)DateTime.UtcNow.ToString("O") : DBNull.Value);
+            cmd.Parameters.AddWithValue("@sa", seen ? (object)now : DBNull.Value);
             cmd.Parameters.AddWithValue("@h", hidden ? 1 : 0);
-            cmd.Parameters.AddWithValue("@ha", hidden ? (object)DateTime.UtcNow.ToString("O") : DBNull.Value);
+            cmd.Parameters.AddWithValue("@ha", hidden ? (object)now : DBNull.Value);
             cmd.ExecuteNonQuery();
         }
 
@@ -121,7 +123,7 @@ namespace GamesRecap.Services
             using var conn = GetConnection();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "UPDATE UserGameState SET PlayniteId = @pid WHERE GameId = @gid";
-            cmd.Parameters.AddWithValue("@pid", (object)playniteId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@pid", string.IsNullOrEmpty(playniteId) ? DBNull.Value : (object)playniteId);
             cmd.Parameters.AddWithValue("@gid", gameId);
             cmd.ExecuteNonQuery();
         }

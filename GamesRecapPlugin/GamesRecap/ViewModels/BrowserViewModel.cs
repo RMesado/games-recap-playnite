@@ -9,8 +9,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace GamesRecap.ViewModels
 {
@@ -35,8 +37,6 @@ namespace GamesRecap.ViewModels
         private DateTime? releaseDateTo;
         private int requestGeneration;
         private bool isWishlistFilterActive;
-
-        public Action<bool> OnLoadingChanged;
 
         private string platformFilterSearch;
         private string genreFilterSearch;
@@ -369,9 +369,9 @@ namespace GamesRecap.ViewModels
 
         public async Task LoadCardsAsync(int page)
         {
+            if (page < 1) page = 1;
             var currentGen = System.Threading.Interlocked.Increment(ref requestGeneration);
             IsLoading = true;
-            OnLoadingChanged?.Invoke(true);
             ErrorMessage = null;
 
             try
@@ -408,9 +408,8 @@ namespace GamesRecap.ViewModels
 
                 hasLoadedOnce = true;
             }
-            catch (Exception ex) when (currentGen != requestGeneration)
+            catch (Exception) when (currentGen != requestGeneration)
             {
-                // Stale request superseded by a newer one, ignore
             }
             catch (Exception ex)
             {
@@ -420,10 +419,7 @@ namespace GamesRecap.ViewModels
             finally
             {
                 if (currentGen == requestGeneration)
-                {
                     IsLoading = false;
-                    OnLoadingChanged?.Invoke(false);
-                }
             }
         }
 
@@ -675,8 +671,10 @@ namespace GamesRecap.ViewModels
 
         private static void OpenTrailer(string url)
         {
-            if (!string.IsNullOrEmpty(url))
-                Process.Start(url);
+            if (!string.IsNullOrEmpty(url) &&
+                Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+                (uri.Scheme == "https" || uri.Scheme == "http"))
+                Process.Start(uri.ToString());
         }
     }
 
@@ -732,12 +730,6 @@ namespace GamesRecap.ViewModels
         public ICommand DeselectAllInYearCommand { get; set; }
     }
 
-    public class ReleaseWindowDisplay
-    {
-        public string Kind { get; set; }
-        public string Label { get; set; }
-    }
-
     public class CardViewModel : ObservableObject
     {
         private readonly Card card;
@@ -749,7 +741,7 @@ namespace GamesRecap.ViewModels
         public string CoverUrl => card.Game?.CoverImageUrl;
         public string DisplayImageUrl => !string.IsNullOrEmpty(card.Game?.ScreenshotUrl)
             ? card.Game.ScreenshotUrl : card.Game?.CoverImageUrl;
-        public string ShowcaseName => card.Showcase?.Name;
+        public string ShowcaseName => card.Showcase?.Name?.Trim();
         public string ShowcaseEventName => card.Showcase?.EventName;
         public string TrailerUrl => card.Media?.FirstOrDefault()?.Url;
         public bool HasTrailer => !string.IsNullOrEmpty(TrailerUrl);
@@ -799,6 +791,33 @@ namespace GamesRecap.ViewModels
 
         public bool HasShowcase => !string.IsNullOrEmpty(ShowcaseName);
         public bool HasTags => Tags != null && Tags.Count > 0;
+
+        public double ShowcaseBadgeWidth
+        {
+            get
+            {
+                if (!HasShowcase) return 0;
+                var name = ShowcaseName ?? "";
+                var date = ShowcaseDate;
+                var text = string.IsNullOrEmpty(date) ? name : $"{name} · {date}";
+                try
+                {
+                    var ft = new FormattedText(
+                        text,
+                        CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        new Typeface("Segoe UI"),
+                        9,
+                        Brushes.White,
+                        1.0);
+                    return ft.Width + 6;
+                }
+                catch
+                {
+                    return 80;
+                }
+            }
+        }
 
         public string PlatformNames
         {

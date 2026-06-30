@@ -41,25 +41,66 @@ GamesRecapPlugin/GamesRecap/
 - Menús de prueba: "Test API", "Ver estado de wishlist"
 - Icono actualizado a #ff506e
 
-### 🛠️ Últimos Cambios (Sesión 2026-06-30 — Wishlist filter fix)
-1. **Filtro Wishlist movido de query params a HTTP headers**:
-   - El filtro wishlist se enviaba como query params (`?wishlisted_ids=...&wishlisted_mode=include`) pero la API espera cabeceras HTTP (`X-Wishlisted-Ids`, `X-Wishlisted-Mode`)
-   - `Services/GamesRecapApiClient.cs`: `FetchCardsAsync` extrae wishlisted IDs y mode de `ActiveFilters`, los pasa a `SendWithVersionAsync` que los añade como headers
-   - `Services/GamesRecapApiClient.cs`: Eliminados `wishlisted_ids` y `wishlisted_mode` de `BuildQuery`
-   - `ViewModels/BrowserViewModel.cs`: `WishlistedMode = "include"` (no `"only"` — el modo correcto según los headers de la web)
+### 🛠️ Changelog Completo — Fase 3 (Sesiones 2026-06-11 al 2026-06-30)
 
-### 🛠️ Últimos Cambios (Sesión 2026-06-26)
-1. **Barra de Progreso con trompicones** (`Views/BrowserView.xaml.cs`):
-   - Reemplazado `Action<bool>` delegate por suscripción a `PropertyChanged` del ViewModel (más confiable)
-   - `StartProgress`: nudge inicial a ScaleX=0.08 para visibilidad inmediata
-   - Timer con `DispatcherTimer`: primer tick rápido (100-300ms), siguientes a 400-1800ms, cap 75%
-   - `CompleteProgress`: fill current→1 en 600ms (QuadraticEase), fade 1→0 en 400ms tras fill
-   - Animación diferida a `DispatcherPriority.Background` para evitar stuttering
-   - Dual hook (`DataContextChanged` + `Loaded`) + cleanup en `Unloaded`
+#### Base de datos y API
+1. Schema SQLite simplificado: eliminadas 12 tablas de caché local (Platforms, Genres, Tags, Companies, Games, etc.) — solo quedan UserGameState y AppMeta
+2. Dead code masivo removido de `LocalDatabase.cs`: `UpsertFromApiResponse`, `UpsertTaxonomy`, `UpsertPlatform/Genre/Tag/Showcase/Company/Game/Card`, `GetCachedCardCount`, `GetCachedGameCount`, `GetLibraryGames`, `LogSync`, `LibraryGameEntry`
+3. Fix: `ShowSlug` columna cambiada de `NOT NULL UNIQUE` a nullable con fallback de slug generado
+4. Fix: `UpsertShowcase` ahora se llama dentro de `UpsertCard` para asegurar foreign key
+5. Fix: `SetInertiaVersion` movido dentro de la transacción en `UpsertFromApiResponse`
+6. Fix: Scraping HTML (`ScrapeVersionFromHtmlAsync`) eliminado — `fullResponse.Version` se lee directo del JSON
+7. Fix: `db.UpsertFromApiResponse` eliminado de `FetchCardsAsync` — ya no persiste datos localmente
+8. Fix: Wishlist movido de query params a HTTP headers (`X-Wishlisted-Ids`, `X-Wishlisted-Mode`) como espera la API
+9. Fix: endpoint de API corregido — page_size=60 agregado a `/api/cards/games-recap`
+
+#### ViewModel y lógica de filtros
+10. Fix: Race condition de paginación corregida con contador `requestGeneration` + stale-response detection
+11. Fix: `CommandManager.InvalidateRequerySuggested()` en setters de paginación para botones habilitados correctamente
+12. Fix: `IsLoading` cambiado a `SetValue(ref isLoading, value)` con notificación correcta (ShowLoadingSpinner eliminado)
+13. Fix: Carga de datos diferida — `LoadCardsAsync(1)` movido del constructor al `Opened` delegate del sidebar
+14. Fix: Search ahora se dispara desde setter de `SearchText` (PropertyChanged → LoadCardsAsync) sin key handler
+15. Añadido: `ExcludePlatforms`/`ExcludeGenres`/`ExcludeTags` con `IsExcluded` en `FilterItem` + query params
+16. Añadido: `ReleaseDateFrom`/`ReleaseDateTo` con DatePickers + ClearCommands
+17. Añadido: `IsWishlistFilterActive` toggle + `WishlistCount` en header
+18. Añadido: `SelectedShowcaseYear` con agrupación por año y auto-selección del año más cercano
+19. Añadido: `ShowcaseYearChips` + `ShowcaseIndividualChips` + `DeselectAllInYearCommand`
+20. Añadido: `PlatformFilterSearch`/`GenreFilterSearch`/`TagFilterSearch`/`ShowcaseFilterSearch` con `ICollectionView` live filter
+21. Añadido: `ClearAllFiltersCommand`, `SelectAll*Command`, `ToggleSelectAllShowcasesCommand`, `GoBackToLibraryCommand`, `RefreshCommand`
+22. Añadido: `DisplayImageUrl` (prefiere ScreenshotUrl sobre CoverUrl)
+23. Añadido: `ShowcaseDate` formateado, `HasShowcase`, `HasTags` en `CardViewModel`
+
+#### UI/XAML
+24. Fix: Dropdown filters reemplazados — eliminados custom controls (`FilterDropdown.xaml`, `ShowcaseFilterDropdown.xaml`), migrado a ToggleButton+Popup inline
+25. Fix: Card grid migrado de ItemsControl a ListBox con WrapPanel + ItemContainerStyle + corner-radius clipping
+26. Fix: Placeholder de búsqueda con StackPanel overlay + code-behind (reemplazado VisualBrush que no funcionaba)
+27. Fix: Placeholder icons cambiados a `&#xed11;` con `FontFamily="{DynamicResource FontIcoFont}"` (icono lupa nativo)
+28. Fix: Filter search TextBoxes: `Trigger` → `MultiTrigger` con `IsKeyboardFocused=False`
+29. Fix: `WindowChrome.IsHitTestVisibleInChrome="True"` en botones del sidebar para clickeabilidad en title bar
+30. Fix: `BrowserView` Background `"Transparent"` → `"{x:Null}"` para heredar fondo del tema
+31. Fix: Wishlist/flip buttons con `Opacity="0"` + DataTrigger `IsMouseOver` para hover reveal
+32. Icono sidebar corregido de `#38BDF8` a `#FF506E`
+33. Icono faltante en "Clientes de terceros" corregido — `override string Icon` agregado en `GamesRecapClient`
+
+#### Code-behind (BrowserView.xaml.cs)
+34. Fix: Progreso — `Action<bool>` delegate reemplazado por PropertyChanged subscription (más confiable)
+35. Fix: Timer con `DispatcherTimer` + chunks aleatorios 100-1800ms, cap 75%, fade out 400ms
+36. Fix: Dual hook (`DataContextChanged` + `Loaded`) + cleanup en `Unloaded`
+37. Fix: `CompleteProgress` diferido a `DispatcherPriority.Background` para evitar stuttering
+38. Añadido: Card flip animation con `ScaleTransform` + `CubicEase` 400ms + midpoint visibility swap
+39. Añadido: `ResetAllCards()` en `IsVisibleChanged` para restaurar front face al volver a la vista
+40. Añadido: Corner-radius clipping dinámico vía `RectangleGeometry` + `border.SizeChanged`
+
+#### Badge de Showcase (Sesión actual — última)
+41. Fix: Badge con `Width="{Binding ShowcaseBadgeWidth}"` basado en `FormattedText` descartado — el binding de ancho anula `HorizontalAlignment="Left"`
+42. Fix: Badge reposicionado como sibling directo del título en `FrontFace Grid` (sin StackPanel/Grid/DockPanel contenedor) — el título ya no estira el badge
+43. Fix: `HorizontalAlignment="Left"` + `Padding="4,2"` en el Border, sin `Width`/`MaxWidth` bindeados
+44. Fix: `VerticalAlignment="Bottom"` + `Margin="8,0,8,32"` para que quede encima del título
+45. Fix: `ShowcaseName?.Trim()` en ViewModel para evitar espacios invisibles
+46. Fix: Eliminados `FontWeight="SemiBold"` y `TextTrimming` del ShowcaseName
 
 ### ⚠️ Pendiente / Bloqueado
-- Nada bloqueado actualmente. API responde 200 OK con versión `fe5cfce8e2cfdd6009a9f870a43fdbc1`.
-- Siguiente: Fase 3 — BrowserView WPF con filtros, grid de cards, paginación.
+- Nada bloqueado. Todos los fixes de Fase 3 completados.
 
 ## API: gamesrecap.io
 
@@ -151,14 +192,39 @@ Los datos de juegos y catálogo vienen exclusivamente de la respuesta HTTP de ga
 | Key | TEXT PK | `inertia_version` |
 | Value | TEXT NOT NULL | MD5 hash de la versión Inertia |
 
-## Reglas de Compilación
+## Reglas de Compilación y Deploy
+
+### Compilación (con Playnite cerrado)
 ```powershell
-# Compilar (desde GamesRecap\)
+# 1. Cerrar Playnite (libera los DLLs)
+Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; Start-Sleep 2
+
+# 2. Compilar (desde GamesRecap\)
 & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" GamesRecap.csproj /t:Clean,Rebuild /p:Configuration=Debug /p:Platform=AnyCPU /v:m
 
-# Si Playnite bloquea los DLLs
-Stop-Process -Name "Playnite.DesktopApp" -Force; Start-Sleep 2
+# 3. Opcional: solo Build rápido (sin Clean)
+& "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" GamesRecap.csproj /t:Build /p:Configuration=Debug /p:Platform=AnyCPU /v:m /nologo
 ```
+
+### Deploy
+- No se necesita copiar archivos — Playnite cargó el plugin desde `bin\Debug\GamesRecap.dll`
+- Al abrir Playnite, recarga extensiones automáticamente
+- No es necesario reiniciar Windows ni recargar tema
+
+### Ciclo típico de prueba
+1. Cerrar Playnite (Stop-Process)
+2. Compilar (MSBuild)
+3. Abrir Playnite
+4. Abrir Games Recap (sidebar)
+5. Realizar acciones a probar
+6. Si hay logs, leer en `M:\Programas Portables\Playnite\extensions.log`
+7. Repetir
+
+### Notas
+- Playnite bloquea `GamesRecap.dll` mientras está abierto, por eso hay que cerrarlo primero
+- `MSBuild.exe` se encuentra en `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\`
+- El flag `/v:m` muestra solo warnings y errores; `/nologo` omite el banner inicial
+- Usar `Clean,Rebuild` cuando se cambian recursos (XAML, imágenes); `Build` rápido para cambios solo en código .cs
 
 ## Dependencias NuGet
 - `PlayniteSDK.6.15.0` — SDK de Playnite

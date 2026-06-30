@@ -12,10 +12,10 @@ namespace GamesRecap.Views
 {
     public partial class BrowserView : UserControl
     {
-        private DispatcherTimer progressTimer;
+        private readonly DispatcherTimer progressTimer = new DispatcherTimer();
         private double progressValue;
         private bool isFirstTick;
-        private static readonly Random rng = new Random();
+        private readonly Random rng = new Random();
 
         public BrowserView()
         {
@@ -88,26 +88,29 @@ namespace GamesRecap.Views
             var border = FindVisualParent<Border>(root, b => b.CornerRadius.TopLeft > 0);
             if (border != null)
             {
-                Action updateClip = () =>
-                {
-                    if (border.ActualWidth > 0 && border.ActualHeight > 0)
-                    {
-                        var r = border.CornerRadius.TopLeft;
-                        border.Clip = new RectangleGeometry(
-                            new Rect(0, 0, border.ActualWidth, border.ActualHeight), r, r);
-                    }
-                };
-                border.Dispatcher.BeginInvoke(new Action(() => updateClip()),
+                SizeChangedEventHandler onSizeChanged = null;
+                onSizeChanged = (_, _) => UpdateCardClip(border);
+                border.SizeChanged += onSizeChanged;
+                root.Unloaded += (_, _) => border.SizeChanged -= onSizeChanged;
+                border.Dispatcher.BeginInvoke(() => UpdateCardClip(border),
                     System.Windows.Threading.DispatcherPriority.Loaded);
-                border.SizeChanged += (_, _) => updateClip();
+            }
+        }
+
+        private static void UpdateCardClip(Border border)
+        {
+            if (border.ActualWidth > 0 && border.ActualHeight > 0)
+            {
+                var r = border.CornerRadius.TopLeft;
+                border.Clip = new RectangleGeometry(
+                    new Rect(0, 0, border.ActualWidth, border.ActualHeight), r, r);
             }
         }
 
         private void StartProgress()
         {
             progressLogger.Debug("Progress: StartProgress");
-            progressTimer?.Stop();
-            progressTimer = null;
+            progressTimer.Stop();
             ProgressBar.BeginAnimation(UIElement.OpacityProperty, null);
             ProgressBar.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
 
@@ -123,22 +126,16 @@ namespace GamesRecap.Views
         {
             if (progressValue >= 0.75) return;
 
-            progressTimer = new DispatcherTimer();
             progressTimer.Interval = isFirstTick
                 ? TimeSpan.FromMilliseconds(rng.Next(100, 300))
                 : TimeSpan.FromMilliseconds(rng.Next(400, 1800));
             isFirstTick = false;
-            progressTimer.Tick += OnProgressTick;
             progressTimer.Start();
         }
 
         private void OnProgressTick(object sender, EventArgs e)
         {
-            var timer = sender as DispatcherTimer;
-            if (timer == null || timer != progressTimer) return;
-
-            timer.Stop();
-            timer.Tick -= OnProgressTick;
+            progressTimer.Stop();
 
             double increment = 0.06 + rng.NextDouble() * 0.14;
             progressValue = Math.Min(progressValue + increment, 0.75);
@@ -155,10 +152,9 @@ namespace GamesRecap.Views
 
         private void CompleteProgress()
         {
-            progressTimer?.Stop();
-            progressTimer = null;
+            progressTimer.Stop();
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(
+            Dispatcher.BeginInvoke(
                 new Action(AnimateCompletion),
                 System.Windows.Threading.DispatcherPriority.Background);
         }
@@ -199,7 +195,7 @@ namespace GamesRecap.Views
 
         private void CardRoot_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (IsInsideButton(e.OriginalSource as DependencyObject))
+            if (FindVisualParent<Button>(e.OriginalSource as DependencyObject) != null)
                 return;
             e.Handled = true;
             var root = (Grid)sender;
@@ -263,16 +259,6 @@ namespace GamesRecap.Views
             sb.Begin();
         }
 
-        private static bool IsInsideButton(DependencyObject element)
-        {
-            while (element != null)
-            {
-                if (element is Button) return true;
-                element = VisualTreeHelper.GetParent(element);
-            }
-            return false;
-        }
-
         private void MainSearch_TextChanged(object sender, TextChangedEventArgs e) => UpdateMainSearchPlaceholder();
         private void MainSearch_GotFocus(object sender, RoutedEventArgs e) => UpdateMainSearchPlaceholder();
         private void MainSearch_LostFocus(object sender, RoutedEventArgs e) => UpdateMainSearchPlaceholder();
@@ -291,7 +277,7 @@ namespace GamesRecap.Views
                 var container = CardList.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem;
                 if (container == null) continue;
 
-                var root = FindCardRoot(container);
+                var root = FindVisualParent<Grid>(container, g => g.Name == "CardRoot");
                 if (root == null) continue;
 
                 if (root.RenderTransform is ScaleTransform scale)
@@ -305,18 +291,5 @@ namespace GamesRecap.Views
             }
         }
 
-        private static Grid FindCardRoot(DependencyObject element)
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
-            {
-                var child = VisualTreeHelper.GetChild(element, i);
-                if (child is Grid grid && grid.Name == "CardRoot")
-                    return grid;
-                var result = FindCardRoot(child);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
     }
 }

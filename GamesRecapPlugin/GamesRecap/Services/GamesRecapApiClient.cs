@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GamesRecap.Services
 {
-    public class GamesRecapApiClient
+    public class GamesRecapApiClient : IDisposable
     {
         private static readonly ILogger logger = LogManager.GetLogger();
         private readonly HttpClient http;
@@ -131,7 +131,13 @@ namespace GamesRecap.Services
             {
                 var fullUrl = BaseUrl.TrimEnd('/') + queryUrl;
                 var html = await htmlHttp.GetStringAsync(fullUrl);
-                var match = Regex.Match(html, @"[0-9a-f]{32}");
+                var match = Regex.Match(html, @"""version"":""([0-9a-f]{32})""");
+                if (match.Success)
+                {
+                    logger.Info($"Scraped version from HTML: {match.Groups[1].Value}");
+                    return match.Groups[1].Value;
+                }
+                match = Regex.Match(html, @"[0-9a-f]{32}");
                 if (match.Success)
                 {
                     logger.Info($"Scraped version from HTML: {match.Value}");
@@ -196,6 +202,12 @@ namespace GamesRecap.Services
             var serializer = new DataContractJsonSerializer(typeof(T));
             using var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             return (T)serializer.ReadObject(ms);
+        }
+
+        public void Dispose()
+        {
+            http?.Dispose();
+            htmlHttp?.Dispose();
         }
     }
 }

@@ -15,13 +15,13 @@ todos:
     content: "Fase 3: BrowserView WPF + BrowserViewModel con filtros, grid, paginación y menú principal"
     status: pending
   - id: phase-4-wishlist
-    content: "Fase 4: Diálogo wishlist, UserGameState, PlayniteLibrarySync y GetGames() desde SQLite"
+    content: "Fase 4: Botón 'Add to Library' en card, PlayniteLibrarySync, tabla PromotedGames, GetGames() real e inverse sync opcional"
     status: pending
   - id: phase-5-metadata
-    content: "Fase 5: GamesRecapMetadataProvider para enriquecer metadata desde caché local"
+    content: "Fase 5: (APLAZADA) Metadata Provider — sin caché local de games, no hay datos que servir sin HTTP. Se omite por ahora."
     status: pending
   - id: phase-6-settings
-    content: "Fase 6: PluginSettings (TTL, defaults), notificaciones y adaptación al tema Playnite"
+    content: "Fase 6: PluginSettings (default wishlist action, auto-sync, notificaciones), botón limpiar estado"
     status: pending
   - id: phase-7-package
     content: "Fase 7: Build .pext, README y checklist de pruebas manuales"
@@ -260,70 +260,98 @@ Accept: application/json
 
 ---
 
-### Fase 4 — Wishlist y sync con librería Playnite (3-4 días)
+### Fase 4 — Wishlist + Library Sync (3-4 días)
 
-**Diálogo wishlist** (`WishlistDialog.xaml`):
-- Opción A: solo guardar en SQLite (`UserGameState.Wishlisted = 1`)
-- Opción B: añadir a librería Playnite con tags configurables (Wishlist, showcase, géneros)
+**NOTA:** La Opción A (wishlist toggle en SQLite) ya existe desde Fase 3 — botón corazón en cada card con `ToggleWishlistCommand`. Esta fase añade la promoción a biblioteca de Playnite.
 
-**`PlayniteLibrarySync.cs`:**
+**1. Botón "Add to Library" en el backface de la card**
+- En el backface (visible al hacer flip), junto al botón de trailer
+- Llama a `AddToLibraryCommand(int gameId)` en el ViewModel
+- Pasa el objeto `Card` completo para tener title, cover, platforms, genres, etc.
+
+**2. `PlayniteLibrarySync.cs` — nuevo servicio**
 ```csharp
-// Crear GameMetadata y añadir vía PlayniteApi.Database.Games.Add
-new GameMetadata {
-    GameId = $"gr-{gameId}",          // ID estable
-    Name = title,
-    Source = new MetadataNameProperty("Games Recap"),
-    IsInstalled = false,
-    Platforms = MapPlatforms(...),    // MetadataNameProperty
-    Tags = selectedTags,
-    CoverImage = new MetadataFile(coverUrl),
-    Links = trailerLinks,
-    ReleaseDate = releaseDate
+public class PlayniteLibrarySync
+{
+    // Añadir juego a la biblioteca de Playnite
+    void AddToLibrary(Card card, IPlayniteAPI api, LocalDatabase db)
+
+    // Devuelve GameMetadata para GetGames() desde PromotedGames
+    List<GameMetadata> GetPromotedGames(LocalDatabase db)
 }
 ```
-- Guardar GUID Playnite en `UserGameState.PlayniteId`
-- Si ya existe (`PlayniteId` no null): actualizar tags/metadata, no duplicar
+- `AddToLibrary`: crea `GameMetadata`, llama a `api.Database.Games.Add()`, guarda `PlayniteId` en `UserGameState` y datos en `PromotedGames`
+- Mapeo: `GameId = $"gr-{gameId}"`, Name, Source("Games Recap"), Platforms (`MetadataNameProperty`), Tags (Wishlist + showcase + géneros), CoverImage (`MetadataFile`), Links, ReleaseDate
+- Si ya existe (`PlayniteId` no null): actualizar metadata, no duplicar
 
-**`GetGames()`** — implementación final ([doc diseño](gamesrecap-playnite-plugin.md)):
-- Solo juegos con `PlayniteId != null`
-- Lectura síncrona SQLite, sin HTTP
-- Mapear plataformas desde `GamePlatforms` join
+**3. Tabla `PromotedGames` en SQLite**
+```sql
+CREATE TABLE IF NOT EXISTS PromotedGames (
+    GameId INTEGER PRIMARY KEY,
+    Title TEXT NOT NULL,
+    CoverUrl TEXT,
+    PlatformsJson TEXT,
+    GenresJson TEXT,
+    TagsJson TEXT,
+    ReleaseDate TEXT,
+    PlayniteId TEXT UNIQUE
+);
+```
+- Se llena al hacer "Add to Library" con datos mínimos
+- `GetGames()` lee de aquí — **síncrono, sin HTTP**
+- Se elimina el registro si el juego se quita de la librería Playnite
 
-**Sincronización inversa:** al quitar juego de librería Playnite, limpiar `PlayniteId` en SQLite (opcional vía evento `Database.Games.ItemUpdated`).
+**4. `GetGames()` en `GamesRecap.cs`**
+```csharp
+public override IEnumerable<GameMetadata> GetGames(LibraryGetGamesArgs args)
+{
+    var sync = new PlayniteLibrarySync();
+    return sync.GetPromotedGames(localDb);
+}
+```
+- Solo devuelve juegos con `PlayniteId` en `PromotedGames`
+- Síncrono, solo lectura SQLite
+
+**5. Inverse sync (opcional)**
+- Suscribirse a `PlayniteApi.Database.Games.ItemUpdated`
+- Si un juego con source "Games Recap" se elimina, limpiar `PlayniteId` en `UserGameState` y borrar de `PromotedGames`
 
 **Criterio de éxito:** juego promovido aparece en Playnite con fuente "Games Recap", filtrable por tag Wishlist; `GetGames()` lo devuelve al reiniciar.
 
 ---
 
-### Fase 5 — Metadata Provider (2-3 días)
+### Fase 5 — Metadata Provider (APLAZADA)
 
-Implementar `GamesRecapMetadataProvider : LibraryMetadataProvider`:
+**Decisión:** Omitir `LibraryMetadataProvider` por ahora.
 
-```csharp
-public override LibraryMetadataProvider GetMetadataDownloader()
-    => new GamesRecapMetadataProvider(this);
-```
+En Fase 3 se eliminaron las 12 tablas de caché local (Games, Platforms, Genres, Tags, etc.). Sin caché local de games, no hay datos que servir sin una llamada HTTP, lo que viola la naturaleza síncrona de metadata download.
 
-- `GetMetadata(Game)` enriquece desde SQLite local (cover, géneros, desarrolladores, trailer, IGDB id)
-- Sin petición HTTP si datos en caché; fetch puntual solo si faltan datos
-- Override `OnDemandMetadataProvider` si se necesita descarga bajo demanda
+Si se necesita en el futuro, se puede implementar con:
+- Fetch bajo demanda a la API (lento, pero funcional)
+- O guardar metadata completa en `PromotedGames` al promover
 
-**Criterio de éxito:** "Descargar metadata" en Playnite completa campos desde datos GamesRecap.
+**Criterio de éxito:** No implementado. Marcado como `TODO` en el código.
 
 ---
 
 ### Fase 6 — Settings y pulido (2-3 días)
 
 **`PluginSettings`** (`GetSettings` / `GetSettingsView`):
-- TTL caché API (minutos)
-- Comportamiento default del diálogo wishlist (solo wishlist vs añadir a librería)
-- Timeout HTTP
-- Botón "Limpiar caché local"
+
+| Setting | Tipo | Default | Descripción |
+|---------|------|---------|-------------|
+| `DefaultWishlistAction` | Enum (`SqliteOnly`, `AddToLibrary`) | `SqliteOnly` | Comportamiento al hacer clic en corazón |
+| `AutoSyncWishlist` | bool | `false` | Añadir automáticamente juegos wishlisteados a la librería |
+| `ShowConfirmation` | bool | `true` | Mostrar confirmación antes de añadir a la biblioteca |
+| (acción) | Button | — | Limpiar `UserGameState` + `PromotedGames` |
+
+**Notas:**
+- TTL de caché ya no aplica (no hay taxonomy cache desde Fase 3)
+- Timeout HTTP se mantiene hardcoded (no necesario como setting)
 
 **UX:**
-- Notificaciones `PlayniteApi.Notifications` en errores de red
+- Notificaciones `PlayniteApi.Notifications` en errores de red y al añadir juego a la biblioteca
 - Respetar tema Playnite (evitar colores hardcoded; usar recursos dinámicos)
-- Icono del plugin en `extension.yaml` / resources
 
 **Criterio de éxito:** settings persisten entre sesiones; UI coherente con tema oscuro/claro de Playnite.
 
@@ -366,16 +394,16 @@ public override LibraryMetadataProvider GetMetadataDownloader()
 ## Estimación
 
 | Fase | Días |
-|---|---|
+|---|---|---|
 | 0 Scaffolding | 1-2 |
 | 1 SQLite + modelos | 2-3 |
 | 2 Cliente Inertia | 2-3 |
 | 3 Browser UI | 4-5 |
-| 4 Wishlist + librería | 3-4 |
-| 5 Metadata | 2-3 |
+| 4 Wishlist + Library Sync | 3-4 |
+| 5 Metadata Provider | APLAZADA |
 | 6 Settings + pulido | 2-3 |
 | 7 Empaquetado | 1 |
-| **Total** | **17-24 días** |
+| **Total** | **14-20 días** |
 
 ## MVP recomendado (entregable intermedio ~8-10 días)
 
@@ -383,7 +411,7 @@ Para validar valor antes del producto completo:
 
 1. Fases 0-2 completas
 2. Fase 3 reducida: grid + filtros básicos (búsqueda, plataforma, showcase, sort) sin excluir
-3. Fase 4 reducida: wishlist SQLite + promover a librería sin diálogo de tags
+3. Fase 4 reducida: wishlist SQLite + promover a librería (ya sin diálogo, toggle directo implementado en Fase 3)
 4. Posponer: metadata provider, filtros exclude, estado seen/hidden, empaquetado
 
 Esto permite explorar showcases y wishlistear desde Playnite con el menor riesgo.

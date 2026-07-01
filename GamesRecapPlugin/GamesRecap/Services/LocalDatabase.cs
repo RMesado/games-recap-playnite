@@ -46,6 +46,17 @@ namespace GamesRecap.Services
                 CREATE TABLE IF NOT EXISTS AppMeta (
                     Key   TEXT PRIMARY KEY,
                     Value TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS PromotedGames (
+                    GameId        INTEGER PRIMARY KEY,
+                    Title         TEXT NOT NULL,
+                    CoverUrl      TEXT,
+                    PlatformsJson TEXT,
+                    GenresJson    TEXT,
+                    TagsJson      TEXT,
+                    ReleaseDate   TEXT,
+                    PlayniteId    TEXT UNIQUE
                 );";
 
             cmd.ExecuteNonQuery();
@@ -128,6 +139,92 @@ namespace GamesRecap.Services
             cmd.ExecuteNonQuery();
         }
 
+        public string GetPlayniteId(int gameId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT PlayniteId FROM UserGameState WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            var result = cmd.ExecuteScalar();
+            return result as string;
+        }
+
+        public List<int> GetAllPlayniteIds()
+        {
+            var result = new List<int>();
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT GameId FROM UserGameState WHERE PlayniteId IS NOT NULL";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+                result.Add(reader.GetInt32(0));
+            return result;
+        }
+
+        public void UpsertPromotedGame(int gameId, string title, string coverUrl,
+            string platformsJson, string genresJson, string tagsJson,
+            string releaseDate, string playniteId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                INSERT OR REPLACE INTO PromotedGames
+                    (GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId)
+                VALUES (@gid, @title, @cover, @pjson, @gjson, @tjson, @rdate, @pid)";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.Parameters.AddWithValue("@title", title);
+            cmd.Parameters.AddWithValue("@cover", coverUrl ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@pjson", platformsJson ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@gjson", genresJson ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@tjson", tagsJson ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@rdate", releaseDate ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@pid", playniteId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public List<PromotedGameEntry> GetAllPromotedGames()
+        {
+            var result = new List<PromotedGameEntry>();
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId FROM PromotedGames";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(new PromotedGameEntry
+                {
+                    GameId = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    CoverUrl = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    PlatformsJson = reader.IsDBNull(3) ? null : reader.GetString(3),
+                    GenresJson = reader.IsDBNull(4) ? null : reader.GetString(4),
+                    TagsJson = reader.IsDBNull(5) ? null : reader.GetString(5),
+                    ReleaseDate = reader.IsDBNull(6) ? null : reader.GetString(6),
+                    PlayniteId = reader.GetString(7)
+                });
+            }
+            return result;
+        }
+
+        public int? GetGameIdByPlayniteId(Guid playniteId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT GameId FROM PromotedGames WHERE PlayniteId = @pid";
+            cmd.Parameters.AddWithValue("@pid", playniteId.ToString());
+            var result = cmd.ExecuteScalar();
+            return result != null ? (int?)Convert.ToInt32(result) : null;
+        }
+
+        public void RemovePromotedGame(int gameId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM PromotedGames WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.ExecuteNonQuery();
+        }
+
         private List<int> QueryIntList(string sql)
         {
             var result = new List<int>();
@@ -139,5 +236,17 @@ namespace GamesRecap.Services
                 result.Add(reader.GetInt32(0));
             return result;
         }
+    }
+
+    public class PromotedGameEntry
+    {
+        public int GameId { get; set; }
+        public string Title { get; set; }
+        public string CoverUrl { get; set; }
+        public string PlatformsJson { get; set; }
+        public string GenresJson { get; set; }
+        public string TagsJson { get; set; }
+        public string ReleaseDate { get; set; }
+        public string PlayniteId { get; set; }
     }
 }

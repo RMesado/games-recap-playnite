@@ -1,6 +1,7 @@
 using GamesRecap.Models;
 using GamesRecap.Services;
 using Playnite.SDK;
+using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,6 +23,7 @@ namespace GamesRecap.ViewModels
         private readonly GamesRecapApiClient apiClient;
         private readonly LocalDatabase database;
         private readonly IPlayniteAPI playniteApi;
+        private readonly LibraryPlugin plugin;
 
         private string searchText;
         private string selectedSort = "newest";
@@ -31,6 +33,7 @@ namespace GamesRecap.ViewModels
         private int totalPages;
         private int totalCards;
         private HashSet<int> wishlistedIds = new HashSet<int>();
+        private HashSet<int> libraryGameIds = new HashSet<int>();
         private bool hasLoadedOnce;
         private int selectedShowcaseYear;
         private DateTime? releaseDateFrom;
@@ -264,6 +267,7 @@ namespace GamesRecap.ViewModels
         public ICommand ToggleWishlistFilterCommand { get; }
         public ICommand RefreshCommand { get; }
         public RelayCommand<int> ToggleWishlistCommand { get; }
+        public RelayCommand<int> AddToLibraryCommand { get; }
         public RelayCommand<string> OpenTrailerCommand { get; }
         public RelayCommand<FilterItem> RemoveFilterCommand { get; }
         public ICommand ClearYearFilterCommand { get; }
@@ -277,16 +281,18 @@ namespace GamesRecap.ViewModels
         public ICommand ToggleSelectAllShowcasesCommand { get; }
         public ICommand DeselectAllInYearCommand { get; }
 
-        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi)
+        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, LibraryPlugin plugin)
         {
             this.apiClient = apiClient;
             this.database = database;
             this.playniteApi = playniteApi;
+            this.plugin = plugin;
 
             SearchCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
             NextPageCommand = new RelayCommand(() => _ = LoadCardsAsync(CurrentPage + 1), () => HasNextPage);
             PrevPageCommand = new RelayCommand(() => _ = LoadCardsAsync(CurrentPage - 1), () => HasPreviousPage);
             ToggleWishlistCommand = new RelayCommand<int>(gameId => ToggleWishlist(gameId));
+            AddToLibraryCommand = new RelayCommand<int>(gameId => AddToLibrary(gameId));
             OpenTrailerCommand = new RelayCommand<string>(url => OpenTrailer(url));
             RemoveFilterCommand = new RelayCommand<FilterItem>(item => { if (item != null) item.IsSelected = false; });
             ClearYearFilterCommand = new RelayCommand(() => { SelectedShowcaseYear = 0; });
@@ -303,6 +309,7 @@ namespace GamesRecap.ViewModels
             ToggleWishlistFilterCommand = new RelayCommand(() => IsWishlistFilterActive = !IsWishlistFilterActive);
             RefreshCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
 
+            libraryGameIds = new HashSet<int>(database.GetAllPlayniteIds());
             LoadWishlistState();
         }
 
@@ -403,10 +410,10 @@ namespace GamesRecap.ViewModels
                     TotalCards = props.Pages.Total;
                 }
 
-                    if (props.Options != null && !hasLoadedOnce)
-                    PopulateFilters(props.Options);
+                    if (props.Options != null)
+                        PopulateFilters(props.Options);
 
-                hasLoadedOnce = true;
+                    hasLoadedOnce = true;
             }
             catch (Exception) when (currentGen != requestGeneration)
             {
@@ -467,31 +474,55 @@ namespace GamesRecap.ViewModels
 
         private void PopulateFilters(FilterOptions options)
         {
-            void PopulateList(ObservableCollection<FilterItem> target, IEnumerable<OptionItem> source)
+            void MergeList(ObservableCollection<FilterItem> target, IEnumerable<OptionItem> source)
             {
-                target.Clear();
-                if (source == null) return;
+                if (source == null)
+                {
+                    target.Clear();
+                    return;
+                }
+
+                var sourceIds = new HashSet<int>(source.Select(s => s.Id));
+                var toRemove = target.Where(t => !sourceIds.Contains(t.Id)).ToList();
+                foreach (var r in toRemove)
+                {
+                    r.PropertyChanged -= OnFilterChanged;
+                    target.Remove(r);
+                }
+
+                var existingIds = new HashSet<int>(target.Select(t => t.Id));
                 foreach (var item in source)
                 {
+                    if (existingIds.Contains(item.Id))
+                        continue;
+
                     var fi = new FilterItem { Id = item.Id, Name = item.Name };
                     fi.PropertyChanged += OnFilterChanged;
                     target.Add(fi);
                 }
             }
 
-            PopulateList(PlatformFilters, options.Platforms);
-            PopulateList(GenreFilters, options.Genres);
-            PopulateList(TagFilters, options.Tags);
+            MergeList(PlatformFilters, options.Platforms);
+            MergeList(GenreFilters, options.Genres);
+            MergeList(TagFilters, options.Tags);
 
-            ShowcaseFilters.Clear();
-            var years = new HashSet<int>();
             if (options.Showcases != null)
             {
+                var sourceShowcaseIds = new HashSet<int>(options.Showcases.Select(s => s.Id));
+                var toRemove = ShowcaseFilters.Where(s => !sourceShowcaseIds.Contains(s.Id)).ToList();
+                foreach (var r in toRemove)
+                {
+                    r.PropertyChanged -= OnFilterChanged;
+                    ShowcaseFilters.Remove(r);
+                }
+
+                var existingShowcaseIds = new HashSet<int>(ShowcaseFilters.Select(s => s.Id));
                 foreach (var s in options.Showcases)
                 {
-                    var year = ParseYear(s.StartAt);
-                    if (year > 0) years.Add(year);
+                    if (existingShowcaseIds.Contains(s.Id))
+                        continue;
 
+                    var year = ParseYear(s.StartAt);
                     var fi = new FilterItem { Id = s.Id, Name = s.Name, Year = year, StartAt = s.StartAt };
                     fi.PropertyChanged += OnFilterChanged;
                     ShowcaseFilters.Add(fi);
@@ -499,6 +530,11 @@ namespace GamesRecap.ViewModels
             }
 
             RefreshFilterViews();
+
+            var years = new HashSet<int>(ShowcaseFilters
+                .Where(s => s.Year > 0)
+                .Select(s => s.Year)
+                .Distinct());
 
             AvailableYears.Clear();
             AvailableYears.Add(0);
@@ -508,9 +544,17 @@ namespace GamesRecap.ViewModels
             var currentYear = DateTime.Now.Year;
             if (years.Count > 0)
             {
-                var closest = years.OrderBy(y => Math.Abs(y - currentYear)).First();
-                SelectedShowcaseYear = closest;
-                SelectShowcasesForYear(closest);
+                if (!hasLoadedOnce)
+                {
+                    var closest = years.OrderBy(y => Math.Abs(y - currentYear)).First();
+                    SelectedShowcaseYear = closest;
+                    SelectShowcasesForYear(closest);
+                }
+                else if (!years.Contains(SelectedShowcaseYear))
+                {
+                    SelectedShowcaseYear = years.OrderBy(y => Math.Abs(y - currentYear)).First();
+                    SelectShowcasesForYear(SelectedShowcaseYear);
+                }
                 UpdateShowcaseChips();
                 OnPropertyChanged(nameof(ShowcaseFilterHeader));
                 OnPropertyChanged(nameof(ShowcaseSelectAllState));
@@ -669,6 +713,37 @@ namespace GamesRecap.ViewModels
             }
         }
 
+        private void AddToLibrary(int gameId)
+        {
+            var cardVm = Cards.FirstOrDefault(c => c.GameId == gameId);
+            if (cardVm?.Title == null) return;
+
+            try
+            {
+                var sync = new PlayniteLibrarySync();
+                sync.AddToLibrary(gameId, cardVm.Title, cardVm.SourceCard.Game?.IgdbId, playniteApi, plugin, database);
+                libraryGameIds.Add(gameId);
+                cardVm.NotifyLibraryStatusChanged();
+                playniteApi.Dialogs.ShowMessage(
+                    $"\"{cardVm.Title}\" added to Playnite library",
+                    "Games Recap");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Error adding game {gameId} to library");
+                playniteApi.Dialogs.ShowErrorMessage(
+                    $"Failed to add \"{cardVm.Title}\" to library:\n{ex.Message}",
+                    "Games Recap - Error");
+            }
+        }
+
+        public bool IsGameInLibrary(int gameId) => libraryGameIds.Contains(gameId);
+
+        public void RefreshLibraryGameIds()
+        {
+            libraryGameIds = new HashSet<int>(database.GetAllPlayniteIds());
+        }
+
         private static void OpenTrailer(string url)
         {
             if (!string.IsNullOrEmpty(url) &&
@@ -735,6 +810,8 @@ namespace GamesRecap.ViewModels
         private readonly Card card;
         private readonly BrowserViewModel parent;
 
+        internal Card SourceCard => card;
+
         public int Id => card.Id;
         public int GameId => card.GameId;
         public string Title => card.Game?.Title;
@@ -771,6 +848,8 @@ namespace GamesRecap.ViewModels
         }
 
         public bool IsWishlisted => parent != null && parent.IsGameWishlisted(GameId);
+
+        public bool IsInLibrary => parent != null && parent.IsGameInLibrary(GameId);
 
         public List<GrTag> Tags => card.Game?.Tags ?? card.Tags ?? new List<GrTag>();
 
@@ -848,6 +927,11 @@ namespace GamesRecap.ViewModels
         public void NotifyWishlistChanged()
         {
             OnPropertyChanged(nameof(IsWishlisted));
+        }
+
+        public void NotifyLibraryStatusChanged()
+        {
+            OnPropertyChanged(nameof(IsInLibrary));
         }
     }
 }

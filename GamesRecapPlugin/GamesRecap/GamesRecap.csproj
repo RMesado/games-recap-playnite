@@ -57,6 +57,7 @@
     <Compile Include="GamesRecap.cs" />
     <Compile Include="Services\LocalDatabase.cs" />
     <Compile Include="Services\GamesRecapApiClient.cs" />
+    <Compile Include="Services\PlayniteLibrarySync.cs" />
     <Compile Include="Models\InertiaModels.cs" />
     <Compile Include="GamesRecapSettings.cs" />
     <Compile Include="GamesRecapSettingsView.xaml.cs">

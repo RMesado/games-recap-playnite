@@ -633,27 +633,28 @@ Esto permite al usuario filtrar en Playnite por `Source: Games Recap` o `Tag: Wi
 - Paginación
 - Loading states y manejo de errores visible
 
-### Fase 4 — Wishlist + sync Playnite (3-4 días)
-- Diálogo de wishlist con opciones de tags
-- Guardar estado en `UserGameState`
-- Implementar `GetGames()` en el Library Plugin
-- Crear `GameMetadata` correcto en Playnite
-- Manejar actualización de juegos ya existentes
+### Fase 4 — Wishlist + Library Sync (3-4 días)
+- Botón "Add to Library" en el backface de cada card
+- `PlayniteLibrarySync.cs`: nuevo servicio que crea `GameMetadata` y lo persiste en Playnite
+- Tabla `PromotedGames` en SQLite con datos mínimos (title, cover, platforms, genres) para `GetGames()`
+- `GetGames()` real — lectura síncrona de `PromotedGames`, sin HTTP
+- Inverse sync opcional vía `Database.Games.ItemUpdated`
+- **NOTA:** El diálogo wishlist con Opción A (toggle SQLite) ya está implementado en Fase 3
 
-### Fase 5 — Metadata Provider (2-3 días)
-- Implementar `LibraryMetadataProvider` opcional
-- Enriquecer metadatos desde gamesrecap al descargarlos en Playnite
+### Fase 5 — Metadata Provider (APLAZADA)
+- Sin caché local de games (12 tablas eliminadas en Fase 3), no hay datos que servir sin HTTP
+- Se omite por ahora. Si se necesita en el futuro: fetch bajo demanda o guardar metadata en `PromotedGames`
 
 ### Fase 6 — Pulido y settings (2-3 días)
-- Ajustes: TTL de caché, comportamiento por defecto al wishlistear
-- Notificaciones de Playnite
-- Icono y assets del plugin
+- Settings: `DefaultWishlistAction` (SqliteOnly/AddToLibrary), `AutoSyncWishlist`, `ShowConfirmation`, botón limpiar estado
+- Notificaciones de Playnite al añadir juego a biblioteca y en errores de red
+- TTL de caché ya no aplica (sin taxonomy cache desde Fase 3)
 
 ### Fase 7 — Empaquetado (1 día)
 - Generar `.pext`
 - README con instrucciones
 
-**Estimación total: 17-24 días**
+**Estimación total: 14-20 días** (Fase 5 aplazada)
 
 ---
 

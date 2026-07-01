@@ -88,13 +88,20 @@ namespace GamesRecap
                 Icon = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon.png"),
                 Opened = () =>
                 {
+                    CleanupOrphanedPromotedGames();
+
                     if (browserView == null)
                     {
-                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi);
+                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi, this);
                         browserView = new BrowserView();
                         browserView.DataContext = browserViewModel;
-                        _ = browserViewModel.LoadCardsAsync(1);
                     }
+                    else
+                    {
+                        browserViewModel.RefreshLibraryGameIds();
+                    }
+
+                    _ = browserViewModel.LoadCardsAsync(1);
                     return browserView;
                 }
             };
@@ -138,7 +145,66 @@ namespace GamesRecap
 
         public override IEnumerable<GameMetadata> GetGames(LibraryGetGamesArgs args)
         {
-            return new List<GameMetadata>();
+            var sync = new PlayniteLibrarySync();
+            var entries = Database.GetAllPromotedGames();
+            if (entries.Count == 0) return Enumerable.Empty<GameMetadata>();
+
+            var result = new List<GameMetadata>();
+            var toRemove = new List<int>();
+
+            foreach (var entry in entries)
+            {
+                if (Guid.TryParse(entry.PlayniteId, out var guid))
+                {
+                    var exists = PlayniteApi.Database.Games.Any(g => g.Id == guid);
+                    if (!exists)
+                    {
+                        toRemove.Add(entry.GameId);
+                        continue;
+                    }
+                }
+                result.Add(sync.MapToGameMetadata(entry));
+            }
+
+            if (toRemove.Count > 0)
+            {
+                foreach (var gameId in toRemove)
+                {
+                    Database.SetPlayniteId(gameId, null);
+                    Database.RemovePromotedGame(gameId);
+                }
+                logger.Info($"Cleaned up {toRemove.Count} promoted games no longer in Playnite library");
+            }
+
+            return result;
+        }
+
+        internal void CleanupOrphanedPromotedGames()
+        {
+            var entries = Database.GetAllPromotedGames();
+            var toRemove = new List<int>();
+
+            foreach (var entry in entries)
+            {
+                if (Guid.TryParse(entry.PlayniteId, out var guid))
+                {
+                    var exists = PlayniteApi.Database.Games.Any(g => g.Id == guid);
+                    if (!exists)
+                    {
+                        toRemove.Add(entry.GameId);
+                    }
+                }
+            }
+
+            if (toRemove.Count > 0)
+            {
+                foreach (var gameId in toRemove)
+                {
+                    Database.SetPlayniteId(gameId, null);
+                    Database.RemovePromotedGame(gameId);
+                }
+                logger.Info($"CleanupOrphanedPromotedGames: removed {toRemove.Count} orphaned games");
+            }
         }
 
         public override ISettings GetSettings(bool firstRunSettings)

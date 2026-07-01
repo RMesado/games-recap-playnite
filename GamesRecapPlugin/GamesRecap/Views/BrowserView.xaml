@@ -1072,48 +1072,75 @@
                                     </Border.Background>
                                 </Border>
 
-                                <Border VerticalAlignment="Top" HorizontalAlignment="Left"
-                                        Margin="4" Padding="2"
-                                        Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
-                                    <ItemsControl ItemsSource="{Binding Tags}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Width="22" Height="22" CornerRadius="3"
-                                                        Background="#66000000" Margin="1"
-                                                        ToolTipService.InitialShowDelay="0"
-                                                        ToolTipService.BetweenShowDelay="0">
-                                                    <Border.ToolTip>
-                                                        <ToolTip>
-                                                            <ToolTip.Template>
-                                                                <ControlTemplate TargetType="ToolTip">
-                                                                    <Border Background="#1a1a2e" BorderBrush="#333"
-                                                                            BorderThickness="1" CornerRadius="4"
-                                                                            Padding="12,6">
-                                                                        <ContentPresenter TextBlock.Foreground="White"
-                                                                                          TextBlock.FontSize="11" />
-                                                                    </Border>
-                                                                </ControlTemplate>
-                                                            </ToolTip.Template>
-                                                            <TextBlock Text="{Binding Name}" Foreground="White"
-                                                                       FontSize="11" />
-                                                        </ToolTip>
-                                                    </Border.ToolTip>
-                                                    <Path Data="{Binding Icon, Converter={StaticResource TagIconConverter}}"
-                                                          Stroke="{Binding Color, Converter={StaticResource TailwindColorConverter}}"
-                                                          StrokeThickness="1.5" Fill="Transparent"
-                                                          Stretch="Uniform" Margin="3" />
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Border>
+                                 <Border VerticalAlignment="Top" HorizontalAlignment="Left"
+                                        Margin="4" Padding="2">
+                                     <WrapPanel Orientation="Horizontal">
+                                         <ItemsControl ItemsSource="{Binding Tags}"
+                                                       Visibility="{Binding HasTags, Converter={StaticResource BoolToVis}}">
+                                             <ItemsControl.ItemsPanel>
+                                                 <ItemsPanelTemplate>
+                                                     <WrapPanel Orientation="Horizontal" />
+                                                 </ItemsPanelTemplate>
+                                             </ItemsControl.ItemsPanel>
+                                             <ItemsControl.ItemTemplate>
+                                                 <DataTemplate>
+                                                     <Border Width="22" Height="22" CornerRadius="3"
+                                                             Background="#66000000" Margin="1"
+                                                             ToolTipService.InitialShowDelay="0"
+                                                             ToolTipService.BetweenShowDelay="0">
+                                                         <Border.ToolTip>
+                                                             <ToolTip>
+                                                                 <ToolTip.Template>
+                                                                     <ControlTemplate TargetType="ToolTip">
+                                                                         <Border Background="#1a1a2e" BorderBrush="#333"
+                                                                                 BorderThickness="1" CornerRadius="4"
+                                                                                 Padding="12,6">
+                                                                             <ContentPresenter TextBlock.Foreground="White"
+                                                                                               TextBlock.FontSize="11" />
+                                                                         </Border>
+                                                                     </ControlTemplate>
+                                                                 </ToolTip.Template>
+                                                                 <TextBlock Text="{Binding Name}" Foreground="White"
+                                                                            FontSize="11" />
+                                                             </ToolTip>
+                                                         </Border.ToolTip>
+                                                         <Path Data="{Binding Icon, Converter={StaticResource TagIconConverter}}"
+                                                               Stroke="{Binding Color, Converter={StaticResource TailwindColorConverter}}"
+                                                               StrokeThickness="1.5" Fill="Transparent"
+                                                               Stretch="Uniform" Margin="3" />
+                                                     </Border>
+                                                 </DataTemplate>
+                                             </ItemsControl.ItemTemplate>
+                                         </ItemsControl>
+                                           <Border Width="22" Height="22" CornerRadius="3"
+                                                   Background="#66000000" Margin="1"
+                                                   Visibility="{Binding IsInLibrary, Converter={StaticResource BoolToVis}}"
+                                                   ToolTipService.InitialShowDelay="0"
+                                                   ToolTipService.BetweenShowDelay="0">
+                                              <Border.ToolTip>
+                                                 <ToolTip>
+                                                     <ToolTip.Template>
+                                                         <ControlTemplate TargetType="ToolTip">
+                                                             <Border Background="#1a1a2e" BorderBrush="#333"
+                                                                     BorderThickness="1" CornerRadius="4"
+                                                                     Padding="12,6">
+                                                                 <ContentPresenter TextBlock.Foreground="White"
+                                                                                   TextBlock.FontSize="11" />
+                                                             </Border>
+                                                         </ControlTemplate>
+                                                     </ToolTip.Template>
+                                                     <TextBlock Text="In Playnite library" Foreground="White"
+                                                                FontSize="11" />
+                                                 </ToolTip>
+                                             </Border.ToolTip>
+                                             <Path Data="{StaticResource IconGamepad2}"
+                                                   Stroke="#4CAF50" StrokeThickness="1.5"
+                                                   Fill="Transparent" Stretch="Uniform" Margin="3" />
+                                         </Border>
+                                     </WrapPanel>
+                                  </Border>
 
-                                 <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                  <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
                                         Margin="8,0,8,32"
                                         CornerRadius="3" Background="#22FFFFFF"
                                         Padding="4,2"
@@ -1134,7 +1161,8 @@
                                            FontSize="14"
                                            TextWrapping="NoWrap"
                                            TextTrimming="CharacterEllipsis"
-                                           ToolTip="{Binding Title}" />
+                                                                                       ToolTip="{Binding Title}" />
+
 
                                 <Button Command="{Binding DataContext.ToggleWishlistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding GameId}"
@@ -1365,6 +1393,35 @@
                                                                   Fill="Transparent" Stretch="Uniform"
                                                                   Width="12" Height="12" Margin="0,0,6,0" />
                                                             <TextBlock Text="Trailer"
+                                                                       Foreground="White" FontSize="11" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#33FFFFFF" />
+                                                            <Setter Property="BorderBrush" Value="#66FFFFFF" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Command="{Binding DataContext.AddToLibraryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding GameId}"
+                                                Cursor="Hand"
+                                                Margin="0,6,0,0">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="#22FFFFFF"
+                                                            BorderBrush="#44FFFFFF"
+                                                            BorderThickness="1"
+                                                            CornerRadius="4"
+                                                            Padding="10,7">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                            <Path Data="{StaticResource IconGamepad2}"
+                                                                  Stroke="White" StrokeThickness="1.5"
+                                                                  Fill="Transparent" Stretch="Uniform"
+                                                                  Width="12" Height="12" Margin="0,0,6,0" />
+                                                            <TextBlock Text="Add to library"
                                                                        Foreground="White" FontSize="11" />
                                                         </StackPanel>
                                                     </Border>

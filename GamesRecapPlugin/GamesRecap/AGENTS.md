@@ -99,8 +99,35 @@ GamesRecapPlugin/GamesRecap/
 45. Fix: `ShowcaseName?.Trim()` en ViewModel para evitar espacios invisibles
 46. Fix: Eliminados `FontWeight="SemiBold"` y `TextTrimming` del ShowcaseName
 
+### ✅ Fase 4 — Wishlist + Library Sync (Completada)
+1. **Tabla `PromotedGames`** en SQLite: GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId
+2. **PlayniteLibrarySync.cs**:
+   - `AddToLibrary(Card, IPlayniteAPI, LibraryPlugin, LocalDatabase)`: crea `GameMetadata` con GameId `gr-{gameId}`, Source "Games Recap", tags (Wishlist + showcase + géneros), cover, links, platforms, genres; llama a `api.Database.ImportGame()`; persiste en PromotedGames
+   - `MapToGameMetadata(PromotedGameEntry)`: reconstruye `GameMetadata` desde DB para `GetGames()`
+3. **Botón "Add to Library"** en backface de cada card (IconGamepad2, tooltip "Add to Playnite library")
+4. **Badge "In Library"** con icono verde en WrapPanel junto a tags, tooltip "In Playnite library"
+5. **libraryGameIds HashSet** en BrowserViewModel: precargado desde DB al abrir la vista, sin acceso a SQLite durante data binding
+6. **Feedback con diálogo**: `Dialogs.ShowMessage` en éxito ("X added to Playnite library"), `ShowErrorMessage` en error
+7. **GetGames() real**: lee PromotedGames, valida existencia en Playnite (`Games.Any()`), limpia huérfanos
+8. **Eliminado OnGamesUpdated**: causaba deadlock al llamar `Games.Any()` durante `ItemUpdated` de importación
+9. **Inverse sync**: `CleanupOrphanedPromotedGames()` se ejecuta cada vez que se abre el sidebar (vía `Opened` delegate), limpiando huérfanos; `RefreshLibraryGameIds()` actualiza el HashSet en memoria. Sin `ItemUpdated` porque no se dispara para borrados en Playnite.
+
+### ✅ Fase 5 — IGDB Metadata Provider (Sesión 2026-07-01)
+1. `PlayniteLibrarySync.AddToLibrary()` simplificado: parámetros cambiados de `Card` a `(int gameId, string title, int? igdbId, ...)`
+2. `GameMetadata` mínimo: solo Name, Source ("Games Recap"), Tags (["Wishlist"]), GameId="gr-{id}", IsInstalled=false
+3. `ImportGame(metadata, plugin)` se llama una sola vez (no más duplicados)
+4. La descarga de metadata usa `ActivateGlobalProgress` — popup nativo "Downloading metadata..." sin congelar UI
+5. Se usan exactamente dos plugins específicos, identificados por GUID:
+   - **IGDB** (`000001DB-DBD1-46C6-B5D0-B1BA559D10E4`): todos los fields (Name, Description, Genres, Platforms, ReleaseDate, CoverImage, BackgroundImage, Icon, etc.)
+   - **SteamGridDB** (`f9a763e1-1ccb-4d7d-b955-d59e708f71c1`): solo imágenes faltantes después de IGDB (CoverImage, BackgroundImage, Icon), cada una verificada individualmente
+6. `Games.Update(game)` reemplaza `ImportGame()` para actualizar metadata — patrón nativo de Playnite (`MetadataDownloader`)
+7. `GameId` del request se pasa como `igdbId?.ToString()` para lookup directo en IGDB, y `null` para SGDB
+8. No hay fallback genérico — si IGDB no está instalado, no se descarga metadata
+9. `BrowserViewModel.AddToLibrary()` pasa `igdbId` desde `cardVm.SourceCard.Game?.IgdbId`
+10. `PromotedGames` persiste solo GameId, Title, TagsJson, PlayniteId
+
 ### ⚠️ Pendiente / Bloqueado
-- Nada bloqueado. Todos los fixes de Fase 3 completados.
+- Nada bloqueado. Fase 5 completada.
 
 ## API: gamesrecap.io
 
@@ -302,11 +329,31 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - `Views/BrowserView.xaml.cs` → simplified (no event handlers needed)
 - `GamesRecap.csproj` → removed deleted control references
 
-## Planned Features (próximas sesiones)
-- **Game Calendar**: Calendario de lanzamientos/próximos juegos. Pendiente de especificación detallada.
-- **Wishlist Sync**: Sincronización bidireccional con la biblioteca de Playnite.
-- **Trailer Popup**: Reproductor embebido de YouTube para trailers desde la card grid.
-- **Card Filter Presets**: Guardar/cargar combinaciones de filtros.
+## Próximas fases
+
+### Fase 4 — Wishlist + Library Sync ✅ Completada
+- Botón "Add to Library" en backface de cada card
+- `PlayniteLibrarySync.cs`: crea `GameMetadata`, lo añade a Playnite, guarda `PlayniteId` en DB
+- Tabla `PromotedGames` con datos mínimos (title, cover, platforms, genres)
+- `GetGames()` real desde `PromotedGames` (síncrono, sin HTTP)
+- Inverse sync opcional: limpiar `PlayniteId` al eliminar de librería
+
+### ✅ Fase 5 — IGDB Metadata Provider para imports (Completada)
+- `PlayniteLibrarySync.AddToLibrary()` recibe `(int gameId, string title, int? igdbId, IPlayniteAPI, LibraryPlugin, LocalDatabase)`
+- `GameMetadata` mínimo: solo `GameId`, `Name`, `Source = "Games Recap"`, `Tags = ["Wishlist"]`, `IsInstalled = false`
+- Un solo `ImportGame()` (sin duplicados); metadata se descarga vía `ActivateGlobalProgress` en background
+- **IGDB** por GUID para todos los fields; **SteamGridDB** por GUID solo para imágenes que IGDB no proveyó
+- `Games.Update()` en vez de segundo `ImportGame()` para persistir metadata
+- `igdbId` se pasa desde `Card.Game?.IgdbId` para lookup directo en IGDB
+
+### Fase 6 — Settings
+- `DefaultWishlistAction` (SqliteOnly/AddToLibrary)
+- `AutoSyncWishlist`, `ShowConfirmation`
+- Botón limpiar estado
+- Notificaciones Playnite
+
+### Fase 7 — Packaging
+- Build .pext + README
 
 ### Files Modified (Sesión 2026-06-11, segunda ronda — ListBox + hover fix + multi-year chips)
 - `ViewModels/BrowserViewModel.cs`:
@@ -341,6 +388,33 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - Timer `DispatcherTimer` para chunks aleatorios: primer tick a 100-300ms, siguientes a 400-1800ms, cap 75%
 - `StartProgress`: nudge inicial a ScaleX=0.08 para visibilidad inmediata
 - `CompleteProgress`: fill current→1 en 600ms (QuadraticEase), fade 1→0 en 400ms tras fill
+
+### Files Modified (Sesión 2026-06-30 — Fase 4 final + inverse sync + auto-refresh)
+- `GamesRecap.cs`:
+  - Eliminado `OnGameItemUpdated` (ItemUpdated no se dispara para borrados en Playnite)
+  - Añadido `CleanupOrphanedPromotedGames()`: recorre PromotedGames, elimina entradas cuyo PlayniteId ya no existe en la DB de Playnite
+  - `SidebarItem.Opened` ahora siempre llama a `CleanupOrphanedPromotedGames()` + `browserViewModel.RefreshLibraryGameIds()` + `LoadCardsAsync(1)` en cada apertura
+- `LocalDatabase.cs`:
+  - Añadido `GetGameIdByPlayniteId(Guid)`: lookup inverso para inverse sync
+- `BrowserViewModel.cs`:
+  - Añadido `RefreshLibraryGameIds()`: recarga el HashSet desde DB
+  - `PopulateFilters` ahora se llama siempre (no solo en primer load): usa merge strategy que preserva selecciones existentes, agrega items nuevos, remueve items que ya no existen
+  - Auto-selección de año showcase solo en primer load; en refrescos mantiene selección del usuario
+- `BrowserView.xaml.cs`:
+  - Fix: `OnViewLoaded` ahora resuscribe `PropertyChanged` (previo -= y +=) para evitar pérdida del handler entre ciclos mostrar/esconder que dejaba la barra de progreso atascada
+
+### Files Modified (Sesión 2026-07-01 — Fase 5: IGDB + SteamGridDB metadata)
+- `Services/PlayniteLibrarySync.cs`:
+  - `AddToLibrary()` recibe `(int gameId, string title, int? igdbId, IPlayniteAPI, LibraryPlugin, LocalDatabase)`
+  - `GameMetadata` mínimo: GameId="gr-{id}", Name, Source="Games Recap", Tags=["Wishlist"], IsInstalled=false
+  - Primer `ImportGame()` crea el juego; metadata se descarga en `ActivateGlobalProgress` (popup nativo)
+  - `DownloadMetadataForGame()` refactorizado: busca IGDB por GUID fijo (`000001DB-DBD1-46C6-B5D0-B1BA559D10E4`), procesa todos los fields via `ProcessPlugin()`
+  - Fallback a SteamGridDB por GUID (`f9a763e1-1ccb-4d7d-b955-d59e708f71c1`) solo para imágenes individuales que IGDB dejó vacías — cada imagen (Cover, Background, Icon) se verifica por separado
+  - `ProcessPlugin()`: helper que crea provider, llama AvailableFields, itera fields con switch, retorna hasUpdates
+  - `Games.Update(game)` en vez de segundo `ImportGame()` — coincide con patrón nativo `MetadataDownloader`
+  - Sin loop genérico de plugins, sin fallback a otros providers
+- `ViewModels/BrowserViewModel.cs`:
+  - `AddToLibrary()` pasa `igdbId = cardVm.SourceCard.Game?.IgdbId` a `sync.AddToLibrary()`
 
 ## Playnite Theme Resources
 - **Default theme path**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\`

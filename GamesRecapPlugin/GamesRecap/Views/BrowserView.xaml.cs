@@ -28,8 +28,13 @@ namespace GamesRecap.Views
 
         private void OnViewLoaded(object sender, RoutedEventArgs e)
         {
-            if (DataContext is BrowserViewModel vm && vm.IsLoading)
-                StartProgress();
+            if (DataContext is BrowserViewModel vm)
+            {
+                vm.PropertyChanged -= OnViewModelPropertyChanged;
+                vm.PropertyChanged += OnViewModelPropertyChanged;
+                if (vm.IsLoading)
+                    StartProgress();
+            }
         }
 
         private void OnViewUnloaded(object sender, RoutedEventArgs e)

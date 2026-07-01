@@ -92,7 +92,7 @@ namespace GamesRecap
 
                     if (browserView == null)
                     {
-                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi, this);
+                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi, this, settings.Settings);
                         browserView = new BrowserView();
                         browserView.DataContext = browserViewModel;
                     }

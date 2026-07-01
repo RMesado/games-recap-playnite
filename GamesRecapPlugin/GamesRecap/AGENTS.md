@@ -112,22 +112,29 @@ GamesRecapPlugin/GamesRecap/
 8. **Eliminado OnGamesUpdated**: causaba deadlock al llamar `Games.Any()` durante `ItemUpdated` de importación
 9. **Inverse sync**: `CleanupOrphanedPromotedGames()` se ejecuta cada vez que se abre el sidebar (vía `Opened` delegate), limpiando huérfanos; `RefreshLibraryGameIds()` actualiza el HashSet en memoria. Sin `ItemUpdated` porque no se dispara para borrados en Playnite.
 
-### ✅ Fase 5 — IGDB Metadata Provider (Sesión 2026-07-01)
+### ✅ Fase 5 — Metadata download por prioridad del usuario (Sesión 2026-07-01, refactorizada 2026-07-01)
 1. `PlayniteLibrarySync.AddToLibrary()` simplificado: parámetros cambiados de `Card` a `(int gameId, string title, int? igdbId, ...)`
 2. `GameMetadata` mínimo: solo Name, Source ("Games Recap"), Tags (["Wishlist"]), GameId="gr-{id}", IsInstalled=false
 3. `ImportGame(metadata, plugin)` se llama una sola vez (no más duplicados)
 4. La descarga de metadata usa `ActivateGlobalProgress` — popup nativo "Downloading metadata..." sin congelar UI
-5. Se usan exactamente dos plugins específicos, identificados por GUID:
-   - **IGDB** (`000001DB-DBD1-46C6-B5D0-B1BA559D10E4`): todos los fields (Name, Description, Genres, Platforms, ReleaseDate, CoverImage, BackgroundImage, Icon, etc.)
-   - **SteamGridDB** (`f9a763e1-1ccb-4d7d-b955-d59e708f71c1`): solo imágenes faltantes después de IGDB (CoverImage, BackgroundImage, Icon), cada una verificada individualmente
-6. `Games.Update(game)` reemplaza `ImportGame()` para actualizar metadata — patrón nativo de Playnite (`MetadataDownloader`)
-7. `GameId` del request se pasa como `igdbId?.ToString()` para lookup directo en IGDB, y `null` para SGDB
-8. No hay fallback genérico — si IGDB no está instalado, no se descarga metadata
-9. `BrowserViewModel.AddToLibrary()` pasa `igdbId` desde `cardVm.SourceCard.Game?.IgdbId`
-10. `PromotedGames` persiste solo GameId, Title, TagsJson, PlayniteId
+5. **Las fuentes de metadata se leen de `config.json` (MetadataSettings)**, respetando exactamente el orden de prioridad que el usuario configuró en **Configuración → Metadata** para cada campo
+6. Por cada campo, se iteran las fuentes en su orden de prioridad; la primera que devuelve datos válidos gana (por campo, no por plugin)
+7. Se omite `Guid.Empty` (Tienda oficial / Official Store) — los juegos no vienen de una tienda
+8. `GameId` del request se pasa como `igdbId?.ToString()` para lookup directo en IGDB
+9. `Games.Update(game)` reemplaza `ImportGame()` para actualizar metadata — patrón nativo de Playnite (`MetadataDownloader`)
+10. `BrowserViewModel.AddToLibrary()` pasa `igdbId` desde `cardVm.SourceCard.Game?.IgdbId`
+11. `PromotedGames` persiste solo GameId, Title, TagsJson, PlayniteId
+
+### ✅ Fase 6 — Settings (Sesión 2026-07-01)
+1. `DefaultWishlistAction` (enum: `SqliteOnly`/`AddToLibrary`): cuando es `AddToLibrary`, el toggle de wishlist (corazón) también añade a la biblioteca de Playnite automáticamente, sin confirmación
+2. `ShowConfirmation` (bool): muestra diálogo de confirmación antes de añadir a biblioteca vía botón manual; se omite (silent) cuando viene del toggle de wishlist
+3. `WishlistActionItem` class para mostrar texto legible en ComboBox ("Save to local database only" / "Add to Playnite library")
+4. UI de Settings: ComboBox con `DisplayMemberPath` + `SelectedValuePath`, CheckBox deshabilitado via DataTrigger cuando `IsAddToLibraryAction`, nota explicativa con `BooleanToVisibilityConverter`
+5. `IsAddToLibraryAction` computed property en ViewModel, actualizada via PropertyChanged en Settings
+6. `AutoSyncWishlist` — documentado en AGENTS.md como idea futura, no implementado (pendiente de decisión)
 
 ### ⚠️ Pendiente / Bloqueado
-- Nada bloqueado. Fase 5 completada.
+- Nada bloqueado. Fase 6 completada.
 
 ## API: gamesrecap.io
 
@@ -338,22 +345,41 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - `GetGames()` real desde `PromotedGames` (síncrono, sin HTTP)
 - Inverse sync opcional: limpiar `PlayniteId` al eliminar de librería
 
-### ✅ Fase 5 — IGDB Metadata Provider para imports (Completada)
-- `PlayniteLibrarySync.AddToLibrary()` recibe `(int gameId, string title, int? igdbId, IPlayniteAPI, LibraryPlugin, LocalDatabase)`
-- `GameMetadata` mínimo: solo `GameId`, `Name`, `Source = "Games Recap"`, `Tags = ["Wishlist"]`, `IsInstalled = false`
-- Un solo `ImportGame()` (sin duplicados); metadata se descarga vía `ActivateGlobalProgress` en background
-- **IGDB** por GUID para todos los fields; **SteamGridDB** por GUID solo para imágenes que IGDB no proveyó
-- `Games.Update()` en vez de segundo `ImportGame()` para persistir metadata
-- `igdbId` se pasa desde `Card.Game?.IgdbId` para lookup directo en IGDB
+### ✅ Fase 5 — Metadata download por prioridad del usuario (Completada)
+- `AddToLibrary()` recibe `(int gameId, string title, int? igdbId, ...)`; `GameMetadata` mínimo
+- Las fuentes de metadata se leen de `config.json` → `MetadataSettings`, respetando el orden de prioridad configurado por el usuario en **Configuración → Metadata**
+- Se omite `Guid.Empty` (Tienda oficial); el resto de plugins se iteran por orden de prioridad por campo
+- `TryApplyField()` procesa un campo a la vez; primer provider que devuelve datos válidos gana
+- `GameId` como `igdbId?.ToString()` para lookup directo en IGDB
 
-### Fase 6 — Settings
-- `DefaultWishlistAction` (SqliteOnly/AddToLibrary)
-- `AutoSyncWishlist`, `ShowConfirmation`
-- Botón limpiar estado
-- Notificaciones Playnite
+### ✅ Fase 6 — Settings (Completada)
+- `DefaultWishlistAction` (enum: SqliteOnly/AddToLibrary) — cuando es AddToLibrary, el toggle de wishlist (corazón) también añade a la biblioteca de Playnite automáticamente; el checkbox ShowConfirmation se deshabilita
+- `ShowConfirmation` (bool) — muestra confirmación antes de añadir a biblioteca vía botón manual; se omite (silent) cuando viene del toggle de wishlist
+- Textos legibles en ComboBox via `WishlistActionItem` class + `DisplayMemberPath`
+- Nota informativa condicional cuando se selecciona AddToLibrary
+- `AutoSyncWishlist` — **documentado pero no implementado**. Idea original: sincronizar automáticamente la wishlist local con la biblioteca de Playnite en background (al abrir el sidebar o periódicamente). Pendiente de decidir si tiene utilidad real.
 
 ### Fase 7 — Packaging
 - Build .pext + README
+
+### Files Modified (Sesión 2026-07-01 — Fase 6: Settings + auto-add-to-library)
+
+- `GamesRecapSettings.cs`:
+  - Added `WishlistAction` enum (`SqliteOnly`, `AddToLibrary`)
+  - Replaced placeholder properties with `DefaultWishlistAction` + `ShowConfirmation`
+  - Added `WishlistActionItem` class (Value + Display) for ComboBox display
+  - Added `WishlistActions` list (`List<WishlistActionItem>`) and `IsAddToLibraryAction` computed property
+  - `Settings` setter subscribes to `PropertyChanged` for `DefaultWishlistAction` → notifies `IsAddToLibraryAction`
+- `GamesRecapSettingsView.xaml`:
+  - ComboBox with `DisplayMemberPath="Display"` + `SelectedValuePath="Value"`
+  - Conditional note text with `BooleanToVisibilityConverter`
+  - CheckBox disabled via `DataTrigger` when `IsAddToLibraryAction`
+- `ViewModels/BrowserViewModel.cs`:
+  - Added `settings` field, constructor param `GamesRecapSettings`
+  - `AddToLibrary(int gameId, bool silent = false)`: checks `settings.ShowConfirmation` unless silent
+  - `ToggleWishlist()`: when `DefaultWishlistAction == AddToLibrary`, calls `AddToLibrary(gameId, silent: true)`
+- `GamesRecap.cs`:
+  - Passes `settings.Settings` to BrowserViewModel constructor
 
 ### Files Modified (Sesión 2026-06-11, segunda ronda — ListBox + hover fix + multi-year chips)
 - `ViewModels/BrowserViewModel.cs`:
@@ -403,16 +429,27 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - `BrowserView.xaml.cs`:
   - Fix: `OnViewLoaded` ahora resuscribe `PropertyChanged` (previo -= y +=) para evitar pérdida del handler entre ciclos mostrar/esconder que dejaba la barra de progreso atascada
 
-### Files Modified (Sesión 2026-07-01 — Fase 5: IGDB + SteamGridDB metadata)
+### Files Modified (Sesión 2026-07-01 — Fase 5 refactor: metadata por prioridad del usuario)
+- `Models/MetadataFieldConfig.cs` (nuevo): clases `PlayniteConfigRoot` + `MetadataFieldSetting` para parsear MetadataSettings del `config.json` via `JavaScriptSerializer`
 - `Services/PlayniteLibrarySync.cs`:
-  - `AddToLibrary()` recibe `(int gameId, string title, int? igdbId, IPlayniteAPI, LibraryPlugin, LocalDatabase)`
-  - `GameMetadata` mínimo: GameId="gr-{id}", Name, Source="Games Recap", Tags=["Wishlist"], IsInstalled=false
-  - Primer `ImportGame()` crea el juego; metadata se descarga en `ActivateGlobalProgress` (popup nativo)
-  - `DownloadMetadataForGame()` refactorizado: busca IGDB por GUID fijo (`000001DB-DBD1-46C6-B5D0-B1BA559D10E4`), procesa todos los fields via `ProcessPlugin()`
-  - Fallback a SteamGridDB por GUID (`f9a763e1-1ccb-4d7d-b955-d59e708f71c1`) solo para imágenes individuales que IGDB dejó vacías — cada imagen (Cover, Background, Icon) se verifica por separado
-  - `ProcessPlugin()`: helper que crea provider, llama AvailableFields, itera fields con switch, retorna hasUpdates
-  - `Games.Update(game)` en vez de segundo `ImportGame()` — coincide con patrón nativo `MetadataDownloader`
-  - Sin loop genérico de plugins, sin fallback a otros providers
+  - Eliminado `ProcessPlugin()` (hardcodeaba fields para un solo plugin)
+  - Reemplazado `DownloadMetadataForGame()` con nuevo algoritmo:
+    1. Lee `api.Paths.ConfigurationPath + "config.json"`
+    2. Parsea `MetadataSettings` sección con `JavaScriptSerializer`
+    3. Para cada campo definido en `FieldProcessingOrder` (Name, Genre, ..., InstallSize):
+       - Lee su `Import` flag y `Sources` array (GUIDs en orden de prioridad)
+       - Omite `Guid.Empty` (Tienda oficial)
+       - Busca el `MetadataPlugin` instalado por GUID
+       - Cachea providers por GUID (no recrea para cada campo)
+       - Si el provider soporta el campo → `TryApplyField()` → primer resultado válido gana, break
+   - `TryApplyField()` (nuevo): procesa un solo campo de un provider; retorna `true` si obtuvo datos válidos
+   - Fix en `TryApplyField` para `MetadataField.Tags`: preserva el tag "Wishlist" concatenándolo (`tagIds.Insert(0, wishlistTag.Id)`) si el provider no lo incluye
+   - `JsonFieldMapping`: mapea nombres JSON ("Genre", "Developer", "Tag", etc.) a `MetadataField` enum
+  - `FieldProcessingOrder`: orden determinista de procesamiento de campos
+  - Añadido `using System.Web.Script.Serialization` + `using GamesRecap.Models`
+- `GamesRecap.csproj`:
+  - Añadido `Compile Include="Models\MetadataFieldConfig.cs"`
+  - Añadido `Reference Include="System.Web.Extensions"` (para `JavaScriptSerializer`)
 - `ViewModels/BrowserViewModel.cs`:
   - `AddToLibrary()` pasa `igdbId = cardVm.SourceCard.Game?.IgdbId` a `sync.AddToLibrary()`
 

@@ -56,10 +56,19 @@ namespace GamesRecap.Services
                     GenresJson    TEXT,
                     TagsJson      TEXT,
                     ReleaseDate   TEXT,
+                    Description   TEXT,
                     PlayniteId    TEXT UNIQUE
                 );";
 
             cmd.ExecuteNonQuery();
+
+            try
+            {
+                using var migrateCmd = conn.CreateCommand();
+                migrateCmd.CommandText = "ALTER TABLE PromotedGames ADD COLUMN Description TEXT";
+                migrateCmd.ExecuteNonQuery();
+            }
+            catch { }
         }
 
         public string GetInertiaVersion()
@@ -163,14 +172,14 @@ namespace GamesRecap.Services
 
         public void UpsertPromotedGame(int gameId, string title, string coverUrl,
             string platformsJson, string genresJson, string tagsJson,
-            string releaseDate, string playniteId)
+            string releaseDate, string playniteId, string description = null)
         {
             using var conn = GetConnection();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
                 INSERT OR REPLACE INTO PromotedGames
-                    (GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId)
-                VALUES (@gid, @title, @cover, @pjson, @gjson, @tjson, @rdate, @pid)";
+                    (GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, Description, PlayniteId)
+                VALUES (@gid, @title, @cover, @pjson, @gjson, @tjson, @rdate, @desc, @pid)";
             cmd.Parameters.AddWithValue("@gid", gameId);
             cmd.Parameters.AddWithValue("@title", title);
             cmd.Parameters.AddWithValue("@cover", coverUrl ?? (object)DBNull.Value);
@@ -178,6 +187,7 @@ namespace GamesRecap.Services
             cmd.Parameters.AddWithValue("@gjson", genresJson ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@tjson", tagsJson ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@rdate", releaseDate ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@desc", description ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@pid", playniteId);
             cmd.ExecuteNonQuery();
         }
@@ -187,7 +197,7 @@ namespace GamesRecap.Services
             var result = new List<PromotedGameEntry>();
             using var conn = GetConnection();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId FROM PromotedGames";
+            cmd.CommandText = "SELECT GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, Description, PlayniteId FROM PromotedGames";
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -200,7 +210,8 @@ namespace GamesRecap.Services
                     GenresJson = reader.IsDBNull(4) ? null : reader.GetString(4),
                     TagsJson = reader.IsDBNull(5) ? null : reader.GetString(5),
                     ReleaseDate = reader.IsDBNull(6) ? null : reader.GetString(6),
-                    PlayniteId = reader.GetString(7)
+                    Description = reader.IsDBNull(7) ? null : reader.GetString(7),
+                    PlayniteId = reader.IsDBNull(8) ? null : reader.GetString(8)
                 });
             }
             return result;
@@ -247,6 +258,7 @@ namespace GamesRecap.Services
         public string GenresJson { get; set; }
         public string TagsJson { get; set; }
         public string ReleaseDate { get; set; }
+        public string Description { get; set; }
         public string PlayniteId { get; set; }
     }
 }

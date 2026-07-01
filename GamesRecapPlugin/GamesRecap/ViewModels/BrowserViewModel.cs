@@ -24,6 +24,7 @@ namespace GamesRecap.ViewModels
         private readonly LocalDatabase database;
         private readonly IPlayniteAPI playniteApi;
         private readonly LibraryPlugin plugin;
+        private readonly GamesRecapSettings settings;
 
         private string searchText;
         private string selectedSort = "newest";
@@ -281,12 +282,13 @@ namespace GamesRecap.ViewModels
         public ICommand ToggleSelectAllShowcasesCommand { get; }
         public ICommand DeselectAllInYearCommand { get; }
 
-        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, LibraryPlugin plugin)
+        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, LibraryPlugin plugin, GamesRecapSettings settings)
         {
             this.apiClient = apiClient;
             this.database = database;
             this.playniteApi = playniteApi;
             this.plugin = plugin;
+            this.settings = settings;
 
             SearchCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
             NextPageCommand = new RelayCommand(() => _ = LoadCardsAsync(CurrentPage + 1), () => HasNextPage);
@@ -694,7 +696,12 @@ namespace GamesRecap.ViewModels
                 database.SetGameState(gameId, isWishlisted, false, false);
 
                 if (isWishlisted)
+                {
                     wishlistedIds.Add(gameId);
+
+                    if (settings.DefaultWishlistAction == WishlistAction.AddToLibrary)
+                        AddToLibrary(gameId, silent: true);
+                }
                 else
                     wishlistedIds.Remove(gameId);
 
@@ -713,10 +720,19 @@ namespace GamesRecap.ViewModels
             }
         }
 
-        private void AddToLibrary(int gameId)
+        private void AddToLibrary(int gameId, bool silent = false)
         {
             var cardVm = Cards.FirstOrDefault(c => c.GameId == gameId);
             if (cardVm?.Title == null) return;
+
+            if (!silent && settings.ShowConfirmation)
+            {
+                var result = playniteApi.Dialogs.ShowMessage(
+                    $"Add \"{cardVm.Title}\" to Playnite library?",
+                    "Games Recap",
+                    MessageBoxButton.YesNo);
+                if (result != MessageBoxResult.Yes) return;
+            }
 
             try
             {

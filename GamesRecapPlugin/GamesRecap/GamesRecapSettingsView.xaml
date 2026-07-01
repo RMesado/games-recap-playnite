@@ -5,10 +5,35 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600">
-    <StackPanel>
-        <TextBlock Text="Description for Option1:"/>
-        <TextBox Text="{Binding Settings.Option1}"/>
-        <TextBlock Text="Description for Option2:"/>
-        <CheckBox IsChecked="{Binding Settings.Option2}"/>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <StackPanel Margin="10">
+        <TextBlock Text="Default wishlist action:" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,4"/>
+        <ComboBox ItemsSource="{Binding WishlistActions}"
+                  SelectedValue="{Binding Settings.DefaultWishlistAction}"
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Display"/>
+
+        <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                   Text="When 'Add to Playnite library' is selected, the heart icon toggle adds the game without confirmation."
+                   TextWrapping="Wrap"
+                   Visibility="{Binding IsAddToLibraryAction, Converter={StaticResource BoolToVis}}"
+                   Margin="0,8,0,4"/>
+
+        <CheckBox IsChecked="{Binding Settings.ShowConfirmation}"
+                  Content="Show confirmation before adding to library"
+                  Margin="0,12,0,0">
+            <CheckBox.Style>
+                <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAddToLibraryAction}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
     </StackPanel>
 </UserControl>

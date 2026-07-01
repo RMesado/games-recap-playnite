@@ -1,12 +1,5 @@
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\GamesRecap.dll
 c:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\System.Data.SQLite.dll
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\extension.yaml
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\icon.png
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Localization\en_US.xaml
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\GamesRecap.pdb
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Playnite.SDK.dll
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Playnite.SDK.xml
-C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\System.Data.SQLite.xml
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.csproj.AssemblyReference.cache
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\App.baml
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecapSettingsView.baml
@@ -16,6 +9,13 @@ C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap_MarkupCompile.cache
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap_MarkupCompile.lref
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\extension.yaml
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\icon.png
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Localization\en_US.xaml
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\GamesRecap.pdb
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Playnite.SDK.dll
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\Playnite.SDK.xml
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Debug\System.Data.SQLite.xml
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\Views\BrowserView.baml
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.g.resources
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.csproj.CoreCompileInputs.cache

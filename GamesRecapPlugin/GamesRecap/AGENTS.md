@@ -135,6 +135,15 @@ GamesRecapPlugin/GamesRecap/
 5. `IsAddToLibraryAction` computed property en ViewModel, actualizada via PropertyChanged en Settings
 6. `AutoSyncWishlist` — documentado en AGENTS.md como idea futura, no implementado (pendiente de decisión)
 
+### ✅ Fase 5b — Validación de URLs de metadata (Sesión 2026-07-02)
+1. **Problema**: Cuando un juego no tiene `library_hero` en Steam, la URL `https://steamcdn-a.akamaihd.net/steam/apps/{appid}/library_hero.jpg` devuelve 404. Playnite guarda esta URL como background y luego falla al cargarla.
+2. **Solución**: Validación HTTP HEAD antes de guardar URLs de cover y background en `TryApplyField()`.
+3. `HttpClient validationHttp` estático con timeout 8s para no bloquear la descarga de metadata.
+4. `IsImageUrlValid(string path)`: retorna `true` para paths locales (ya descargados), hace HEAD request para URLs HTTP. Si falla, retorna `false`.
+5. Casos `CoverImage` y `BackgroundImage` en `TryApplyField()` validan la URL antes de asignar `game.CoverImage` / `game.BackgroundImage`.
+6. Si la validación falla, se loggea un warning con la URL y se retorna `false`, permitiendo que el siguiente provider en la lista de prioridades intente con su propia imagen.
+7. Archivos modificados: `PlayniteLibrarySync.cs` (lines 10, 20-23, 267-287, 427-444).
+
 ### ⚠️ Pendiente
 - Fase 7: Packaging (build .pext + README)
 

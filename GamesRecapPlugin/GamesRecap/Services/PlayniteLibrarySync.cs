@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Web.Script.Serialization;
@@ -16,6 +17,10 @@ namespace GamesRecap.Services
     public class PlayniteLibrarySync
     {
         private static readonly ILogger logger = LogManager.GetLogger();
+        private static readonly HttpClient validationHttp = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(8)
+        };
 
         private static readonly Dictionary<string, MetadataField> JsonFieldMapping = new()
         {
@@ -262,12 +267,22 @@ namespace GamesRecap.Services
                 case MetadataField.CoverImage:
                     var cover = provider.GetCoverImage(args);
                     if (cover == null || cover.Path == null) return false;
+                    if (!IsImageUrlValid(cover.Path))
+                    {
+                        logger.Warn($"Cover image not available: {cover.Path}");
+                        return false;
+                    }
                     game.CoverImage = cover.Path;
                     return true;
 
                 case MetadataField.BackgroundImage:
                     var bg = provider.GetBackgroundImage(args);
                     if (bg == null || bg.Path == null) return false;
+                    if (!IsImageUrlValid(bg.Path))
+                    {
+                        logger.Warn($"Background image not available: {bg.Path}");
+                        return false;
+                    }
                     game.BackgroundImage = bg.Path;
                     return true;
 
@@ -406,6 +421,25 @@ namespace GamesRecap.Services
             {
                 logger.Warn(ex, $"Failed to deserialize list from JSON: {json}");
                 return null;
+            }
+        }
+
+        private static bool IsImageUrlValid(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+            if (!path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !path.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Head, path);
+                var response = validationHttp.SendAsync(request).GetAwaiter().GetResult();
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

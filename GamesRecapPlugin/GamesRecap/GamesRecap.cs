@@ -44,33 +44,7 @@ namespace GamesRecap
 
         public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
         {
-            return new List<MainMenuItem>
-            {
-                new MainMenuItem
-                {
-                    Description = "Test API: fetch desde gamesrecap.io",
-                    MenuSection = "@Games Recap",
-                    Action = args2 =>
-                    {
-                        TestApiFetch();
-                    }
-                },
-                new MainMenuItem
-                {
-                    Description = "Ver estado de wishlist",
-                    MenuSection = "@Games Recap",
-                    Action = args2 =>
-                    {
-                        var wishlisted = Database.GetWishlistedIds().Count;
-                        var seen = Database.GetSeenIds().Count;
-                        var hidden = Database.GetHiddenIds().Count;
-                        var version = Database.GetInertiaVersion() ?? "(none)";
-                        PlayniteApi.Dialogs.ShowMessage(
-                            $"Wishlist: {wishlisted} juegos\nVistos: {seen}\nOcultos: {hidden}\nVersión Inertia: {version}",
-                            "Games Recap - Estado");
-                    }
-                }
-            };
+            return new List<MainMenuItem>();
         }
 
         public override IEnumerable<SidebarItem> GetSidebarItems()
@@ -99,42 +73,6 @@ namespace GamesRecap
                     return browserView;
                 }
             };
-        }
-
-        private async void TestApiFetch()
-        {
-            try
-            {
-                logger.Info("TestApiFetch: starting...");
-                var filters = new ActiveFilters
-                {
-                    Q = "Control",
-                    Platforms = new List<int> { 1 },
-                    Showcases = new List<int> { 300 },
-                    Sort = "newest"
-                };
-
-                var props = await ApiClient.FetchCardsAsync(filters);
-
-                var count = props?.Pages?.Data?.Count ?? 0;
-                var total = props?.Pages?.Total ?? 0;
-
-                PlayniteApi.Dialogs.ShowMessage(
-                    $"Respuesta recibida correctamente.\n\n" +
-                    $"Cards en página: {count}\nTotal: {total}\n" +
-                    $"Versión Inertia: {Database.GetInertiaVersion()}\n" +
-                    $"Juegos en wishlist: {Database.GetWishlistedIds().Count}",
-                    "Games Recap - API Test");
-
-                logger.Info($"TestApiFetch: OK, got {count} cards, total {total}");
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "TestApiFetch failed");
-                PlayniteApi.Dialogs.ShowErrorMessage(
-                    $"Error al llamar a la API:\n{ex.Message}",
-                    "Games Recap - Error");
-            }
         }
 
         internal void CleanupOrphanedPromotedGames()

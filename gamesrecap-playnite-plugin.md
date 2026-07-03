@@ -465,6 +465,52 @@ public void AddToLibrary(int gameId, string title, int? igdbId, IPlayniteAPI api
 
 Esto permite al usuario filtrar en Playnite por `Source: Games Recap` o `Tag: Wishlist`, ver sus juegos pendientes mezclados con la biblioteca, y cuando el juego salga y lo compre, cambiar la fuente a Steam/GOG eliminando el tag Wishlist.
 
+### Descarga de metadata — Flujo completo
+
+#### Orden de procesamiento de campos
+```
+Name → Genre → ReleaseDate → Developer → Publisher → Tag → Feature →
+Description → CoverImage → BackgroundImage → Icon → Links →
+CriticScore → CommunityScore → AgeRating → Series → Region → Platform → InstallSize
+```
+
+#### Cascada de providers por campo
+Para cada campo, se itera la lista de fuentes en el orden de prioridad del usuario (Configuración → Metadata → [Campo]). La primera que devuelve datos válidos gana.
+
+```
+Campo: BackgroundImage
+  → Provider 1 (ej: IGDB) → inválido o 404 → continue
+  → Provider 2 (ej: SteamGridDB) → inválido o 404 → continue
+  → Provider 3 (ej: Steam) → imagen válida → asignar y break
+```
+
+#### Validación de URLs de imágenes
+**Problema**: Cuando un juego no tiene `library_hero` en Steam, la URL `https://steamcdn-a.akamaihd.net/steam/apps/{appid}/library_hero.jpg` devuelve 404. Playnite guarda esta URL como background y luego falla al cargarla.
+
+**Solución**: Antes de asignar `game.CoverImage` o `game.BackgroundImage`, se valida la URL con un HTTP HEAD request (timeout 8s). Si la validación falla:
+1. Se loggea un warning con la URL problemática
+2. Se retorna `false` desde `TryApplyField()`
+3. El siguiente provider en la lista de prioridades intenta con su imagen
+
+**Flujo de validación**:
+```csharp
+// En TryApplyField(), para CoverImage y BackgroundImage:
+var cover = provider.GetCoverImage(args);
+if (cover == null || cover.Path == null) return false;
+if (!IsImageUrlValid(cover.Path))   // HEAD request a URLs HTTP
+{
+    logger.Warn($"Cover image not available: {cover.Path}");
+    return false;  // → siguiente provider intenta
+}
+game.CoverImage = cover.Path;
+return true;
+```
+
+**`IsImageUrlValid`**:
+- Paths locales (ya descargados): retorna `true` sin validación
+- URLs HTTP/HTTPS: hace HEAD request, retorna `true` solo si status es 2xx
+- Excepciones de red/timeout: retorna `false`
+
 ---
 
 ## Plan de implementación
@@ -507,6 +553,7 @@ Esto permite al usuario filtrar en Playnite por `Source: Games Recap` o `Tag: Wi
 - Se omite `Guid.Empty` (Tienda oficial)
 - `GameId` como `igdbId?.ToString()` para lookup directo en IGDB
 - `Games.Update(game)` reemplaza `ImportGame()` para actualizar metadata
+- **Validación HTTP HEAD** para URLs de cover y background: evita guardar URLs 404 (ej: Steam CDN `library_hero.jpg` para juegos sin artwork). Si la validación falla, el siguiente provider en la prioridad intenta su imagen.
 
 ### Fase 6 — Pulido y settings (completada)
 - `DefaultWishlistAction` (enum: SqliteOnly/AddToLibrary): cuando es AddToLibrary, el toggle de wishlist también añade a la biblioteca de Playnite automáticamente

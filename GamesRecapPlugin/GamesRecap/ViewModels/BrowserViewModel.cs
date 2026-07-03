@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
+
 
 namespace GamesRecap.ViewModels
 {
@@ -883,33 +883,6 @@ namespace GamesRecap.ViewModels
 
         public bool HasShowcase => !string.IsNullOrEmpty(ShowcaseName);
         public bool HasTags => Tags != null && Tags.Count > 0;
-
-        public double ShowcaseBadgeWidth
-        {
-            get
-            {
-                if (!HasShowcase) return 0;
-                var name = ShowcaseName ?? "";
-                var date = ShowcaseDate;
-                var text = string.IsNullOrEmpty(date) ? name : $"{name} · {date}";
-                try
-                {
-                    var ft = new FormattedText(
-                        text,
-                        CultureInfo.CurrentCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface("Segoe UI"),
-                        9,
-                        Brushes.White,
-                        1.0);
-                    return ft.Width + 6;
-                }
-                catch
-                {
-                    return 80;
-                }
-            }
-        }
 
         public string PlatformNames
         {

@@ -361,44 +361,6 @@ namespace GamesRecap.Services
             }
         }
 
-        public GameMetadata MapToGameMetadata(PromotedGameEntry entry)
-        {
-            var platforms = DeserializeList(entry.PlatformsJson);
-            var genres = DeserializeList(entry.GenresJson);
-            var tags = DeserializeList(entry.TagsJson);
-
-            var metadata = new GameMetadata
-            {
-                GameId = $"gr-{entry.GameId}",
-                Name = entry.Title,
-                Source = new MetadataNameProperty("Games Recap"),
-                IsInstalled = false
-            };
-
-            if (platforms != null && platforms.Count > 0)
-                metadata.Platforms = new HashSet<MetadataProperty>(
-                    platforms.Select(p => new MetadataNameProperty(p)));
-
-            if (genres != null && genres.Count > 0)
-                metadata.Genres = new HashSet<MetadataProperty>(
-                    genres.Select(g => new MetadataNameProperty(g)));
-
-            if (tags != null && tags.Count > 0)
-                metadata.Tags = new HashSet<MetadataProperty>(
-                    tags.Select(t => new MetadataNameProperty(t)));
-
-            if (!string.IsNullOrEmpty(entry.CoverUrl))
-                metadata.CoverImage = new MetadataFile(entry.CoverUrl);
-
-            if (!string.IsNullOrEmpty(entry.Description))
-                metadata.Description = entry.Description;
-
-            if (DateTime.TryParse(entry.ReleaseDate, out var releaseDate))
-                metadata.ReleaseDate = new ReleaseDate(releaseDate);
-
-            return metadata;
-        }
-
         internal static string SerializeList(List<string> items)
         {
             if (items == null || items.Count == 0) return null;
@@ -406,22 +368,6 @@ namespace GamesRecap.Services
             using var ms = new MemoryStream();
             serializer.WriteObject(ms, items);
             return Encoding.UTF8.GetString(ms.ToArray());
-        }
-
-        internal static List<string> DeserializeList(string json)
-        {
-            if (string.IsNullOrEmpty(json)) return null;
-            try
-            {
-                var serializer = new DataContractJsonSerializer(typeof(List<string>));
-                using var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-                return (List<string>)serializer.ReadObject(ms);
-            }
-            catch (Exception ex)
-            {
-                logger.Warn(ex, $"Failed to deserialize list from JSON: {json}");
-                return null;
-            }
         }
 
         private static bool IsImageUrlValid(string path)

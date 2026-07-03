@@ -1,0 +1,76 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Header / Sidebar -->
+    <sys:String x:Key="PluginName">Games Recap</sys:String>
+    <sys:String x:Key="BackToLibrary">Volver a la biblioteca</sys:String>
+    <sys:String x:Key="Refresh">Actualizar</sys:String>
+
+    <!-- Header - Wishlisted suffix (leading space intentional) -->
+    <sys:String x:Key="WishlistedSuffix"> en lista de deseos</sys:String>
+
+    <!-- Search placeholders (leading space intentional for icon spacing) -->
+    <sys:String x:Key="SearchByGame"> Buscar por juego</sys:String>
+    <sys:String x:Key="SearchByPlatform"> Buscar por plataforma</sys:String>
+    <sys:String x:Key="SearchByGenre"> Buscar por género</sys:String>
+    <sys:String x:Key="SearchByTag"> Buscar por etiqueta</sys:String>
+    <sys:String x:Key="SearchByShowcase"> Buscar por presentación</sys:String>
+
+    <!-- Filter section headers -->
+    <sys:String x:Key="FilterSort">Ordenar</sys:String>
+    <sys:String x:Key="FilterPlatforms">Plataformas</sys:String>
+    <sys:String x:Key="FilterExclude">Excluir</sys:String>
+    <sys:String x:Key="FilterGenres">Géneros</sys:String>
+    <sys:String x:Key="FilterTags">Etiquetas</sys:String>
+    <sys:String x:Key="FilterShowcases">Presentaciones</sys:String>
+    <sys:String x:Key="FilterSelectAllInYear">Seleccionar todo en el año</sys:String>
+    <sys:String x:Key="FilterReleaseDate">Fecha de lanzamiento</sys:String>
+    <sys:String x:Key="ClearDate">Limpiar fecha</sys:String>
+    <sys:String x:Key="FilterClearFilters">Limpiar filtros</sys:String>
+
+    <!-- Card labels and tooltips -->
+    <sys:String x:Key="InPlayniteLibrary">En la biblioteca de Playnite</sys:String>
+    <sys:String x:Key="AddToWishlist">Añadir a lista de deseos</sys:String>
+    <sys:String x:Key="FlipCard">Girar tarjeta</sys:String>
+    <sys:String x:Key="AddToCalendar">Añadir al calendario</sys:String>
+    <sys:String x:Key="Trailer">Tráiler</sys:String>
+    <sys:String x:Key="AddToLibrary">Añadir a la biblioteca</sys:String>
+    <sys:String x:Key="FlipBack">Volver a girar</sys:String>
+
+    <!-- Pagination -->
+    <sys:String x:Key="PaginationPrevious">&#x25C0; Anterior</sys:String>
+    <sys:String x:Key="PaginationNext">Siguiente &#x25B6;</sys:String>
+    <sys:String x:Key="PaginationPageFormat">Página {0} de {1}</sys:String>
+    <sys:String x:Key="PaginationCardCount">  ({0} tarjetas)</sys:String>
+
+    <!-- Showcase chips -->
+    <sys:String x:Key="AllShowcasesInYear">Todas las presentaciones de {0}</sys:String>
+
+    <!-- Year display -->
+    <sys:String x:Key="AllYears">Todos los años</sys:String>
+
+    <!-- Error messages -->
+    <sys:String x:Key="ErrorConnection">No se pudo conectar con el servidor</sys:String>
+    <sys:String x:Key="ErrorGeneric">Error: {0}</sys:String>
+
+    <!-- Dialog titles -->
+    <sys:String x:Key="ConfirmAddTitle">Games Recap</sys:String>
+    <sys:String x:Key="SuccessAddTitle">Games Recap</sys:String>
+    <sys:String x:Key="ErrorAddTitle">Games Recap - Error</sys:String>
+
+    <!-- Dialog messages -->
+    <sys:String x:Key="ConfirmAddMessage">¿Añadir "{0}" a la biblioteca de Playnite?</sys:String>
+    <sys:String x:Key="SuccessAddMessage">"{0}" añadido a la biblioteca de Playnite</sys:String>
+    <sys:String x:Key="ErrorAddMessage">Error al añadir "{0}" a la biblioteca:\n{1}</sys:String>
+
+    <!-- Progress dialog -->
+    <sys:String x:Key="DownloadingMetadata">Descargando metadatos para "{0}"...</sys:String>
+
+    <!-- Settings UI -->
+    <sys:String x:Key="SettingsDefaultAction">Acción predeterminada de lista de deseos:</sys:String>
+    <sys:String x:Key="SettingsActionSaveLocal">Guardar solo en base de datos local</sys:String>
+    <sys:String x:Key="SettingsActionAddLibrary">Añadir a la biblioteca de Playnite</sys:String>
+    <sys:String x:Key="SettingsNote">Cuando está seleccionado "Añadir a la biblioteca de Playnite", el icono de corazón añade el juego sin confirmación.</sys:String>
+    <sys:String x:Key="SettingsShowConfirmation">Mostrar confirmación antes de añadir a la biblioteca</sys:String>
+</ResourceDictionary>

@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Web.Script.Serialization;
+using System.Windows;
 
 namespace GamesRecap.Services
 {
@@ -93,7 +94,7 @@ namespace GamesRecap.Services
                 {
                     DownloadMetadataForGame(api, playniteGame.Id, igdbId, metadataPlugins);
 
-                }, new GlobalProgressOptions($"Downloading metadata for '{title}'...")
+                }, new GlobalProgressOptions(GetLocalizedProgress(title))
                 {
                     IsIndeterminate = true
                 });
@@ -368,6 +369,14 @@ namespace GamesRecap.Services
             using var ms = new MemoryStream();
             serializer.WriteObject(ms, items);
             return Encoding.UTF8.GetString(ms.ToArray());
+        }
+
+        private static string GetLocalizedProgress(string title)
+        {
+            var resource = Application.Current?.TryFindResource("DownloadingMetadata");
+            var fmt = resource as string ?? "Downloading metadata for '{0}'...";
+            var result = string.Format(fmt, title);
+            return result;
         }
 
         private static bool IsImageUrlValid(string path)

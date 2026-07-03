@@ -207,9 +207,9 @@
                     <Button Content="&#xE72B;"
                             Command="{Binding GoBackToLibraryCommand}"
                             Style="{StaticResource NavigationButtonStyle}"
-                            ToolTip="Back to Library"
+                             ToolTip="{DynamicResource BackToLibrary}"
                             WindowChrome.IsHitTestVisibleInChrome="True" />
-                    <TextBlock Text="Games Recap"
+                    <TextBlock Text="{DynamicResource PluginName}"
                                Style="{StaticResource BaseTextBlockStyle}"
                                FontWeight="Bold" FontSize="18"
                                Foreground="{DynamicResource TextBrush}"
@@ -218,7 +218,7 @@
                     <Button Content="&#xE72C;"
                             Command="{Binding RefreshCommand}"
                             Style="{StaticResource NavigationButtonStyle}"
-                            ToolTip="Refresh"
+                            ToolTip="{DynamicResource Refresh}"
                             Margin="4,0,0,0"
                             WindowChrome.IsHitTestVisibleInChrome="True" />
                 </StackPanel>
@@ -247,7 +247,7 @@
                                        Foreground="{DynamicResource TextBrush}"
                                        FontWeight="Bold" FontSize="14"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text=" wishlisted"
+                            <TextBlock Text="{DynamicResource WishlistedSuffix}"
                                        Foreground="{DynamicResource TextBrushDarker}"
                                        FontSize="12" VerticalAlignment="Center"
                                        Margin="3,0,0,0" />
@@ -293,21 +293,21 @@
                                        Foreground="{DynamicResource TextBrushDarker}"
                                        FontSize="{DynamicResource FontSizeSmall}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text=" Search by game" 
+                             <TextBlock Text="{DynamicResource SearchByGame}" 
                                        Foreground="{DynamicResource TextBrushDarker}"
                                        FontSize="{DynamicResource FontSizeSmall}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock Text="Sort" Style="{StaticResource BaseTextBlockStyle}"
+                    <TextBlock Text="{DynamicResource FilterSort}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,4" />
                     <ComboBox ItemsSource="{Binding SortOptions}" DisplayMemberPath="Label"
                               SelectedValuePath="Value" SelectedValue="{Binding SelectedSort}"
                               FontSize="{DynamicResource FontSizeSmall}" Padding="4,2" />
 
-                    <TextBlock Text="Platforms" Style="{StaticResource BaseTextBlockStyle}"
+                    <TextBlock Text="{DynamicResource FilterPlatforms}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,2" />
 
@@ -370,7 +370,7 @@
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
-                                                                                <TextBlock Text=" Search by platform" 
+                                                                                 <TextBlock Text="{DynamicResource SearchByPlatform}" 
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
@@ -417,7 +417,7 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="Exclude">
+                                                                       ToolTip="{DynamicResource FilterExclude}">
                                                             <ToggleButton.Style>
                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
                                                                     <Style.Triggers>
@@ -475,7 +475,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Genres" Style="{StaticResource BaseTextBlockStyle}"
+                    <TextBlock Text="{DynamicResource FilterGenres}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
 
@@ -538,7 +538,7 @@
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
-                                                                                <TextBlock Text=" Search by genre" 
+                                                                                 <TextBlock Text="{DynamicResource SearchByGenre}" 
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
@@ -585,7 +585,7 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="Exclude">
+                                                                       ToolTip="{DynamicResource FilterExclude}">
                                                             <ToggleButton.Style>
                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
                                                                     <Style.Triggers>
@@ -643,7 +643,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Tags" Style="{StaticResource BaseTextBlockStyle}"
+                         <TextBlock Text="{DynamicResource FilterTags}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
 
@@ -706,7 +706,7 @@
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
-                                                                                <TextBlock Text=" Search by tag" 
+                                                                                 <TextBlock Text="{DynamicResource SearchByTag}" 
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
@@ -753,7 +753,7 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="Exclude">
+                                                                       ToolTip="{DynamicResource FilterExclude}">
                                                             <ToggleButton.Style>
                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
                                                                     <Style.Triggers>
@@ -811,7 +811,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="Showcases" Style="{StaticResource BaseTextBlockStyle}"
+                    <TextBlock Text="{DynamicResource FilterShowcases}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,6,0,2" />
 
@@ -867,7 +867,7 @@
                                         </ComboBox>
                                         <CheckBox IsChecked="{Binding ShowcaseSelectAllState, Mode=OneWay}" IsThreeState="True"
                                                   Command="{Binding ToggleSelectAllShowcasesCommand}"
-                                                  Content="Select all in year"
+                                                  Content="{DynamicResource FilterSelectAllInYear}"
                                                   Margin="2,0,2,4"
                                                   Visibility="{Binding IsShowcaseYearSelected, Converter={StaticResource BoolToVis}}"
                                                   Style="{StaticResource FilterItemCheckBox}" />
@@ -889,7 +889,7 @@
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
-                                                                                <TextBlock Text=" Search by showcase" 
+                                                                                 <TextBlock Text="{DynamicResource SearchByShowcase}" 
                                                                                            Foreground="{DynamicResource TextBrushDarker}"
                                                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                                                            VerticalAlignment="Center" />
@@ -931,25 +931,25 @@
                         </Grid>
                     </Border>
 
-                    <TextBlock Text="Release Date" Style="{StaticResource BaseTextBlockStyle}"
+                    <TextBlock Text="{DynamicResource FilterReleaseDate}" Style="{StaticResource BaseTextBlockStyle}"
                                Foreground="{DynamicResource TextBrushDarker}"
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,2" />
                     <DockPanel Margin="0,0,0,3">
                         <Button Content="&#x2715;" Command="{Binding ClearReleaseDateFromCommand}"
                                 Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
-                                ToolTip="Clear date" />
+                                ToolTip="{DynamicResource ClearDate}" />
                         <DatePicker SelectedDate="{Binding ReleaseDateFrom}"
                                     FontSize="{DynamicResource FontSizeSmall}" />
                     </DockPanel>
                     <DockPanel Margin="0,0,0,3">
                         <Button Content="&#x2715;" Command="{Binding ClearReleaseDateToCommand}"
                                 Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
-                                ToolTip="Clear date" />
+                                ToolTip="{DynamicResource ClearDate}" />
                         <DatePicker SelectedDate="{Binding ReleaseDateTo}"
                                     FontSize="{DynamicResource FontSizeSmall}" />
                     </DockPanel>
 
-                    <Button Content="Clear Filters"
+                    <Button Content="{DynamicResource FilterClearFilters}"
                             Command="{Binding ClearAllFiltersCommand}"
                             Style="{StaticResource ActionButtonStyle}"
                             FontSize="{DynamicResource FontSizeSmall}"
@@ -1129,7 +1129,7 @@
                                                              </Border>
                                                          </ControlTemplate>
                                                      </ToolTip.Template>
-                                                     <TextBlock Text="In Playnite library" Foreground="White"
+                                                      <TextBlock Text="{DynamicResource InPlayniteLibrary}" Foreground="White"
                                                                 FontSize="11" />
                                                  </ToolTip>
                                              </Border.ToolTip>
@@ -1170,7 +1170,7 @@
                                         Background="#80000000" Cursor="Hand"
                                         HorizontalAlignment="Right" VerticalAlignment="Top"
                                         Margin="4"
-                                        ToolTip="Add to wishlist">
+                                                                                 ToolTip="{DynamicResource AddToWishlist}">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
@@ -1206,8 +1206,8 @@
                                         Background="#80000000"
                                         HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                         Margin="4"
-                                        IsHitTestVisible="False"
-                                        ToolTip="Flip card">
+                                        ToolTip="{DynamicResource FlipCard}"
+                                        IsHitTestVisible="False">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
@@ -1266,7 +1266,7 @@
                                                 Width="24" Height="24"
                                                 BorderThickness="0" Background="Transparent"
                                                 Cursor="Hand"
-                                                ToolTip="Add to calendar"
+                                                 ToolTip="{DynamicResource AddToCalendar}"
                                                 Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
@@ -1392,7 +1392,7 @@
                                                                   Stroke="White" StrokeThickness="1.5"
                                                                   Fill="Transparent" Stretch="Uniform"
                                                                   Width="12" Height="12" Margin="0,0,6,0" />
-                                                            <TextBlock Text="Trailer"
+                                                             <TextBlock Text="{DynamicResource Trailer}"
                                                                        Foreground="White" FontSize="11" />
                                                         </StackPanel>
                                                     </Border>
@@ -1421,7 +1421,7 @@
                                                                   Stroke="White" StrokeThickness="1.5"
                                                                   Fill="Transparent" Stretch="Uniform"
                                                                   Width="12" Height="12" Margin="0,0,6,0" />
-                                                            <TextBlock Text="Add to library"
+                                                             <TextBlock Text="{DynamicResource AddToLibrary}"
                                                                        Foreground="White" FontSize="11" />
                                                         </StackPanel>
                                                     </Border>
@@ -1439,7 +1439,7 @@
                                     <Button Width="20" Height="20"
                                             Grid.ColumnSpan="2"
                                             BorderThickness="0" Background="Transparent"
-                                            ToolTip="Flip back"
+                                             ToolTip="{DynamicResource FlipBack}"
                                             IsHitTestVisible="False"
                                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                             Margin="0,0,2,2">
@@ -1489,26 +1489,23 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="&#x25C0; Previous"
+                    <Button Grid.Column="0" Content="{DynamicResource PaginationPrevious}"
                             Command="{Binding PrevPageCommand}"
                             Style="{StaticResource ActionButtonStyle}"
                             FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextBrush}" />
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                        <TextBlock Text="{Binding PaginationText}"
+                                   Style="{StaticResource BaseTextBlockStyle}"
                                    Foreground="{DynamicResource TextBrush}"
                                    VerticalAlignment="Center"
-                                   FontSize="{DynamicResource FontSizeSmall}">
-                            <Run Text="Page" /><Run Text=" " />
-                            <Run Text="{Binding CurrentPage}" /><Run Text=" of " />
-                            <Run Text="{Binding TotalPages}" />
-                        </TextBlock>
-                        <TextBlock Text="{Binding TotalCards, StringFormat='  ({0} cards)'}"
+                                   FontSize="{DynamicResource FontSizeSmall}" />
+                        <TextBlock Text="{Binding CardCountText}"
                                    Foreground="{DynamicResource TextBrushDarker}"
                                    FontSize="11" VerticalAlignment="Center" Margin="4,0,0,0" />
                     </StackPanel>
 
-                    <Button Grid.Column="2" Content="Next &#x25B6;"
+                    <Button Grid.Column="2" Content="{DynamicResource PaginationNext}"
                             Command="{Binding NextPageCommand}"
                             Style="{StaticResource ActionButtonStyle}"
                             FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource TextBrush}" />

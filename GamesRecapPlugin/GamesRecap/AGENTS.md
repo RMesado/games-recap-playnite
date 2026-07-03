@@ -462,3 +462,133 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - **IcoFont**: `FontFamily="{DynamicResource FontIcoFont}"`
 - **Theme XAML dir**: `<PlayniteDir>\Themes\Desktop\Default\CustomControls\SearchBox.xaml`
 - Para usar el icono de búsqueda nativo en placeholders: `<TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" />`
+
+## Localización
+
+### Sistema de localización
+El plugin usa `ResourceDictionary` XAML de WPF para localización. Los ficheros están en `Localization/*.xaml` y se cargan via `App.xaml` como `MergedDictionaries`. El orden determina la prioridad: el primer diccionario tiene preferencia, los siguientes actúan como fallback.
+
+```
+App.xaml:
+  └─ Localization/es_ES.xaml  ← primario (se usa primero)
+  └─ Localization/en_US.xaml  ← fallback (claves no encontradas en es_ES)
+```
+
+### Formato del fichero
+Cada clave es un `sys:String` con `x:Key` único:
+
+```xml
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="FilterPlatforms">Plataformas</sys:String>
+    <sys:String x:Key="ConfirmAddMessage">¿Añadir "{0}" a la biblioteca de Playnite?</sys:String>
+</ResourceDictionary>
+```
+
+### Convenciones de nombrado de claves
+- **CamelCase** sin espacios
+- Prefijo por contexto: `Filter*`, `Search*`, `Pagination*`, `Settings*`, `Error*`, etc.
+- Las claves con `{0}`, `{1}` (placeholders para `string.Format`) lleván sufijo `*Format` o se documentan en el nombre (ej. `ConfirmAddMessage`, `ErrorAddMessage`)
+
+### Tabla de claves (47 total)
+
+| Clave | Contexto | Placeholders |
+|-------|----------|-------------|
+| `PluginName` | Título del sidebar y cabecera | — |
+| `BackToLibrary` | Tooltip botón volver | — |
+| `Refresh` | Tooltip botón actualizar | — |
+| `WishlistedSuffix` | Sufijo contador wishlist (incluye espacio leading: `" en lista de deseos"`) | — |
+| `SearchByGame` | Placeholder búsqueda principal | — |
+| `FilterSort` | Etiqueta filtro Sort | — |
+| `FilterPlatforms` | Etiqueta filtro Platforms | — |
+| `SearchByPlatform` | Placeholder búsqueda de plataforma | — |
+| `FilterExclude` | Tooltip botón Exclude | — |
+| `FilterGenres` | Etiqueta filtro Genres | — |
+| `SearchByGenre` | Placeholder búsqueda de género | — |
+| `FilterTags` | Etiqueta filtro Tags | — |
+| `SearchByTag` | Placeholder búsqueda de etiqueta | — |
+| `FilterShowcases` | Etiqueta filtro Showcases | — |
+| `SearchByShowcase` | Placeholder búsqueda de showcase | — |
+| `FilterSelectAllInYear` | Checkbox "Select all in year" | — |
+| `FilterReleaseDate` | Etiqueta Release Date + fallback `FormatReleaseKind` | — |
+| `ClearDate` | Tooltip botón limpiar fecha | — |
+| `FilterClearFilters` | Botón "Clear Filters" | — |
+| `InPlayniteLibrary` | Tooltip badge de biblioteca | — |
+| `AddToWishlist` | Tooltip botón wishlist | — |
+| `FlipCard` | Tooltip botón girar | — |
+| `AddToCalendar` | Tooltip botón calendario | — |
+| `Trailer` | Botón "Trailer" | — |
+| `AddToLibrary` | Botón "Add to library" | — |
+| `FlipBack` | Tooltip botón volver a girar | — |
+| `PaginationPrevious` | Botón "◀ Previous" | — |
+| `PaginationNext` | Botón "Next ▶" | — |
+| `PaginationPageFormat` | Texto "Página {0} de {1}" | `{0}` = current page, `{1}` = total pages |
+| `PaginationCardCount` | Texto "  ({0} tarjetas)" | `{0}` = total cards |
+| `AllShowcasesInYear` | Chip "Todas las presentaciones de {0}" | `{0}` = year |
+| `AllYears` | ComboBox año: "Todos los años" | — |
+| `ErrorConnection` | Mensaje error de conexión | — |
+| `ErrorGeneric` | Plantilla "Error: {0}" | `{0}` = ex.Message |
+| `ConfirmAddTitle` | Título diálogo de confirmación | — |
+| `SuccessAddTitle` | Título diálogo de éxito | — |
+| `ErrorAddTitle` | Título diálogo de error | — |
+| `ConfirmAddMessage` | Mensaje "¿Añadir "{0}" a la biblioteca de Playnite?" | `{0}` = título del juego |
+| `SuccessAddMessage` | Mensaje ""{0}" añadido a la biblioteca de Playnite" | `{0}` = título del juego |
+| `ErrorAddMessage` | Mensaje "Error al añadir "{0}"...:\n{1}" | `{0}` = título, `{1}` = ex.Message |
+| `DownloadingMetadata` | Progreso "Descargando metadatos para "{0}"..." | `{0}` = título del juego |
+| `SettingsDefaultAction` | Label settings | — |
+| `SettingsActionSaveLocal` | Item ComboBox | — |
+| `SettingsActionAddLibrary` | Item ComboBox | — |
+| `SettingsNote` | Nota explicativa settings | — |
+| `SettingsShowConfirmation` | CheckBox settings | — |
+
+### Uso en XAML: `{DynamicResource Key}`
+```xml
+<TextBlock Text="{DynamicResource FilterPlatforms}" ... />
+<Button ToolTip="{DynamicResource AddToWishlist}" ... />
+```
+
+### Uso en C#: `Loc.Get("Key")`
+La clase helper `Loc` está definida en `GamesRecapSettings.cs` (línea 31):
+```csharp
+internal static class Loc
+{
+    public static string Get(string key)
+    {
+        var resource = Application.Current?.TryFindResource(key);
+        return resource as string ?? key;
+    }
+}
+```
+Si la clave no existe, devuelve el propio nombre de la clave como fallback. Ejemplos de uso:
+```csharp
+// Con string.Format para placeholders
+string msg = string.Format(Loc.Get("ConfirmAddMessage"), cardVm.Title);
+
+// Sin placeholders
+ErrorMessage = Loc.Get("ErrorConnection");
+
+// Formato con múltiples placeholders
+string err = string.Format(Loc.Get("ErrorAddMessage"), cardVm.Title, ex.Message);
+```
+
+### Strings NO localizados (identificadores internos)
+- `"Games Recap"` como `Source` name en `PlayniteLibrarySync.cs:68` — identificador de origen de metadatos en la DB de Playnite
+- `"Wishlist"` como tag en `PlayniteLibrarySync.cs:71,84,255` — nombre de tag usado para lookup y persistencia en SQLite
+- `"gr-"` prefix en `GameId` (`PlayniteLibrarySync.cs:66`) — prefijo interno de ID
+- `"newest"` como valor por defecto de sort (`BrowserViewModel.cs:28`) — valor programático, no visible
+
+### Cómo añadir un nuevo locale
+1. Copiar `Localization/en_US.xaml` a `Localization/{código}.xaml` (ej. `fr_FR.xaml`)
+2. Traducir los valores de cada `sys:String`
+3. Añadir al `App.xaml` como primer `ResourceDictionary` en `MergedDictionaries`:
+   ```xml
+   <ResourceDictionary Source="Localization/fr_FR.xaml" />
+   <ResourceDictionary Source="Localization/en_US.xaml" />
+   ```
+4. El `GamesRecap.csproj` ya incluye `Localization\*.xaml` con `CopyToOutputDirectory=PreserveNewest` (línea 89), no necesita cambios.
+
+### Notas importantes
+- Los placeholders de búsqueda (dentro de `VisualBrush`) también usan `{DynamicResource}` y funcionan correctamente porque las resources están a nivel de `Application`.
+- Los strings con espacios leading (como `WishlistedSuffix`: `" en lista de deseos"`, y los search placeholders: `" Buscar por..."`) incluyen el espacio intencionadamente para mantener el espaciado visual sin modificar el Margin de cada XAML.
+- `PaginationText` y `CardCountText` son propiedades computadas en `BrowserViewModel` (líneas 249-250) que se actualizan via `OnPropertyChanged` en los setters de `CurrentPage`, `TotalPages` y `TotalCards`.

@@ -3,6 +3,7 @@ using Playnite.SDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace GamesRecap
 {
@@ -25,6 +26,15 @@ namespace GamesRecap
     {
         public WishlistAction Value { get; set; }
         public string Display { get; set; }
+    }
+
+    internal static class Loc
+    {
+        public static string Get(string key)
+        {
+            var resource = Application.Current?.TryFindResource(key);
+            return resource as string ?? key;
+        }
     }
 
     public class GamesRecapSettingsViewModel : ObservableObject, ISettings
@@ -52,8 +62,8 @@ namespace GamesRecap
 
         public List<WishlistActionItem> WishlistActions { get; } = new()
         {
-            new WishlistActionItem { Value = WishlistAction.SqliteOnly, Display = "Save to local database only" },
-            new WishlistActionItem { Value = WishlistAction.AddToLibrary, Display = "Add to Playnite library" }
+            new WishlistActionItem { Value = WishlistAction.SqliteOnly, Display = Loc.Get("SettingsActionSaveLocal") },
+            new WishlistActionItem { Value = WishlistAction.AddToLibrary, Display = Loc.Get("SettingsActionAddLibrary") }
         };
 
         public bool IsAddToLibraryAction => Settings?.DefaultWishlistAction == WishlistAction.AddToLibrary;

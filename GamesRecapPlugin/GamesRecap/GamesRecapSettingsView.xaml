@@ -9,20 +9,20 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <StackPanel Margin="10">
-        <TextBlock Text="Default wishlist action:" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,4"/>
+        <TextBlock Text="{DynamicResource SettingsDefaultAction}" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,4"/>
         <ComboBox ItemsSource="{Binding WishlistActions}"
                   SelectedValue="{Binding Settings.DefaultWishlistAction}"
                   SelectedValuePath="Value"
                   DisplayMemberPath="Display"/>
 
         <TextBlock Style="{StaticResource BaseTextBlockStyle}"
-                   Text="When 'Add to Playnite library' is selected, the heart icon toggle adds the game without confirmation."
+                   Text="{DynamicResource SettingsNote}"
                    TextWrapping="Wrap"
                    Visibility="{Binding IsAddToLibraryAction, Converter={StaticResource BoolToVis}}"
                    Margin="0,8,0,4"/>
 
         <CheckBox IsChecked="{Binding Settings.ShowConfirmation}"
-                  Content="Show confirmation before adding to library"
+                  Content="{DynamicResource SettingsShowConfirmation}"
                   Margin="0,12,0,0">
             <CheckBox.Style>
                 <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">

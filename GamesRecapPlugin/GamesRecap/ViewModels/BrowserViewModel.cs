@@ -241,10 +241,13 @@ namespace GamesRecap.ViewModels
         public bool HasPreviousPage => CurrentPage > 1;
         public bool HasNextPage => CurrentPage < TotalPages;
 
-        public string PlatformFilterHeader => FormatFilterHeader("Platforms", PlatformFilters);
-        public string GenreFilterHeader => FormatFilterHeader("Genres", GenreFilters);
-        public string TagFilterHeader => FormatFilterHeader("Tags", TagFilters);
-        public string ShowcaseFilterHeader => FormatFilterHeader("Showcases", ShowcaseFilters);
+        public string PlatformFilterHeader => FormatFilterHeader("FilterPlatforms", PlatformFilters);
+        public string GenreFilterHeader => FormatFilterHeader("FilterGenres", GenreFilters);
+        public string TagFilterHeader => FormatFilterHeader("FilterTags", TagFilters);
+        public string ShowcaseFilterHeader => FormatFilterHeader("FilterShowcases", ShowcaseFilters);
+
+        public string PaginationText => string.Format(Loc.Get("PaginationPageFormat"), CurrentPage, TotalPages);
+        public string CardCountText => string.Format(Loc.Get("PaginationCardCount"), TotalCards);
 
         public bool? ShowcaseSelectAllState
         {
@@ -357,8 +360,9 @@ namespace GamesRecap.ViewModels
                 item.IsSelected = false;
         }
 
-        private static string FormatFilterHeader(string name, ObservableCollection<FilterItem> items)
+        private static string FormatFilterHeader(string resourceKey, ObservableCollection<FilterItem> items)
         {
+            var name = Loc.Get(resourceKey);
             var count = items.Count(f => f.IsSelected);
             return count > 0 ? $"{name} ({count})" : name;
         }
@@ -391,7 +395,7 @@ namespace GamesRecap.ViewModels
 
                 if (props == null)
                 {
-                    ErrorMessage = "No se pudo conectar con el servidor";
+                    ErrorMessage = Loc.Get("ErrorConnection");
                     return;
                 }
 
@@ -404,9 +408,11 @@ namespace GamesRecap.ViewModels
 
                 if (props.Pages != null)
                 {
-                    CurrentPage = props.Pages.CurrentPage;
-                    TotalPages = props.Pages.LastPage;
-                    TotalCards = props.Pages.Total;
+                CurrentPage = props.Pages.CurrentPage;
+                TotalPages = props.Pages.LastPage;
+                TotalCards = props.Pages.Total;
+                OnPropertyChanged(nameof(PaginationText));
+                OnPropertyChanged(nameof(CardCountText));
                 }
 
                     if (props.Options != null)
@@ -420,7 +426,7 @@ namespace GamesRecap.ViewModels
             catch (Exception ex)
             {
                 logger.Error(ex, "Error loading cards");
-                ErrorMessage = $"Error: {ex.Message}";
+                ErrorMessage = string.Format(Loc.Get("ErrorGeneric"), ex.Message);
             }
             finally
             {
@@ -651,7 +657,7 @@ namespace GamesRecap.ViewModels
                     ShowcaseYearChips.Add(new YearChipItem
                     {
                         Year = year,
-                        ChipText = $"All showcases in {year}",
+                        ChipText = string.Format(Loc.Get("AllShowcasesInYear"), year),
                         DeselectAllInYearCommand = DeselectAllInYearCommand
                     });
                 }
@@ -725,8 +731,8 @@ namespace GamesRecap.ViewModels
             if (!silent && settings.ShowConfirmation)
             {
                 var result = playniteApi.Dialogs.ShowMessage(
-                    $"Add \"{cardVm.Title}\" to Playnite library?",
-                    "Games Recap",
+                    string.Format(Loc.Get("ConfirmAddMessage"), cardVm.Title),
+                    Loc.Get("ConfirmAddTitle"),
                     MessageBoxButton.YesNo);
                 if (result != MessageBoxResult.Yes) return;
             }
@@ -738,15 +744,15 @@ namespace GamesRecap.ViewModels
                 libraryGameIds.Add(gameId);
                 cardVm.NotifyLibraryStatusChanged();
                 playniteApi.Dialogs.ShowMessage(
-                    $"\"{cardVm.Title}\" added to Playnite library",
-                    "Games Recap");
+                    string.Format(Loc.Get("SuccessAddMessage"), cardVm.Title),
+                    Loc.Get("SuccessAddTitle"));
             }
             catch (Exception ex)
             {
                 logger.Error(ex, $"Error adding game {gameId} to library");
                 playniteApi.Dialogs.ShowErrorMessage(
-                    $"Failed to add \"{cardVm.Title}\" to library:\n{ex.Message}",
-                    "Games Recap - Error");
+                    string.Format(Loc.Get("ErrorAddMessage"), cardVm.Title, ex.Message),
+                    Loc.Get("ErrorAddTitle"));
             }
         }
 
@@ -856,7 +862,7 @@ namespace GamesRecap.ViewModels
 
         private static string FormatReleaseKind(string kind)
         {
-            if (string.IsNullOrEmpty(kind)) return "Release Date";
+            if (string.IsNullOrEmpty(kind)) return Loc.Get("FilterReleaseDate");
             return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(kind.Replace("_", " "));
         }
 

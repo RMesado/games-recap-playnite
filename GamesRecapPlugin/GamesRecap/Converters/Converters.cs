@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
+using Application = System.Windows.Application;
+
 namespace GamesRecap.Converters
 {
     public class YearToDisplayConverter : IValueConverter
@@ -10,7 +12,10 @@ namespace GamesRecap.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is int year && year == 0)
-                return "All Years";
+            {
+                var resource = Application.Current?.TryFindResource("AllYears");
+                return resource as string ?? "All Years";
+            }
             return value?.ToString();
         }
 

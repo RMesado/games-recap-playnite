@@ -3,5 +3,5 @@ Name: Games Recap
 Author: RMesado
 Version: 0.1.0
 Module: GamesRecap.dll
-Type: GameLibrary
+Type: GenericPlugin
 Icon: icon.png

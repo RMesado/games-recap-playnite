@@ -1,7 +1,7 @@
 -- Schema de referencia para GamesRecap Plugin (minimal)
 -- SQLite local en GetPluginUserDataPath()/gamesrecap.db
--- Solo persiste estado de usuario y metadatos del sistema.
--- Los datos de juegos vienen de la respuesta HTTP de gamesrecap.io.
+-- Solo persiste estado de usuario, metadatos del sistema y juegos promovidos a librería.
+-- Los datos de juegos y catálogo vienen exclusivamente de la respuesta HTTP de gamesrecap.io.
 
 CREATE TABLE UserGameState (
     GameId       INTEGER PRIMARY KEY,
@@ -17,4 +17,16 @@ CREATE TABLE UserGameState (
 CREATE TABLE AppMeta (
     Key   TEXT PRIMARY KEY,
     Value TEXT NOT NULL
+);
+
+CREATE TABLE PromotedGames (
+    GameId        INTEGER PRIMARY KEY,
+    Title         TEXT NOT NULL,
+    CoverUrl      TEXT,
+    PlatformsJson TEXT,
+    GenresJson    TEXT,
+    TagsJson      TEXT,
+    ReleaseDate   TEXT,
+    Description   TEXT,
+    PlayniteId    TEXT UNIQUE
 );

@@ -48,7 +48,7 @@ namespace GamesRecap.Services
             "Platform", "InstallSize"
         };
 
-        public void AddToLibrary(int gameId, string title, int? igdbId, IPlayniteAPI api, LibraryPlugin plugin, LocalDatabase db)
+        public void AddToLibrary(int gameId, string title, int? igdbId, IPlayniteAPI api, LocalDatabase db)
         {
             var existingPlayniteId = db.GetPlayniteId(gameId);
             if (!string.IsNullOrEmpty(existingPlayniteId))
@@ -68,7 +68,7 @@ namespace GamesRecap.Services
                     IsInstalled = false
                 };
 
-                var playniteGame = api.Database.ImportGame(metadata, plugin);
+                var playniteGame = api.Database.ImportGame(metadata);
                 var playniteId = playniteGame?.Id.ToString();
 
                 if (string.IsNullOrEmpty(playniteId))

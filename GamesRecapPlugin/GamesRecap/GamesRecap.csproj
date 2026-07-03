@@ -54,7 +54,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamesRecapClient.cs" />
     <Compile Include="GamesRecap.cs" />
     <Compile Include="Services\LocalDatabase.cs" />
     <Compile Include="Services\GamesRecapApiClient.cs" />

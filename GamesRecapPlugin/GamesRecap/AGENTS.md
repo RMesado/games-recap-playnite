@@ -15,19 +15,20 @@ Plugin de biblioteca para Playnite que integra gamesrecap.io vía API Inertia.js
 ## Estructura del Proyecto
 ```
 GamesRecapPlugin/GamesRecap/
-├── GamesRecap.cs              # Entry point, menús, Test API, GetGames
+├── GamesRecap.cs              # Entry point, menús, Test API
 ├── GamesRecap.csproj          # Target v4.8.1, LangVersion 12.0
-├── GamesRecapClient.cs        # Stub de LibraryClient
 ├── GamesRecapSettings.cs      # Settings viewmodel
 ├── GamesRecapSettingsView.xaml/.cs  # UI de settings
 ├── extension.yaml             # Metadatos del plugin
 ├── icon.svg / icon.png        # Icono #ff506e
 ├── AGENTS.md                  # ← ESTE ARCHIVO
 ├── Models/
-│   └── InertiaModels.cs       # 20 DTOs con DataContract/DataMember
+│   ├── InertiaModels.cs       # 20 DTOs con DataContract/DataMember
+│   └── MetadataFieldConfig.cs # Configuración de fuentes de metadata
 ├── Services/
-│   ├── GamesRecapApiClient.cs # Cliente HTTP Inertia con scrape de versión
-│   └── LocalDatabase.cs       # SQLite: UserGameState + AppMeta
+│   ├── GamesRecapApiClient.cs # Cliente HTTP Inertia con headers
+│   ├── LocalDatabase.cs       # SQLite: UserGameState + AppMeta + PromotedGames
+│   └── PlayniteLibrarySync.cs # Sync con librería de Playnite
 └── Data/schema.sql            # Schema de referencia
 ```
 
@@ -36,15 +37,16 @@ GamesRecapPlugin/GamesRecap/
 ### ✅ Completado (Fase 0 y 1)
 - Scaffolding del proyecto, compilación, Playnite carga el plugin
 - 20 DTOs en `InertiaModels.cs` mapeando la respuesta Inertia completa
-- `LocalDatabase.cs`: 2 tablas (UserGameState + AppMeta), solo persiste estado de usuario e inertia_version
+- `LocalDatabase.cs`: 3 tablas (UserGameState + AppMeta + PromotedGames)
 - `GamesRecapApiClient.cs`: HTTP client con headers Inertia, query builder, manejo de 409/429
 - Menús de prueba: "Test API", "Ver estado de wishlist"
 - Icono actualizado a #ff506e
+- `GenericPlugin` en vez de `LibraryPlugin`: no tiene `GetGames()`, `HasCustomizedGameImport` ni `LibraryClient`. El plugin añade juegos exclusivamente vía `ImportGame(GameMetadata)` + `Games.Update()` desde `AddToLibrary()`. Al no haber `PluginId`, otros plugins (HLTB, ProtonDB, etc.) se disparan en el mismo ciclo de importación al detectar juegos nuevos por timestamp.
 
 ### 🛠️ Changelog Completo — Fase 3 (Sesiones 2026-06-11 al 2026-06-30)
 
 #### Base de datos y API
-1. Schema SQLite simplificado: eliminadas 12 tablas de caché local (Platforms, Genres, Tags, Companies, Games, etc.) — solo quedan UserGameState y AppMeta
+1. Schema SQLite simplificado: eliminadas 12 tablas de caché local (Platforms, Genres, Tags, Companies, Games, etc.) — solo quedan UserGameState y AppMeta (Posteriormente se añadió PromotedGames en Fase 4)
 2. Dead code masivo removido de `LocalDatabase.cs`: `UpsertFromApiResponse`, `UpsertTaxonomy`, `UpsertPlatform/Genre/Tag/Showcase/Company/Game/Card`, `GetCachedCardCount`, `GetCachedGameCount`, `GetLibraryGames`, `LogSync`, `LibraryGameEntry`
 3. Fix: `ShowSlug` columna cambiada de `NOT NULL UNIQUE` a nullable con fallback de slug generado
 4. Fix: `UpsertShowcase` ahora se llama dentro de `UpsertCard` para asegurar foreign key
@@ -52,7 +54,7 @@ GamesRecapPlugin/GamesRecap/
 6. Fix: Scraping HTML (`ScrapeVersionFromHtmlAsync`) eliminado — `fullResponse.Version` se lee directo del JSON
 7. Fix: `db.UpsertFromApiResponse` eliminado de `FetchCardsAsync` — ya no persiste datos localmente
 8. Fix: Wishlist movido de query params a HTTP headers (`X-Wishlisted-Ids`, `X-Wishlisted-Mode`) como espera la API
-9. Fix: endpoint de API corregido — page_size=60 agregado a `/api/cards/games-recap`
+9. Fix: endpoint de API corregido — wishlist se envía como headers en vez de query params
 
 #### ViewModel y lógica de filtros
 10. Fix: Race condition de paginación corregida con contador `requestGeneration` + stale-response detection
@@ -102,20 +104,20 @@ GamesRecapPlugin/GamesRecap/
 ### ✅ Fase 4 — Wishlist + Library Sync (Completada)
 1. **Tabla `PromotedGames`** en SQLite: GameId, Title, CoverUrl, PlatformsJson, GenresJson, TagsJson, ReleaseDate, PlayniteId
 2. **PlayniteLibrarySync.cs**:
-   - `AddToLibrary(Card, IPlayniteAPI, LibraryPlugin, LocalDatabase)`: crea `GameMetadata` con GameId `gr-{gameId}`, Source "Games Recap", tags (Wishlist + showcase + géneros), cover, links, platforms, genres; llama a `api.Database.ImportGame()`; persiste en PromotedGames
-   - `MapToGameMetadata(PromotedGameEntry)`: reconstruye `GameMetadata` desde DB para `GetGames()`
+   - `AddToLibrary(int gameId, string title, int? igdbId, IPlayniteAPI api, LocalDatabase db)`: crea `GameMetadata` con GameId `gr-{gameId}`, Source "Games Recap", tags (Wishlist); llama a `api.Database.ImportGame()`; persiste en PromotedGames
+   - `MapToGameMetadata(PromotedGameEntry)`: reconstruye `GameMetadata` desde DB (anteriormente usado por `GetGames()`, ahora solo referencia)
 3. **Botón "Add to Library"** en backface de cada card (IconGamepad2, tooltip "Add to Playnite library")
 4. **Badge "In Library"** con icono verde en WrapPanel junto a tags, tooltip "In Playnite library"
 5. **libraryGameIds HashSet** en BrowserViewModel: precargado desde DB al abrir la vista, sin acceso a SQLite durante data binding
 6. **Feedback con diálogo**: `Dialogs.ShowMessage` en éxito ("X added to Playnite library"), `ShowErrorMessage` en error
-7. **GetGames() real**: lee PromotedGames, valida existencia en Playnite (`Games.Any()`), limpia huérfanos
+7. **Eliminado GetGames()**: ya no existe. Plugin tipo GenericPlugin — solo añade juegos vía ImportGame() manual.
 8. **Eliminado OnGamesUpdated**: causaba deadlock al llamar `Games.Any()` durante `ItemUpdated` de importación
 9. **Inverse sync**: `CleanupOrphanedPromotedGames()` se ejecuta cada vez que se abre el sidebar (vía `Opened` delegate), limpiando huérfanos; `RefreshLibraryGameIds()` actualiza el HashSet en memoria. Sin `ItemUpdated` porque no se dispara para borrados en Playnite.
 
 ### ✅ Fase 5 — Metadata download por prioridad del usuario (Sesión 2026-07-01, refactorizada 2026-07-01)
 1. `PlayniteLibrarySync.AddToLibrary()` simplificado: parámetros cambiados de `Card` a `(int gameId, string title, int? igdbId, ...)`
 2. `GameMetadata` mínimo: solo Name, Source ("Games Recap"), Tags (["Wishlist"]), GameId="gr-{id}", IsInstalled=false
-3. `ImportGame(metadata, plugin)` se llama una sola vez (no más duplicados)
+3. `ImportGame(metadata)` se llama una sola vez (no más duplicados)
 4. La descarga de metadata usa `ActivateGlobalProgress` — popup nativo "Downloading metadata..." sin congelar UI
 5. **Las fuentes de metadata se leen de `config.json` (MetadataSettings)**, respetando exactamente el orden de prioridad que el usuario configuró en **Configuración → Metadata** para cada campo
 6. Por cada campo, se iteran las fuentes en su orden de prioridad; la primera que devuelve datos válidos gana (por campo, no por plugin)
@@ -133,8 +135,8 @@ GamesRecapPlugin/GamesRecap/
 5. `IsAddToLibraryAction` computed property en ViewModel, actualizada via PropertyChanged en Settings
 6. `AutoSyncWishlist` — documentado en AGENTS.md como idea futura, no implementado (pendiente de decisión)
 
-### ⚠️ Pendiente / Bloqueado
-- Nada bloqueado. Fase 6 completada.
+### ⚠️ Pendiente
+- Fase 7: Packaging (build .pext + README)
 
 ## API: gamesrecap.io
 
@@ -203,9 +205,9 @@ Los showcases aparecen en DOS contextos con fields diferentes:
 1. **`options.showcases`** (filtros): `id`, `name`, `event_name`, `start_at`, `series_key`, `series_label` — NO tienen `slug`
 2. **`card.showcase`** (asociado a cada card): `id`, `name`, `slug`, `series_key`, `start_at`, `end_at`, `url`, `event_name`, `event_id`
 
-## Base de Datos (2 tablas)
+## Base de Datos (3 tablas)
 
-Schema mínimo: solo persiste estado de usuario y metadatos del sistema.
+Schema mínimo: solo persiste estado de usuario, metadatos del sistema y juegos promovidos a la librería de Playnite.
 Los datos de juegos y catálogo vienen exclusivamente de la respuesta HTTP de gamesrecap.io.
 
 ### UserGameState
@@ -225,6 +227,19 @@ Los datos de juegos y catálogo vienen exclusivamente de la respuesta HTTP de ga
 |---------|------|-------|
 | Key | TEXT PK | `inertia_version` |
 | Value | TEXT NOT NULL | MD5 hash de la versión Inertia |
+
+### PromotedGames
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| GameId | INTEGER PK | ID del juego en gamesrecap.io |
+| Title | TEXT NOT NULL | Título del juego |
+| CoverUrl | TEXT | URL de la cover (IGDB) |
+| PlatformsJson | TEXT | JSON array de plataformas |
+| GenresJson | TEXT | JSON array de géneros |
+| TagsJson | TEXT | JSON array de tags |
+| ReleaseDate | TEXT | Fecha de lanzamiento |
+| Description | TEXT | Descripción del juego |
+| PlayniteId | TEXT UNIQUE | GUID del juego en librería Playnite (NULL si no ha sido añadido) |
 
 ## Reglas de Compilación y Deploy
 
@@ -251,7 +266,7 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 3. Abrir Playnite
 4. Abrir Games Recap (sidebar)
 5. Realizar acciones a probar
-6. Si hay logs, leer en `M:\Programas Portables\Playnite\extensions.log`
+6. Si hay logs, leer en `<PlayniteDir>\extensions.log` (ruta según instalación)
 7. Repetir
 
 ### Notas
@@ -337,27 +352,6 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - `GamesRecap.csproj` → removed deleted control references
 
 ## Próximas fases
-
-### Fase 4 — Wishlist + Library Sync ✅ Completada
-- Botón "Add to Library" en backface de cada card
-- `PlayniteLibrarySync.cs`: crea `GameMetadata`, lo añade a Playnite, guarda `PlayniteId` en DB
-- Tabla `PromotedGames` con datos mínimos (title, cover, platforms, genres)
-- `GetGames()` real desde `PromotedGames` (síncrono, sin HTTP)
-- Inverse sync opcional: limpiar `PlayniteId` al eliminar de librería
-
-### ✅ Fase 5 — Metadata download por prioridad del usuario (Completada)
-- `AddToLibrary()` recibe `(int gameId, string title, int? igdbId, ...)`; `GameMetadata` mínimo
-- Las fuentes de metadata se leen de `config.json` → `MetadataSettings`, respetando el orden de prioridad configurado por el usuario en **Configuración → Metadata**
-- Se omite `Guid.Empty` (Tienda oficial); el resto de plugins se iteran por orden de prioridad por campo
-- `TryApplyField()` procesa un campo a la vez; primer provider que devuelve datos válidos gana
-- `GameId` como `igdbId?.ToString()` para lookup directo en IGDB
-
-### ✅ Fase 6 — Settings (Completada)
-- `DefaultWishlistAction` (enum: SqliteOnly/AddToLibrary) — cuando es AddToLibrary, el toggle de wishlist (corazón) también añade a la biblioteca de Playnite automáticamente; el checkbox ShowConfirmation se deshabilita
-- `ShowConfirmation` (bool) — muestra confirmación antes de añadir a biblioteca vía botón manual; se omite (silent) cuando viene del toggle de wishlist
-- Textos legibles en ComboBox via `WishlistActionItem` class + `DisplayMemberPath`
-- Nota informativa condicional cuando se selecciona AddToLibrary
-- `AutoSyncWishlist` — **documentado pero no implementado**. Idea original: sincronizar automáticamente la wishlist local con la biblioteca de Playnite en background (al abrir el sidebar o periódicamente). Pendiente de decidir si tiene utilidad real.
 
 ### Fase 7 — Packaging
 - Build .pext + README
@@ -454,8 +448,8 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
   - `AddToLibrary()` pasa `igdbId = cardVm.SourceCard.Game?.IgdbId` a `sync.AddToLibrary()`
 
 ## Playnite Theme Resources
-- **Default theme path**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\`
+- **Default theme path**: `<PlayniteDir>\Themes\Desktop\Default\`
 - **Search icon**: `Media.xaml:44` — `SearchTextIconTemplate` con `&#xed11;` en `FontIcoFont`
 - **IcoFont**: `FontFamily="{DynamicResource FontIcoFont}"`
-- **Theme XAML dir**: `M:\Programas Portables\Playnite\Themes\Desktop\Default\CustomControls\SearchBox.xaml`
+- **Theme XAML dir**: `<PlayniteDir>\Themes\Desktop\Default\CustomControls\SearchBox.xaml`
 - Para usar el icono de búsqueda nativo en placeholders: `<TextBlock Text="&#xed11;" FontFamily="{DynamicResource FontIcoFont}" />`

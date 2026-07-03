@@ -3,7 +3,6 @@ using GamesRecap.Services;
 using GamesRecap.ViewModels;
 using GamesRecap.Views;
 using Playnite.SDK;
-using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ using System.Windows.Controls;
 
 namespace GamesRecap
 {
-    public class GamesRecap : LibraryPlugin
+    public class GamesRecap : GenericPlugin
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
@@ -28,17 +27,12 @@ namespace GamesRecap
 
         public override Guid Id { get; } = Guid.Parse("01af564c-edf6-49ba-b6e1-32a12fb28bec");
 
-        public override string Name => "Games Recap";
-
-        public override LibraryClient Client { get; } = new GamesRecapClient();
-
         public GamesRecap(IPlayniteAPI api) : base(api)
         {
             settings = new GamesRecapSettingsViewModel(this);
-            Properties = new LibraryPluginProperties
+            Properties = new GenericPluginProperties
             {
-                HasSettings = true,
-                HasCustomizedGameImport = true
+                HasSettings = true
             };
 
             var dbPath = Path.Combine(GetPluginUserDataPath(), "gamesrecap.db");
@@ -92,7 +86,7 @@ namespace GamesRecap
 
                     if (browserView == null)
                     {
-                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi, this, settings.Settings);
+                        browserViewModel = new BrowserViewModel(ApiClient, Database, PlayniteApi, settings.Settings);
                         browserView = new BrowserView();
                         browserView.DataContext = browserViewModel;
                     }
@@ -141,42 +135,6 @@ namespace GamesRecap
                     $"Error al llamar a la API:\n{ex.Message}",
                     "Games Recap - Error");
             }
-        }
-
-        public override IEnumerable<GameMetadata> GetGames(LibraryGetGamesArgs args)
-        {
-            var sync = new PlayniteLibrarySync();
-            var entries = Database.GetAllPromotedGames();
-            if (entries.Count == 0) return Enumerable.Empty<GameMetadata>();
-
-            var result = new List<GameMetadata>();
-            var toRemove = new List<int>();
-
-            foreach (var entry in entries)
-            {
-                if (Guid.TryParse(entry.PlayniteId, out var guid))
-                {
-                    var exists = PlayniteApi.Database.Games.Any(g => g.Id == guid);
-                    if (!exists)
-                    {
-                        toRemove.Add(entry.GameId);
-                        continue;
-                    }
-                }
-                result.Add(sync.MapToGameMetadata(entry));
-            }
-
-            if (toRemove.Count > 0)
-            {
-                foreach (var gameId in toRemove)
-                {
-                    Database.SetPlayniteId(gameId, null);
-                    Database.RemovePromotedGame(gameId);
-                }
-                logger.Info($"Cleaned up {toRemove.Count} promoted games no longer in Playnite library");
-            }
-
-            return result;
         }
 
         internal void CleanupOrphanedPromotedGames()

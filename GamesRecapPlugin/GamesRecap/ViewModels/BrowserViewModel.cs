@@ -1,7 +1,6 @@
 using GamesRecap.Models;
 using GamesRecap.Services;
 using Playnite.SDK;
-using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +22,6 @@ namespace GamesRecap.ViewModels
         private readonly GamesRecapApiClient apiClient;
         private readonly LocalDatabase database;
         private readonly IPlayniteAPI playniteApi;
-        private readonly LibraryPlugin plugin;
         private readonly GamesRecapSettings settings;
 
         private string searchText;
@@ -282,12 +280,11 @@ namespace GamesRecap.ViewModels
         public ICommand ToggleSelectAllShowcasesCommand { get; }
         public ICommand DeselectAllInYearCommand { get; }
 
-        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, LibraryPlugin plugin, GamesRecapSettings settings)
+        public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, GamesRecapSettings settings)
         {
             this.apiClient = apiClient;
             this.database = database;
             this.playniteApi = playniteApi;
-            this.plugin = plugin;
             this.settings = settings;
 
             SearchCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
@@ -737,7 +734,7 @@ namespace GamesRecap.ViewModels
             try
             {
                 var sync = new PlayniteLibrarySync();
-                sync.AddToLibrary(gameId, cardVm.Title, cardVm.SourceCard.Game?.IgdbId, playniteApi, plugin, database);
+                sync.AddToLibrary(gameId, cardVm.Title, cardVm.SourceCard.Game?.IgdbId, playniteApi, database);
                 libraryGameIds.Add(gameId);
                 cardVm.NotifyLibraryStatusChanged();
                 playniteApi.Dialogs.ShowMessage(

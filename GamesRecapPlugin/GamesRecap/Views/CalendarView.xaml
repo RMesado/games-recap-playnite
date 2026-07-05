@@ -120,6 +120,12 @@
                 </Setter>
             </Style>
 
+            <!-- Minimal style for calendar grid cards (section 3) -->
+            <Style x:Key="CalendarGridStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+
             <!-- Custom tooltip template matching BrowserView badges -->
             <ControlTemplate x:Key="CalendarTooltipTemplate" TargetType="ToolTip">
                 <Border Background="#1a1a2e" BorderBrush="#333"
@@ -414,62 +420,112 @@
                                                             </Border>
                                                             <!-- Games list -->
                                                             <ListBox ItemsSource="{Binding Games}"
-                                                                     ItemContainerStyle="{StaticResource CalendarCardStyle}"
+                                                                     ItemContainerStyle="{StaticResource CalendarGridStyle}"
                                                                      Background="Transparent" BorderThickness="0"
                                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                                                      IsSynchronizedWithCurrentItem="False">
                                                                 <ListBox.ItemTemplate>
                                                                     <DataTemplate>
-                                                                        <Grid
-                                                                              ToolTipService.InitialShowDelay="0"
-                                                                              ToolTipService.BetweenShowDelay="0">
-                                                                            <Grid.ToolTip>
-                                                                                <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
-                                                                                    <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
-                                                                                </ToolTip>
-                                                                            </Grid.ToolTip>
-                                                                            <Image x:Name="CoverImage" Source="{Binding CoverUrl}"
-                                                                                   Stretch="Uniform" MaxHeight="200"
-                                                                                   VerticalAlignment="Center" />
-                                                                            <Button HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                                                    Width="22" Height="22" Margin="0,2,2,0"
-                                                                                    Background="#80000000" BorderThickness="0"
-                                                                                    Cursor="Hand"
-                                                                                    Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                                    CommandParameter="{Binding GameId}"
-                                                                                    ToolTip="{DynamicResource RemoveFromCalendar}">
-                                                                                <Button.Template>
-                                                                                    <ControlTemplate TargetType="Button">
-                                                                                        <Border Background="{TemplateBinding Background}"
-                                                                                                CornerRadius="3" Width="22" Height="22">
-                                                                                            <Grid>
-                                                                                                <Path Data="{StaticResource IconCalendarClock}"
-                                                                                                      Stroke="#FF506e" StrokeThickness="1.5"
-                                                                                                      Fill="Transparent" Stretch="Uniform"
-                                                                                                      Width="12" Height="12" />
-                                                                                                <Line X1="3" Y1="3" X2="19" Y2="19"
-                                                                                                      Stroke="#FF506e" StrokeThickness="2"
-                                                                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                                                                                            </Grid>
-                                                                                        </Border>
-                                                                                    </ControlTemplate>
-                                                                                </Button.Template>
-                                                                                <Button.Style>
-                                                                                    <Style TargetType="Button">
-                                                                                        <Setter Property="Opacity" Value="0" />
-                                                                                        <Style.Triggers>
-                                                                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Value="True">
-                                                                                                <Setter Property="Opacity" Value="1" />
-                                                                                            </DataTrigger>
-                                                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                                                <Setter Property="Background" Value="#33FFFFFF" />
-                                                                                            </Trigger>
-                                                                                        </Style.Triggers>
-                                                                                    </Style>
-                                                                                </Button.Style>
-                                                                            </Button>
-                                                                        </Grid>
+                                                                        <Border x:Name="GameCard"
+                                                                                CornerRadius="8"
+                                                                                HorizontalAlignment="Center"
+                                                                                VerticalAlignment="Center"
+                                                                                Loaded="CalendarCard_OnLoaded"
+                                                                                RenderTransformOrigin="0.5, 0.85">
+                                                                            <Border.RenderTransform>
+                                                                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                                            </Border.RenderTransform>
+                                                                            <Grid ToolTipService.InitialShowDelay="0"
+                                                                                  ToolTipService.BetweenShowDelay="0">
+                                                                                <Grid.ToolTip>
+                                                                                    <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
+                                                                                        <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
+                                                                                    </ToolTip>
+                                                                                </Grid.ToolTip>
+                                                                                <Image x:Name="CoverImage" Source="{Binding CoverUrl}"
+                                                                                       Stretch="UniformToFill" />
+                                                                                <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                                                        Width="22" Height="22" Margin="0,2,2,0"
+                                                                                        Background="#80000000" BorderThickness="0"
+                                                                                        Cursor="Hand"
+                                                                                        Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                        CommandParameter="{Binding GameId}"
+                                                                                        ToolTip="{DynamicResource RemoveFromCalendar}">
+                                                                                    <Button.Template>
+                                                                                        <ControlTemplate TargetType="Button">
+                                                                                            <Border Background="{TemplateBinding Background}"
+                                                                                                    CornerRadius="3" Width="22" Height="22">
+                                                                                                <Grid>
+                                                                                                    <Path Data="{StaticResource IconCalendarClock}"
+                                                                                                          Stroke="#FF506e" StrokeThickness="1.5"
+                                                                                                          Fill="Transparent" Stretch="Uniform"
+                                                                                                          Width="12" Height="12" />
+                                                                                                    <Line X1="3" Y1="3" X2="19" Y2="19"
+                                                                                                          Stroke="#FF506e" StrokeThickness="2"
+                                                                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                                                                                </Grid>
+                                                                                            </Border>
+                                                                                        </ControlTemplate>
+                                                                                    </Button.Template>
+                                                                                    <Button.Style>
+                                                                                        <Style TargetType="Button">
+                                                                                            <Setter Property="Opacity" Value="0" />
+                                                                                            <Style.Triggers>
+                                                                                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=GameCard}" Value="True">
+                                                                                                    <Setter Property="Opacity" Value="1" />
+                                                                                                </DataTrigger>
+                                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                                    <Setter Property="Background" Value="#33FFFFFF" />
+                                                                                                </Trigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </Button.Style>
+                                                                                </Button>
+                                                                            </Grid>
+                                                                            <Border.Triggers>
+                                                                                <EventTrigger RoutedEvent="MouseEnter">
+                                                                                    <BeginStoryboard>
+                                                                                        <Storyboard>
+                                                                                            <DoubleAnimation Duration="0:0:0.25"
+                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                                             To="1.04">
+                                                                                                <DoubleAnimation.EasingFunction>
+                                                                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                                                                </DoubleAnimation.EasingFunction>
+                                                                                            </DoubleAnimation>
+                                                                                            <DoubleAnimation Duration="0:0:0.25"
+                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                                             To="1.04">
+                                                                                                <DoubleAnimation.EasingFunction>
+                                                                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                                                                </DoubleAnimation.EasingFunction>
+                                                                                            </DoubleAnimation>
+                                                                                        </Storyboard>
+                                                                                    </BeginStoryboard>
+                                                                                </EventTrigger>
+                                                                                <EventTrigger RoutedEvent="MouseLeave">
+                                                                                    <BeginStoryboard>
+                                                                                        <Storyboard>
+                                                                                            <DoubleAnimation Duration="0:0:0.25"
+                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                                             To="1">
+                                                                                                <DoubleAnimation.EasingFunction>
+                                                                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                                                                </DoubleAnimation.EasingFunction>
+                                                                                            </DoubleAnimation>
+                                                                                            <DoubleAnimation Duration="0:0:0.25"
+                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                                             To="1">
+                                                                                                <DoubleAnimation.EasingFunction>
+                                                                                                    <QuadraticEase EasingMode="EaseOut" />
+                                                                                                </DoubleAnimation.EasingFunction>
+                                                                                            </DoubleAnimation>
+                                                                                        </Storyboard>
+                                                                                    </BeginStoryboard>
+                                                                                </EventTrigger>
+                                                                            </Border.Triggers>
+                                                                        </Border>
                                                                     </DataTemplate>
                                                                 </ListBox.ItemTemplate>
                                                             </ListBox>

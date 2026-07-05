@@ -413,11 +413,11 @@
                                                              <!-- Card container (always visible, acts as placeholder when empty, wraps game cards when present) -->
                                                              <Border Background="{DynamicResource ControlBackgroundBrush}"
                                                                      CornerRadius="4" MinHeight="200"
-                                                                     ClipToBounds="True">
+                                                                     Padding="0,12,0,12">
                                                                  <ListBox ItemsSource="{Binding Games}"
                                                                           ItemContainerStyle="{StaticResource CalendarGridStyle}"
                                                                           Background="Transparent" BorderThickness="0"
-                                                                          Margin="0,12,0,12"
+                                                                          Padding="0,10,0,10"
                                                                           PreviewMouseWheel="ListBox_PreviewMouseWheel"
                                                                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -425,6 +425,7 @@
                                                                      <ListBox.ItemTemplate>
                                                                          <DataTemplate>
                                                                              <Border x:Name="GameCard"
+                                                                                     Background="{DynamicResource ControlBackgroundBrush}"
                                                                                      CornerRadius="8" Width="180"
                                                                                      HorizontalAlignment="Center"
                                                                                      VerticalAlignment="Center"

@@ -401,17 +401,23 @@
                                                     <Border Background="{DynamicResource GridItemBackgroundBrush}"
                                                             CornerRadius="6" Padding="6,4" Margin="1"
                                                             MinHeight="120">
-                                                        <StackPanel>
-                                                            <!-- Date label (Steam format: "1 DE JULIO") -->
-                                                            <Border Background="{DynamicResource ControlBackgroundBrush}"
-                                                                    CornerRadius="4" Padding="4,6" Margin="0,0,0,6">
-                                                                <TextBlock Text="{Binding DateLabel}"
-                                                                           FontSize="11" FontWeight="SemiBold"
-                                                                           Foreground="{DynamicResource TextBrush}"
-                                                                           HorizontalAlignment="Center" />
-                                                            </Border>
-                                                             <!-- Card container (always visible, acts as placeholder when empty, wraps game cards when present) -->
-                                                             <Border Background="{DynamicResource ControlBackgroundBrush}"
+                                                        <Grid>
+                                                             <Grid.RowDefinitions>
+                                                                 <RowDefinition Height="Auto" />
+                                                                 <RowDefinition Height="*" />
+                                                             </Grid.RowDefinitions>
+                                                             <!-- Date label (Steam format: "1 DE JULIO") -->
+                                                             <Border Grid.Row="0"
+                                                                     Background="{DynamicResource ControlBackgroundBrush}"
+                                                                     CornerRadius="4" Padding="4,6" Margin="0,0,0,6">
+                                                                 <TextBlock Text="{Binding DateLabel}"
+                                                                            FontSize="11" FontWeight="SemiBold"
+                                                                            Foreground="{DynamicResource TextBrush}"
+                                                                            HorizontalAlignment="Center" />
+                                                             </Border>
+                                                             <!-- Card container (fills remaining height, acts as placeholder when empty) -->
+                                                             <Border Grid.Row="1"
+                                                                     Background="{DynamicResource ControlBackgroundBrush}"
                                                                      CornerRadius="4" MinHeight="200"
                                                                      Padding="0,12,0,12">
                                                                  <ListBox ItemsSource="{Binding Games}"
@@ -528,7 +534,7 @@
                                                                      </ListBox.ItemTemplate>
                                                                  </ListBox>
                                                              </Border>
-                                                        </StackPanel>
+                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>

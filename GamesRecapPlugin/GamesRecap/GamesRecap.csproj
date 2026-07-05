@@ -65,8 +65,12 @@
       <DependentUpon>GamesRecapSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\BrowserViewModel.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="Views\BrowserView.xaml.cs">
       <DependentUpon>BrowserView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CalendarView.xaml.cs">
+      <DependentUpon>CalendarView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
     <Compile Include="Converters\TagIconToGeometryConverter.cs" />
@@ -83,7 +87,11 @@
     <None Include="icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="icon-calendar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="icon.svg" />
+    <None Include="icon-calendar.svg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Localization\*.xaml">
@@ -100,6 +108,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BrowserView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CalendarView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

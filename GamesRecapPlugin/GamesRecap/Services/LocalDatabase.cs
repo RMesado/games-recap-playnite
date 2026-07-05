@@ -58,6 +58,14 @@ namespace GamesRecap.Services
                     ReleaseDate   TEXT,
                     Description   TEXT,
                     PlayniteId    TEXT UNIQUE
+                );
+
+                CREATE TABLE IF NOT EXISTS CalendarGames (
+                    GameId      INTEGER PRIMARY KEY,
+                    Title       TEXT NOT NULL,
+                    CoverUrl    TEXT,
+                    ReleaseDate TEXT NOT NULL,
+                    AddedAt     TEXT NOT NULL
                 );";
 
             cmd.ExecuteNonQuery();
@@ -236,6 +244,62 @@ namespace GamesRecap.Services
             cmd.ExecuteNonQuery();
         }
 
+        // CalendarGames CRUD
+
+        public void AddToCalendar(int gameId, string title, string coverUrl, string releaseDate)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                INSERT OR IGNORE INTO CalendarGames (GameId, Title, CoverUrl, ReleaseDate, AddedAt)
+                VALUES (@gid, @title, @cover, @rdate, @added)";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.Parameters.AddWithValue("@title", title);
+            cmd.Parameters.AddWithValue("@cover", coverUrl ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@rdate", releaseDate);
+            cmd.Parameters.AddWithValue("@added", DateTime.UtcNow.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
+
+        public void RemoveFromCalendar(int gameId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM CalendarGames WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public List<CalendarGameEntry> GetAllCalendarGames()
+        {
+            var result = new List<CalendarGameEntry>();
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT GameId, Title, CoverUrl, ReleaseDate, AddedAt FROM CalendarGames";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(new CalendarGameEntry
+                {
+                    GameId = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    CoverUrl = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    ReleaseDate = reader.GetString(3),
+                    AddedAt = reader.GetString(4)
+                });
+            }
+            return result;
+        }
+
+        public bool IsInCalendar(int gameId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM CalendarGames WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+
         private List<int> QueryIntList(string sql)
         {
             var result = new List<int>();
@@ -260,5 +324,14 @@ namespace GamesRecap.Services
         public string ReleaseDate { get; set; }
         public string Description { get; set; }
         public string PlayniteId { get; set; }
+    }
+
+    public class CalendarGameEntry
+    {
+        public int GameId { get; set; }
+        public string Title { get; set; }
+        public string CoverUrl { get; set; }
+        public string ReleaseDate { get; set; }
+        public string AddedAt { get; set; }
     }
 }

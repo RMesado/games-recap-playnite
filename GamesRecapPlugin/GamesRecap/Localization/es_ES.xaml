@@ -67,6 +67,20 @@
     <!-- Progress dialog -->
     <sys:String x:Key="DownloadingMetadata">Descargando metadatos para "{0}"...</sys:String>
 
+    <!-- Calendar -->
+    <sys:String x:Key="ReleaseCalendar">Calendario de Lanzamientos</sys:String>
+    <sys:String x:Key="LastMonthReleases">Juegos lanzados el último mes</sys:String>
+    <sys:String x:Key="LastWeekReleases">Lanzados en los últimos 7 días</sys:String>
+    <sys:String x:Key="UpcomingReleases">Próximos lanzamientos</sys:String>
+    <sys:String x:Key="CalendarToday">Hoy</sys:String>
+    <sys:String x:Key="NoGamesOnDay">Sin juegos</sys:String>
+    <sys:String x:Key="CalendarAdded">"{0}" añadido al calendario</sys:String>
+    <sys:String x:Key="CalendarAlreadyAdded">"{0}" ya está en el calendario</sys:String>
+    <sys:String x:Key="CalendarRemoved">"{0}" eliminado del calendario</sys:String>
+    <sys:String x:Key="RemoveFromCalendar">Quitar del calendario</sys:String>
+    <sys:String x:Key="ConfirmAddCalendarMessage">¿Añadir "{0}" al calendario?</sys:String>
+    <sys:String x:Key="ConfirmRemoveCalendarMessage">¿Quitar "{0}" del calendario?</sys:String>
+
     <!-- Settings UI -->
     <sys:String x:Key="SettingsDefaultAction">Acción predeterminada de lista de deseos:</sys:String>
     <sys:String x:Key="SettingsActionSaveLocal">Guardar solo en base de datos local</sys:String>

@@ -1,5 +1,18 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                    
+
+    <sys:String x:Key="ReleaseCalendar">Release Calendar</sys:String>
+    <sys:String x:Key="LastMonthReleases">Games released last month</sys:String>
+    <sys:String x:Key="LastWeekReleases">Released in the last 7 days</sys:String>
+    <sys:String x:Key="UpcomingReleases">Upcoming releases</sys:String>
+    <sys:String x:Key="CalendarToday">Today</sys:String>
+    <sys:String x:Key="NoGamesOnDay">No games</sys:String>
+    <sys:String x:Key="CalendarAdded">"{0}" added to calendar</sys:String>
+    <sys:String x:Key="CalendarAlreadyAdded">"{0}" already in calendar</sys:String>
+    <sys:String x:Key="CalendarRemoved">"{0}" removed from calendar</sys:String>
+    <sys:String x:Key="RemoveFromCalendar">Remove from calendar</sys:String>
+    <sys:String x:Key="ConfirmAddCalendarMessage">Add "{0}" to calendar?</sys:String>
+    <sys:String x:Key="ConfirmRemoveCalendarMessage">Remove "{0}" from calendar?</sys:String>
+
 </ResourceDictionary>

@@ -24,6 +24,8 @@ namespace GamesRecap
 
         private BrowserView browserView;
         private BrowserViewModel browserViewModel;
+        private CalendarView calendarView;
+        private CalendarViewModel calendarViewModel;
 
         public override Guid Id { get; } = Guid.Parse("01af564c-edf6-49ba-b6e1-32a12fb28bec");
 
@@ -67,10 +69,30 @@ namespace GamesRecap
                     else
                     {
                         browserViewModel.RefreshLibraryGameIds();
+                        browserViewModel.RefreshCalendarIds();
                     }
 
                     _ = browserViewModel.LoadCardsAsync(1);
                     return browserView;
+                }
+            };
+
+            yield return new SidebarItem
+            {
+                Title = Loc.Get("ReleaseCalendar"),
+                Type = SiderbarItemType.View,
+                Icon = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "icon-calendar.png"),
+                Opened = () =>
+                {
+                    if (calendarView == null)
+                    {
+                        calendarViewModel = new CalendarViewModel(Database, PlayniteApi);
+                        calendarView = new CalendarView();
+                        calendarView.DataContext = calendarViewModel;
+                    }
+
+                    calendarViewModel.RefreshGames();
+                    return calendarView;
                 }
             };
         }

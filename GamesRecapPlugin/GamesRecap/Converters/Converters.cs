@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 
 using Application = System.Windows.Application;
+using System.Linq;
 
 namespace GamesRecap.Converters
 {
@@ -59,6 +60,25 @@ namespace GamesRecap.Converters
                 return col.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return value != null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("This converter only supports one-way conversion.");
+        }
+    }
+
+    public class IsCompleteDateConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string s && !string.IsNullOrEmpty(s))
+            {
+                if (DateTime.TryParseExact(s, "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                    return Visibility.Visible;
+            }
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

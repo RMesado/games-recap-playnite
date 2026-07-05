@@ -289,6 +289,7 @@ Stop-Process -Name "Playnite.DesktopApp" -Force -ErrorAction SilentlyContinue; S
 - `Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0` — SQLite para .NET Framework (incluye SQLite.Interop.dll nativo para x86/x64)
 
 ## Convenciones de Código
+- **NO escribas código en el chat** al explicar qué vas a hacer. Describe la acción en texto breve. El código solo se escribe en los archivos al implementar.
 - Sin `using Newtonsoft.Json` — usar `DataContractJsonSerializer`
 - `[DataMember(Name = "snake_case")]` para mapear JSON
 - C# 12.0 features permitidos (ej. `using var`, pattern matching)

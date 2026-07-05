@@ -14,6 +14,7 @@
             </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
             <conv:StringNotNullToVisibilityConverter x:Key="StringNotNullToVis" />
+            <conv:IsCompleteDateConverter x:Key="IsCompleteDate" />
             <conv:YearToDisplayConverter x:Key="YearToDisplayConverter" />
             <conv:TagIconToGeometryConverter x:Key="TagIconConverter" />
             <conv:TailwindColorToBrushConverter x:Key="TailwindColorConverter" />
@@ -1236,6 +1237,33 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
+                                <Border Width="22" Height="22" CornerRadius="3"
+                                        Background="#66000000"
+                                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                        Margin="0,0,30,4"
+                                        Visibility="{Binding IsInCalendar, Converter={StaticResource BoolToVis}}"
+                                        ToolTipService.InitialShowDelay="0"
+                                        ToolTipService.BetweenShowDelay="0">
+                                    <Border.ToolTip>
+                                        <ToolTip>
+                                            <ToolTip.Template>
+                                                <ControlTemplate TargetType="ToolTip">
+                                                    <Border Background="#1a1a2e" BorderBrush="#333"
+                                                            BorderThickness="1" CornerRadius="4"
+                                                            Padding="12,6">
+                                                        <ContentPresenter TextBlock.Foreground="White"
+                                                                          TextBlock.FontSize="11" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </ToolTip.Template>
+                                            <TextBlock Text="{DynamicResource AddToCalendar}" Foreground="White"
+                                                       FontSize="11" />
+                                        </ToolTip>
+                                    </Border.ToolTip>
+                                    <Path Data="{StaticResource IconCalendarClock}"
+                                          Stroke="#FF9800" StrokeThickness="1.5"
+                                          Fill="Transparent" Stretch="Uniform" Margin="3" />
+                                </Border>
                             </Grid>
 
                             <!-- BACK FACE -->
@@ -1262,45 +1290,91 @@
                                                        Foreground="#AAFFFFFF" FontSize="10"
                                                        Visibility="{Binding PublisherName, Converter={StaticResource StringNotNullToVis}}" />
                                         </StackPanel>
-                                        <Button Grid.Column="1"
-                                                Width="24" Height="24"
-                                                BorderThickness="0" Background="Transparent"
-                                                Cursor="Hand"
-                                                 ToolTip="{DynamicResource AddToCalendar}"
-                                                Visibility="{Binding ReleaseDate, Converter={StaticResource StringNotNullToVis}}">
+                                         <Button Grid.Column="1"
+                                                  Width="24" Height="24"
+                                                  BorderThickness="0"
+                                                  Background="Transparent"
+                                                  Cursor="Hand"
+                                                  Command="{Binding DataContext.AddToCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  CommandParameter="{Binding GameId}"
+                                                  Visibility="{Binding ReleaseDate, Converter={StaticResource IsCompleteDate}}">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}"
                                                             CornerRadius="4"
                                                             Width="24" Height="24">
-                                                        <Path Data="{StaticResource IconCalendarClock}"
-                                                              Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
-                                                              StrokeThickness="1.5" Fill="Transparent"
-                                                              Stretch="Uniform"
-                                                              Width="16" Height="16" />
+                                                        <Grid>
+                                                            <Path Data="{StaticResource IconCalendarClock}"
+                                                                  Stroke="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"
+                                                                  StrokeThickness="1.5" Fill="Transparent"
+                                                                  Stretch="Uniform"
+                                                                  Width="16" Height="16" />
+                                                            <Line X1="5" Y1="5" X2="19" Y2="19"
+                                                                  Stroke="#FF506e" StrokeThickness="2"
+                                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                  Visibility="{Binding IsInCalendar, Converter={StaticResource BoolToVis}}" />
+                                                        </Grid>
                                                     </Border>
                                                 </ControlTemplate>
                                             </Button.Template>
                                             <Button.Style>
                                                 <Style TargetType="Button">
                                                     <Setter Property="Foreground" Value="#D9FFFFFF" />
-                                                    <Setter Property="Opacity" Value="1" />
+                                                    <Setter Property="BorderThickness" Value="0" />
                                                     <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsInCalendar}" Value="True">
+                                                            <Setter Property="Foreground" Value="#FF506e" />
+                                                            <Setter Property="BorderBrush" Value="#44FF506e" />
+                                                        </DataTrigger>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="#20FFFFFF" />
+                                                            <Setter Property="Background" Value="#33FFFFFF" />
+                                                            <Setter Property="BorderBrush" Value="#66FFFFFF" />
                                                         </Trigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
+                                            <Button.ToolTip>
+                                                <ToolTip>
+                                                    <ToolTip.Template>
+                                                        <ControlTemplate TargetType="ToolTip">
+                                                            <Border Background="#1a1a2e" BorderBrush="#333"
+                                                                    BorderThickness="1" CornerRadius="4"
+                                                                    Padding="12,6">
+                                                                <ContentPresenter TextBlock.Foreground="White"
+                                                                                  TextBlock.FontSize="11" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </ToolTip.Template>
+                                                    <TextBlock>
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsInCalendar}" Value="True">
+                                                                        <Setter Property="Text" Value="{DynamicResource RemoveFromCalendar}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsInCalendar}" Value="False">
+                                                                        <Setter Property="Text" Value="{DynamicResource AddToCalendar}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </ToolTip>
+                                            </Button.ToolTip>
                                         </Button>
                                     </Grid>
                                 </Border>
 
-                                <Grid Grid.Row="1" Margin="8,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                <ScrollViewer Grid.Row="1" Margin="8,6"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
 
@@ -1325,14 +1399,13 @@
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Margin="0,0,0,4">
-                                                                <TextBlock Text="{Binding Kind}"
-                                                                           Foreground="#AAFFFFFF" FontSize="9"
-                                                                           FontWeight="Medium"
-                                                                           TextTrimming="CharacterEllipsis" />
-                                                                <TextBlock Text="{Binding Label}"
+                                                                <TextBlock Text="{Binding Date}"
                                                                            Foreground="White" FontSize="10"
                                                                            FontWeight="SemiBold"
                                                                            TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Text="{Binding Platforms}"
+                                                                           Foreground="#AAFFFFFF" FontSize="9"
+                                                                           Visibility="{Binding Platforms, Converter={StaticResource StringNotNullToVis}}" />
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -1392,7 +1465,7 @@
                                                                   Stroke="White" StrokeThickness="1.5"
                                                                   Fill="Transparent" Stretch="Uniform"
                                                                   Width="12" Height="12" Margin="0,0,6,0" />
-                                                             <TextBlock Text="{DynamicResource Trailer}"
+                                                             <TextBlock Text="{Binding TrailerTitle}"
                                                                        Foreground="White" FontSize="11" />
                                                         </StackPanel>
                                                     </Border>
@@ -1472,6 +1545,7 @@
                                         </Button.Style>
                                     </Button>
                                 </Grid>
+                                </ScrollViewer>
                             </Grid>
                         </Grid>
                     </DataTemplate>

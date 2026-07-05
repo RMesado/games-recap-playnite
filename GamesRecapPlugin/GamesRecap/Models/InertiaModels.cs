@@ -453,8 +453,8 @@ namespace GamesRecap.Models
 
     public class ReleaseWindowDisplay
     {
-        public string Kind { get; set; }
-        public string Label { get; set; }
+        public string Date { get; set; }
+        public string Platforms { get; set; }
     }
 
     [DataContract]

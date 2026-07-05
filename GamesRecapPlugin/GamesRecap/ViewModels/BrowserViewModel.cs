@@ -33,6 +33,7 @@ namespace GamesRecap.ViewModels
         private int totalCards;
         private HashSet<int> wishlistedIds = new HashSet<int>();
         private HashSet<int> libraryGameIds = new HashSet<int>();
+        private HashSet<int> calendarIds = new HashSet<int>();
         private bool hasLoadedOnce;
         private int selectedShowcaseYear;
         private DateTime? releaseDateFrom;
@@ -282,6 +283,7 @@ namespace GamesRecap.ViewModels
         public ICommand SelectAllShowcasesCommand { get; }
         public ICommand ToggleSelectAllShowcasesCommand { get; }
         public ICommand DeselectAllInYearCommand { get; }
+        public RelayCommand<int> AddToCalendarCommand { get; }
 
         public BrowserViewModel(GamesRecapApiClient apiClient, LocalDatabase database, IPlayniteAPI playniteApi, GamesRecapSettings settings)
         {
@@ -310,8 +312,10 @@ namespace GamesRecap.ViewModels
             GoBackToLibraryCommand = new RelayCommand(() => playniteApi.MainView.SwitchToLibraryView());
             ToggleWishlistFilterCommand = new RelayCommand(() => IsWishlistFilterActive = !IsWishlistFilterActive);
             RefreshCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
+            AddToCalendarCommand = new RelayCommand<int>(gameId => AddToCalendar(gameId));
 
             libraryGameIds = new HashSet<int>(database.GetAllPlayniteIds());
+            calendarIds = new HashSet<int>(database.GetAllCalendarGames().Select(g => g.GameId));
             LoadWishlistState();
         }
 
@@ -756,11 +760,68 @@ namespace GamesRecap.ViewModels
             }
         }
 
+        private void AddToCalendar(int gameId)
+        {
+            var cardVm = Cards.FirstOrDefault(c => c.GameId == gameId);
+            if (cardVm?.Title == null || string.IsNullOrEmpty(cardVm.ReleaseDate)) return;
+
+            if (calendarIds.Contains(gameId))
+            {
+                var result = playniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc.Get("ConfirmRemoveCalendarMessage"), cardVm.Title),
+                    Loc.Get("ConfirmAddTitle"),
+                    MessageBoxButton.YesNo);
+                if (result != MessageBoxResult.Yes) return;
+
+                try
+                {
+                    database.RemoveFromCalendar(gameId);
+                    calendarIds.Remove(gameId);
+                    cardVm.NotifyCalendarChanged();
+                    playniteApi.Dialogs.ShowMessage(
+                        string.Format(Loc.Get("CalendarRemoved"), cardVm.Title),
+                        Loc.Get("SuccessAddTitle"));
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, $"Error removing game {gameId} from calendar");
+                }
+                return;
+            }
+
+            var confirm = playniteApi.Dialogs.ShowMessage(
+                string.Format(Loc.Get("ConfirmAddCalendarMessage"), cardVm.Title),
+                Loc.Get("ConfirmAddTitle"),
+                MessageBoxButton.YesNo);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            try
+            {
+                database.AddToCalendar(gameId, cardVm.Title, cardVm.CoverUrl, cardVm.ReleaseDate);
+                calendarIds.Add(gameId);
+                cardVm.NotifyCalendarChanged();
+                playniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc.Get("CalendarAdded"), cardVm.Title),
+                    Loc.Get("SuccessAddTitle"));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Error adding game {gameId} to calendar");
+            }
+        }
+
         public bool IsGameInLibrary(int gameId) => libraryGameIds.Contains(gameId);
+
+        public bool IsInCalendar(int gameId) => calendarIds.Contains(gameId);
 
         public void RefreshLibraryGameIds()
         {
             libraryGameIds = new HashSet<int>(database.GetAllPlayniteIds());
+        }
+
+        public void RefreshCalendarIds()
+        {
+            calendarIds = new HashSet<int>(database.GetAllCalendarGames().Select(g => g.GameId));
         }
 
         private static void OpenTrailer(string url)
@@ -840,6 +901,7 @@ namespace GamesRecap.ViewModels
         public string ShowcaseName => card.Showcase?.Name?.Trim();
         public string ShowcaseEventName => card.Showcase?.EventName;
         public string TrailerUrl => card.Media?.FirstOrDefault()?.Url;
+        public string TrailerTitle => card.Media?.FirstOrDefault()?.Title ?? Loc.Get("Trailer");
         public bool HasTrailer => !string.IsNullOrEmpty(TrailerUrl);
         public string ReleaseDate => card.Game?.ReleaseDate;
 
@@ -847,28 +909,64 @@ namespace GamesRecap.ViewModels
         {
             get
             {
-                if (card.Game?.ReleaseWindows == null || card.Game.ReleaseWindows.Count == 0)
-                    return null;
-                return card.Game.ReleaseWindows
-                    .Where(rw => !string.IsNullOrEmpty(rw.Label))
-                    .Select(rw => new ReleaseWindowDisplay
+                var windows = card.Game?.ReleaseWindows;
+                if (windows != null && windows.Count > 0)
+                {
+                    return windows
+                        .OrderBy(rw => rw.DisplayOrder)
+                        .Select(rw => new ReleaseWindowDisplay
+                        {
+                            Date = !string.IsNullOrEmpty(rw.Label)
+                                ? rw.Label
+                                : FormatReleaseDate(rw.Date),
+                            Platforms = FormatPlatformIds(rw.PlatformIds, card.Game?.Platforms)
+                        })
+                        .Where(rw => !string.IsNullOrEmpty(rw.Date))
+                        .GroupBy(rw => new { rw.Date, rw.Platforms })
+                        .Select(g => g.First())
+                        .ToList();
+                }
+
+                if (!string.IsNullOrEmpty(card.Game?.ReleaseDate))
+                {
+                    var formatted = FormatReleaseDate(card.Game.ReleaseDate);
+                    if (formatted != null)
                     {
-                        Kind = FormatReleaseKind(rw.Kind),
-                        Label = rw.Label
-                    })
-                    .ToList();
+                        return new List<ReleaseWindowDisplay>
+                        {
+                            new ReleaseWindowDisplay { Date = formatted }
+                        };
+                    }
+                }
+
+                return null;
             }
         }
 
-        private static string FormatReleaseKind(string kind)
+        private static string FormatPlatformIds(List<int> platformIds, List<GrPlatform> platforms)
         {
-            if (string.IsNullOrEmpty(kind)) return Loc.Get("FilterReleaseDate");
-            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(kind.Replace("_", " "));
+            if (platformIds == null || platformIds.Count == 0 || platforms == null)
+                return null;
+            var names = platforms
+                .Where(p => platformIds.Contains(p.Id))
+                .Select(p => p.Name)
+                .ToList();
+            return names.Count > 0 ? "(" + string.Join(", ", names) + ")" : null;
+        }
+
+        private static string FormatReleaseDate(string dateStr)
+        {
+            if (string.IsNullOrEmpty(dateStr)) return null;
+            if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                return dt.ToString("d MMM yyyy").ToUpper();
+            return null;
         }
 
         public bool IsWishlisted => parent != null && parent.IsGameWishlisted(GameId);
 
         public bool IsInLibrary => parent != null && parent.IsGameInLibrary(GameId);
+
+        public bool IsInCalendar => parent != null && parent.IsInCalendar(GameId);
 
         public List<GrTag> Tags => card.Game?.Tags ?? card.Tags ?? new List<GrTag>();
 
@@ -924,6 +1022,11 @@ namespace GamesRecap.ViewModels
         public void NotifyLibraryStatusChanged()
         {
             OnPropertyChanged(nameof(IsInLibrary));
+        }
+
+        public void NotifyCalendarChanged()
+        {
+            OnPropertyChanged(nameof(IsInCalendar));
         }
     }
 }

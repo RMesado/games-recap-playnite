@@ -124,6 +124,13 @@
             <Style x:Key="CalendarGridStyle" TargetType="ListBoxItem">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <!-- Custom tooltip template matching BrowserView badges -->
@@ -428,7 +435,7 @@
                                                                 <ListBox.ItemTemplate>
                                                                     <DataTemplate>
                                                                         <Border x:Name="GameCard"
-                                                                                CornerRadius="8"
+                                                                                CornerRadius="8" Width="180"
                                                                                 HorizontalAlignment="Center"
                                                                                 VerticalAlignment="Center"
                                                                                 Loaded="CalendarCard_OnLoaded"

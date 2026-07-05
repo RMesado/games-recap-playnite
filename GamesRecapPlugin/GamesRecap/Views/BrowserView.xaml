@@ -1054,9 +1054,8 @@
                         <Grid x:Name="CardRoot"
                                Height="173"
                               Margin="0"
-                              ClipToBounds="True"
-                               PreviewMouseDown="CardRoot_PreviewMouseDown"
-                              Loaded="CardRoot_OnLoaded">
+                                PreviewMouseDown="CardRoot_PreviewMouseDown"
+                               Loaded="CardRoot_OnLoaded">
 
                             <!-- FRONT FACE -->
                             <Grid x:Name="FrontFace">

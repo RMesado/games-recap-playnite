@@ -98,7 +98,7 @@ namespace GamesRecap.Views
                 border.SizeChanged += onSizeChanged;
                 root.Unloaded += (_, _) => border.SizeChanged -= onSizeChanged;
                 border.Dispatcher.BeginInvoke(() => UpdateCardClip(border),
-                    System.Windows.Threading.DispatcherPriority.Loaded);
+                    DispatcherPriority.Loaded);
             }
         }
 

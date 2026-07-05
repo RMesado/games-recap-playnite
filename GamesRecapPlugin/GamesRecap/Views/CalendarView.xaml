@@ -11,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/GamesRecap;component/Resources/BadgeIcons.xaml" />
+                <ResourceDictionary Source="/GamesRecap;component/Resources/SharedResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
 
@@ -133,15 +134,6 @@
                 </Setter>
             </Style>
 
-            <!-- Custom tooltip template matching BrowserView badges -->
-            <ControlTemplate x:Key="CalendarTooltipTemplate" TargetType="ToolTip">
-                <Border Background="#1a1a2e" BorderBrush="#333"
-                        BorderThickness="1" CornerRadius="4"
-                        Padding="12,6">
-                    <ContentPresenter TextBlock.Foreground="White"
-                                      TextBlock.FontSize="11" />
-                </Border>
-            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -168,8 +160,14 @@
                     <Button Content="&#xE72B;"
                             Command="{Binding GoBackToLibraryCommand}"
                             Style="{StaticResource NavigationButtonStyle}"
-                            ToolTip="{DynamicResource BackToLibrary}"
-                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                <TextBlock Text="{DynamicResource BackToLibrary}"
+                                           Foreground="White" FontSize="11" />
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
                     <TextBlock Text="{DynamicResource ReleaseCalendar}"
                                Style="{StaticResource BaseTextBlockStyle}"
                                FontWeight="Bold" FontSize="18"
@@ -217,7 +215,7 @@
                                 <Grid Width="200"                                       ToolTipService.InitialShowDelay="0"
                                       ToolTipService.BetweenShowDelay="0">
                                     <Grid.ToolTip>
-                                        <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
+                                        <ToolTip Template="{StaticResource StandardTooltipTemplate}">
                                             <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
                                         </ToolTip>
                                     </Grid.ToolTip>
@@ -229,7 +227,13 @@
                                             Cursor="Hand"
                                             Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding GameId}"
-                                            ToolTip="{DynamicResource RemoveFromCalendar}">
+                                            >
+                                        <Button.ToolTip>
+                                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                <TextBlock Text="{DynamicResource RemoveFromCalendar}"
+                                                           Foreground="White" FontSize="11" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}"
@@ -298,7 +302,7 @@
                                 <Grid Width="200"                                       ToolTipService.InitialShowDelay="0"
                                       ToolTipService.BetweenShowDelay="0">
                                     <Grid.ToolTip>
-                                        <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
+                                        <ToolTip Template="{StaticResource StandardTooltipTemplate}">
                                             <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
                                         </ToolTip>
                                     </Grid.ToolTip>
@@ -310,7 +314,13 @@
                                             Cursor="Hand"
                                             Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding GameId}"
-                                            ToolTip="{DynamicResource RemoveFromCalendar}">
+                                            >
+                                        <Button.ToolTip>
+                                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                <TextBlock Text="{DynamicResource RemoveFromCalendar}"
+                                                           Foreground="White" FontSize="11" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}"
@@ -444,7 +454,7 @@
                                                                                  <Grid ToolTipService.InitialShowDelay="0"
                                                                                        ToolTipService.BetweenShowDelay="0">
                                                                                      <Grid.ToolTip>
-                                                                                         <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
+                                                                                         <ToolTip Template="{StaticResource StandardTooltipTemplate}">
                                                                                              <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
                                                                                          </ToolTip>
                                                                                      </Grid.ToolTip>
@@ -456,8 +466,14 @@
                                                                                              Cursor="Hand"
                                                                                              Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                                                              CommandParameter="{Binding GameId}"
-                                                                                             ToolTip="{DynamicResource RemoveFromCalendar}">
-                                                                                         <Button.Template>
+                                                                                              >
+                                                                                          <Button.ToolTip>
+                                                                                              <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                                                                  <TextBlock Text="{DynamicResource RemoveFromCalendar}"
+                                                                                                             Foreground="White" FontSize="11" />
+                                                                                              </ToolTip>
+                                                                                          </Button.ToolTip>
+                                                                                          <Button.Template>
                                                                                              <ControlTemplate TargetType="Button">
                                                                                                  <Border Background="{TemplateBinding Background}"
                                                                                                          CornerRadius="3" Width="22" Height="22">

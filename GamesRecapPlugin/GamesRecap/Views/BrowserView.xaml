@@ -11,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/GamesRecap;component/Resources/BadgeIcons.xaml" />
+                <ResourceDictionary Source="/GamesRecap;component/Resources/SharedResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
             <conv:StringNotNullToVisibilityConverter x:Key="StringNotNullToVis" />
@@ -208,8 +209,14 @@
                     <Button Content="&#xE72B;"
                             Command="{Binding GoBackToLibraryCommand}"
                             Style="{StaticResource NavigationButtonStyle}"
-                             ToolTip="{DynamicResource BackToLibrary}"
-                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                <TextBlock Text="{DynamicResource BackToLibrary}"
+                                           Foreground="White" FontSize="11" />
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
                     <TextBlock Text="{DynamicResource PluginName}"
                                Style="{StaticResource BaseTextBlockStyle}"
                                FontWeight="Bold" FontSize="18"
@@ -219,42 +226,80 @@
                     <Button Content="&#xE72C;"
                             Command="{Binding RefreshCommand}"
                             Style="{StaticResource NavigationButtonStyle}"
-                            ToolTip="{DynamicResource Refresh}"
                             Margin="4,0,0,0"
-                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.ToolTip>
+                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                <TextBlock Text="{DynamicResource Refresh}"
+                                           Foreground="White" FontSize="11" />
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
                 </StackPanel>
 
-                <Button Grid.Column="2"
-                        Command="{Binding ToggleWishlistFilterCommand}"
-                        Padding="12,6" Margin="0,6"
-                        VerticalAlignment="Center"
-                        WindowChrome.IsHitTestVisibleInChrome="True">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsWishlistFilterActive}" Value="True">
-                                    <Setter Property="Background" Value="#20ff506e" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#x2665;" Foreground="#ff506e"
-                                   FontSize="16" VerticalAlignment="Center"
-                                   Margin="0,0,6,0" />
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding WishlistCount}"
-                                       Foreground="{DynamicResource TextBrush}"
-                                       FontWeight="Bold" FontSize="14"
-                                       VerticalAlignment="Center" />
-                            <TextBlock Text="{DynamicResource WishlistedSuffix}"
-                                       Foreground="{DynamicResource TextBrushDarker}"
-                                       FontSize="12" VerticalAlignment="Center"
-                                       Margin="3,0,0,0" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding ToggleWishlistFilterCommand}"
+                            Padding="12,6" Margin="0,6"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsWishlistFilterActive}" Value="True">
+                                        <Setter Property="Background" Value="#20ff506e" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#x2665;" Foreground="#ff506e"
+                                       FontSize="16" VerticalAlignment="Center"
+                                       Margin="0,0,6,0" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding WishlistCount}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           FontWeight="Bold" FontSize="14"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource WishlistedSuffix}"
+                                           Foreground="{DynamicResource TextBrushDarker}"
+                                           FontSize="12" VerticalAlignment="Center"
+                                           Margin="3,0,0,0" />
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Button>
+                    </Button>
+                    <Button Command="{Binding ToggleCalendarFilterCommand}"
+                            Padding="12,6" Margin="6,6,0,6"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCalendarFilterActive}" Value="True">
+                                        <Setter Property="Background" Value="#20FF9800" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource IconCalendarClock}"
+                                  Stroke="#FF9800" StrokeThickness="1.5"
+                                  Fill="Transparent" Stretch="Uniform"
+                                  Width="16" Height="16"
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,6,0" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CalendarCount}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           FontWeight="Bold" FontSize="14"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{DynamicResource CalendarSuffix}"
+                                           Foreground="{DynamicResource TextBrushDarker}"
+                                           FontSize="12" VerticalAlignment="Center"
+                                           Margin="3,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -418,17 +463,23 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="{DynamicResource FilterExclude}">
-                                                            <ToggleButton.Style>
-                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
-                                                                            <Setter Property="Foreground" Value="Red" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </ToggleButton.Style>
-                                                        </ToggleButton>
+                                                        >
+                                                             <ToggleButton.ToolTip>
+                                                                 <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                                     <TextBlock Text="{DynamicResource FilterExclude}"
+                                                                                Foreground="White" FontSize="11" />
+                                                                 </ToolTip>
+                                                             </ToggleButton.ToolTip>
+                                                             <ToggleButton.Style>
+                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                     <Style.Triggers>
+                                                                         <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                             <Setter Property="Foreground" Value="Red" />
+                                                                         </DataTrigger>
+                                                                     </Style.Triggers>
+                                                                 </Style>
+                                                             </ToggleButton.Style>
+                                                         </ToggleButton>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
@@ -586,17 +637,23 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="{DynamicResource FilterExclude}">
-                                                            <ToggleButton.Style>
-                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
-                                                                            <Setter Property="Foreground" Value="Red" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </ToggleButton.Style>
-                                                        </ToggleButton>
+                                                        >
+                                                             <ToggleButton.ToolTip>
+                                                                 <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                                     <TextBlock Text="{DynamicResource FilterExclude}"
+                                                                                Foreground="White" FontSize="11" />
+                                                                 </ToolTip>
+                                                             </ToggleButton.ToolTip>
+                                                             <ToggleButton.Style>
+                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                     <Style.Triggers>
+                                                                         <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                             <Setter Property="Foreground" Value="Red" />
+                                                                         </DataTrigger>
+                                                                     </Style.Triggers>
+                                                                 </Style>
+                                                             </ToggleButton.Style>
+                                                         </ToggleButton>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
@@ -754,17 +811,23 @@
                                                                        IsChecked="{Binding IsExcluded}"
                                                                        FontSize="11" Padding="2,0" Margin="1"
                                                                        MinHeight="16" MaxHeight="16"
-                                                                       ToolTip="{DynamicResource FilterExclude}">
-                                                            <ToggleButton.Style>
-                                                                <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding IsExcluded}" Value="True">
-                                                                            <Setter Property="Foreground" Value="Red" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </ToggleButton.Style>
-                                                        </ToggleButton>
+                                                        >
+                                                             <ToggleButton.ToolTip>
+                                                                 <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                                     <TextBlock Text="{DynamicResource FilterExclude}"
+                                                                                Foreground="White" FontSize="11" />
+                                                                 </ToolTip>
+                                                             </ToggleButton.ToolTip>
+                                                             <ToggleButton.Style>
+                                                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                                                     <Style.Triggers>
+                                                                         <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                                                             <Setter Property="Foreground" Value="Red" />
+                                                                         </DataTrigger>
+                                                                     </Style.Triggers>
+                                                                 </Style>
+                                                             </ToggleButton.Style>
+                                                         </ToggleButton>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
@@ -937,15 +1000,27 @@
                                FontSize="{DynamicResource FontSizeSmall}" Margin="0,10,0,2" />
                     <DockPanel Margin="0,0,0,3">
                         <Button Content="&#x2715;" Command="{Binding ClearReleaseDateFromCommand}"
-                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
-                                ToolTip="{DynamicResource ClearDate}" />
+                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right">
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                    <TextBlock Text="{DynamicResource ClearDate}"
+                                               Foreground="White" FontSize="11" />
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
                         <DatePicker SelectedDate="{Binding ReleaseDateFrom}"
                                     FontSize="{DynamicResource FontSizeSmall}" />
                     </DockPanel>
                     <DockPanel Margin="0,0,0,3">
                         <Button Content="&#x2715;" Command="{Binding ClearReleaseDateToCommand}"
-                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right"
-                                ToolTip="{DynamicResource ClearDate}" />
+                                Style="{StaticResource ChipRemoveButton}" DockPanel.Dock="Right">
+                            <Button.ToolTip>
+                                <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                    <TextBlock Text="{DynamicResource ClearDate}"
+                                               Foreground="White" FontSize="11" />
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
                         <DatePicker SelectedDate="{Binding ReleaseDateTo}"
                                     FontSize="{DynamicResource FontSizeSmall}" />
                     </DockPanel>
@@ -1089,55 +1164,50 @@
                                                              ToolTipService.InitialShowDelay="0"
                                                              ToolTipService.BetweenShowDelay="0">
                                                          <Border.ToolTip>
-                                                             <ToolTip>
-                                                                 <ToolTip.Template>
-                                                                     <ControlTemplate TargetType="ToolTip">
-                                                                         <Border Background="#1a1a2e" BorderBrush="#333"
-                                                                                 BorderThickness="1" CornerRadius="4"
-                                                                                 Padding="12,6">
-                                                                             <ContentPresenter TextBlock.Foreground="White"
-                                                                                               TextBlock.FontSize="11" />
-                                                                         </Border>
-                                                                     </ControlTemplate>
-                                                                 </ToolTip.Template>
-                                                                 <TextBlock Text="{Binding Name}" Foreground="White"
-                                                                            FontSize="11" />
-                                                             </ToolTip>
-                                                         </Border.ToolTip>
-                                                         <Path Data="{Binding Icon, Converter={StaticResource TagIconConverter}}"
-                                                               Stroke="{Binding Color, Converter={StaticResource TailwindColorConverter}}"
-                                                               StrokeThickness="1.5" Fill="Transparent"
-                                                               Stretch="Uniform" Margin="3" />
-                                                     </Border>
-                                                 </DataTemplate>
-                                             </ItemsControl.ItemTemplate>
-                                         </ItemsControl>
-                                           <Border Width="22" Height="22" CornerRadius="3"
-                                                   Background="#66000000" Margin="1"
-                                                   Visibility="{Binding IsInLibrary, Converter={StaticResource BoolToVis}}"
-                                                   ToolTipService.InitialShowDelay="0"
-                                                   ToolTipService.BetweenShowDelay="0">
-                                              <Border.ToolTip>
-                                                 <ToolTip>
-                                                     <ToolTip.Template>
-                                                         <ControlTemplate TargetType="ToolTip">
-                                                             <Border Background="#1a1a2e" BorderBrush="#333"
-                                                                     BorderThickness="1" CornerRadius="4"
-                                                                     Padding="12,6">
-                                                                 <ContentPresenter TextBlock.Foreground="White"
-                                                                                   TextBlock.FontSize="11" />
-                                                             </Border>
-                                                         </ControlTemplate>
-                                                     </ToolTip.Template>
-                                                      <TextBlock Text="{DynamicResource InPlayniteLibrary}" Foreground="White"
-                                                                FontSize="11" />
-                                                 </ToolTip>
-                                             </Border.ToolTip>
-                                             <Path Data="{StaticResource IconGamepad2}"
-                                                   Stroke="#4CAF50" StrokeThickness="1.5"
-                                                   Fill="Transparent" Stretch="Uniform" Margin="3" />
-                                         </Border>
-                                     </WrapPanel>
+                                                  <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                                  <TextBlock Text="{Binding Name}" Foreground="White"
+                                                                             FontSize="11" />
+                                                              </ToolTip>
+                                                          </Border.ToolTip>
+                                                          <Path Data="{Binding Icon, Converter={StaticResource TagIconConverter}}"
+                                                                Stroke="{Binding Color, Converter={StaticResource TailwindColorConverter}}"
+                                                                StrokeThickness="1.5" Fill="Transparent"
+                                                                Stretch="Uniform" Margin="3" />
+                                                      </Border>
+                                                  </DataTemplate>
+                                              </ItemsControl.ItemTemplate>
+                                          </ItemsControl>
+                                            <Border Width="22" Height="22" CornerRadius="3"
+                                                    Background="#66000000" Margin="1"
+                                                    Visibility="{Binding IsInLibrary, Converter={StaticResource BoolToVis}}"
+                                                    ToolTipService.InitialShowDelay="0"
+                                                    ToolTipService.BetweenShowDelay="0">
+                                               <Border.ToolTip>
+                                                  <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                       <TextBlock Text="{DynamicResource InPlayniteLibrary}" Foreground="White"
+                                                                 FontSize="11" />
+                                                  </ToolTip>
+                                              </Border.ToolTip>
+                                            <Path Data="{StaticResource IconGamepad2}"
+                                                    Stroke="#4CAF50" StrokeThickness="1.5"
+                                                    Fill="Transparent" Stretch="Uniform" Margin="3" />
+                                          </Border>
+                                          <Border Width="22" Height="22" CornerRadius="3"
+                                                  Background="#66000000" Margin="1"
+                                                  Visibility="{Binding IsInCalendar, Converter={StaticResource BoolToVis}}"
+                                                  ToolTipService.InitialShowDelay="0"
+                                                  ToolTipService.BetweenShowDelay="0">
+                                               <Border.ToolTip>
+                                                   <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                       <TextBlock Text="{DynamicResource InCalendar}" Foreground="White"
+                                                                  FontSize="11" />
+                                                   </ToolTip>
+                                               </Border.ToolTip>
+                                              <Path Data="{StaticResource IconCalendarClock}"
+                                                    Stroke="#FF9800" StrokeThickness="1.5"
+                                                    Fill="Transparent" Stretch="Uniform" Margin="3" />
+                                          </Border>
+                                      </WrapPanel>
                                   </Border>
 
                                   <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
@@ -1158,10 +1228,16 @@
                                            Margin="8,0,8,8"
                                            Text="{Binding Title}"
                                            Foreground="White" FontWeight="Bold"
-                                           FontSize="14"
-                                           TextWrapping="NoWrap"
-                                           TextTrimming="CharacterEllipsis"
-                                                                                       ToolTip="{Binding Title}" />
+                                            FontSize="14"
+                                            TextWrapping="NoWrap"
+                                            TextTrimming="CharacterEllipsis">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                            <TextBlock Text="{Binding Title}"
+                                                       Foreground="White" FontSize="11" />
+                                        </ToolTip>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
 
 
                                 <Button Command="{Binding DataContext.ToggleWishlistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -1169,8 +1245,25 @@
                                         Width="24" Height="24" BorderThickness="0"
                                         Background="#80000000" Cursor="Hand"
                                         HorizontalAlignment="Right" VerticalAlignment="Top"
-                                        Margin="4"
-                                                                                 ToolTip="{DynamicResource AddToWishlist}">
+                                        Margin="4">
+                                    <Button.ToolTip>
+                                        <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsWishlisted}" Value="True">
+                                                                <Setter Property="Text" Value="{DynamicResource RemoveFromWishlist}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsWishlisted}" Value="False">
+                                                                <Setter Property="Text" Value="{DynamicResource AddToWishlist}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </ToolTip>
+                                    </Button.ToolTip>
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
@@ -1194,6 +1287,7 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsWishlisted}" Value="True">
                                                     <Setter Property="Foreground" Value="#ff506e" />
+                                                    <Setter Property="Opacity" Value="1" />
                                                 </DataTrigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Background" Value="#20FFFFFF" />
@@ -1206,8 +1300,13 @@
                                         Background="#80000000"
                                         HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                         Margin="4"
-                                        ToolTip="{DynamicResource FlipCard}"
                                         IsHitTestVisible="False">
+                                    <Button.ToolTip>
+                                        <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                            <TextBlock Text="{DynamicResource FlipCard}"
+                                                       Foreground="White" FontSize="11" />
+                                        </ToolTip>
+                                    </Button.ToolTip>
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
@@ -1236,33 +1335,6 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Border Width="22" Height="22" CornerRadius="3"
-                                        Background="#66000000"
-                                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                        Margin="0,0,30,4"
-                                        Visibility="{Binding IsInCalendar, Converter={StaticResource BoolToVis}}"
-                                        ToolTipService.InitialShowDelay="0"
-                                        ToolTipService.BetweenShowDelay="0">
-                                    <Border.ToolTip>
-                                        <ToolTip>
-                                            <ToolTip.Template>
-                                                <ControlTemplate TargetType="ToolTip">
-                                                    <Border Background="#1a1a2e" BorderBrush="#333"
-                                                            BorderThickness="1" CornerRadius="4"
-                                                            Padding="12,6">
-                                                        <ContentPresenter TextBlock.Foreground="White"
-                                                                          TextBlock.FontSize="11" />
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </ToolTip.Template>
-                                            <TextBlock Text="{DynamicResource AddToCalendar}" Foreground="White"
-                                                       FontSize="11" />
-                                        </ToolTip>
-                                    </Border.ToolTip>
-                                    <Path Data="{StaticResource IconCalendarClock}"
-                                          Stroke="#FF9800" StrokeThickness="1.5"
-                                          Fill="Transparent" Stretch="Uniform" Margin="3" />
-                                </Border>
                             </Grid>
 
                             <!-- BACK FACE -->
@@ -1334,34 +1406,24 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
-                                            <Button.ToolTip>
-                                                <ToolTip>
-                                                    <ToolTip.Template>
-                                                        <ControlTemplate TargetType="ToolTip">
-                                                            <Border Background="#1a1a2e" BorderBrush="#333"
-                                                                    BorderThickness="1" CornerRadius="4"
-                                                                    Padding="12,6">
-                                                                <ContentPresenter TextBlock.Foreground="White"
-                                                                                  TextBlock.FontSize="11" />
-                                                            </Border>
-                                                        </ControlTemplate>
-                                                    </ToolTip.Template>
-                                                    <TextBlock>
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsInCalendar}" Value="True">
-                                                                        <Setter Property="Text" Value="{DynamicResource RemoveFromCalendar}" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding IsInCalendar}" Value="False">
-                                                                        <Setter Property="Text" Value="{DynamicResource AddToCalendar}" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
-                                                </ToolTip>
-                                            </Button.ToolTip>
+                                             <Button.ToolTip>
+                                                 <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                     <TextBlock>
+                                                         <TextBlock.Style>
+                                                             <Style TargetType="TextBlock">
+                                                                 <Style.Triggers>
+                                                                     <DataTrigger Binding="{Binding IsInCalendar}" Value="True">
+                                                                         <Setter Property="Text" Value="{DynamicResource RemoveFromCalendar}" />
+                                                                     </DataTrigger>
+                                                                     <DataTrigger Binding="{Binding IsInCalendar}" Value="False">
+                                                                         <Setter Property="Text" Value="{DynamicResource AddToCalendar}" />
+                                                                     </DataTrigger>
+                                                                 </Style.Triggers>
+                                                             </Style>
+                                                         </TextBlock.Style>
+                                                     </TextBlock>
+                                                 </ToolTip>
+                                             </Button.ToolTip>
                                         </Button>
                                     </Grid>
                                 </Border>
@@ -1511,10 +1573,15 @@
                                     <Button Width="20" Height="20"
                                             Grid.ColumnSpan="2"
                                             BorderThickness="0" Background="Transparent"
-                                             ToolTip="{DynamicResource FlipBack}"
                                             IsHitTestVisible="False"
                                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                             Margin="0,0,2,2">
+                                        <Button.ToolTip>
+                                            <ToolTip Template="{StaticResource StandardTooltipTemplate}">
+                                                <TextBlock Text="{DynamicResource FlipBack}"
+                                                           Foreground="White" FontSize="11" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border Background="{TemplateBinding Background}"

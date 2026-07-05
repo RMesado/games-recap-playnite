@@ -14,5 +14,8 @@
     <sys:String x:Key="RemoveFromCalendar">Remove from calendar</sys:String>
     <sys:String x:Key="ConfirmAddCalendarMessage">Add "{0}" to calendar?</sys:String>
     <sys:String x:Key="ConfirmRemoveCalendarMessage">Remove "{0}" from calendar?</sys:String>
+        <sys:String x:Key="CalendarSuffix"> in calendar</sys:String>
+    <sys:String x:Key="RemoveFromWishlist">Remove from wishlist</sys:String>
+    <sys:String x:Key="InCalendar">In calendar</sys:String>
 
 </ResourceDictionary>

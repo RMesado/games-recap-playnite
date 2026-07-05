@@ -40,6 +40,7 @@ namespace GamesRecap.ViewModels
         private DateTime? releaseDateTo;
         private int requestGeneration;
         private bool isWishlistFilterActive;
+        private bool isCalendarFilterActive;
 
         private string platformFilterSearch;
         private string genreFilterSearch;
@@ -103,7 +104,21 @@ namespace GamesRecap.ViewModels
             }
         }
 
+        public bool IsCalendarFilterActive
+        {
+            get => isCalendarFilterActive;
+            set
+            {
+                if (isCalendarFilterActive == value) return;
+                isCalendarFilterActive = value;
+                OnPropertyChanged(nameof(IsCalendarFilterActive));
+                _ = LoadCardsAsync(1);
+            }
+        }
+
         public int WishlistCount => wishlistedIds.Count;
+
+        public int CalendarCount => calendarIds.Count;
 
         public string ErrorMessage
         {
@@ -268,6 +283,7 @@ namespace GamesRecap.ViewModels
         public ICommand PrevPageCommand { get; }
         public ICommand GoBackToLibraryCommand { get; }
         public ICommand ToggleWishlistFilterCommand { get; }
+        public ICommand ToggleCalendarFilterCommand { get; }
         public ICommand RefreshCommand { get; }
         public RelayCommand<int> ToggleWishlistCommand { get; }
         public RelayCommand<int> AddToLibraryCommand { get; }
@@ -311,6 +327,7 @@ namespace GamesRecap.ViewModels
             ClearReleaseDateToCommand = new RelayCommand(() => ReleaseDateTo = null);
             GoBackToLibraryCommand = new RelayCommand(() => playniteApi.MainView.SwitchToLibraryView());
             ToggleWishlistFilterCommand = new RelayCommand(() => IsWishlistFilterActive = !IsWishlistFilterActive);
+            ToggleCalendarFilterCommand = new RelayCommand(() => IsCalendarFilterActive = !IsCalendarFilterActive);
             RefreshCommand = new RelayCommand(() => _ = LoadCardsAsync(1));
             AddToCalendarCommand = new RelayCommand<int>(gameId => AddToCalendar(gameId));
 
@@ -462,9 +479,15 @@ namespace GamesRecap.ViewModels
             if (ReleaseDateTo.HasValue)
                 filters.ReleaseTo = ReleaseDateTo.Value.ToString("yyyy-MM-dd");
 
-            if (IsWishlistFilterActive && wishlistedIds.Count > 0)
+            var combinedIds = new HashSet<int>();
+            if (IsWishlistFilterActive)
+                combinedIds.UnionWith(wishlistedIds);
+            if (IsCalendarFilterActive)
+                combinedIds.UnionWith(calendarIds);
+
+            if (combinedIds.Count > 0)
             {
-                filters.WishlistedIds = wishlistedIds.ToList();
+                filters.WishlistedIds = combinedIds.ToList();
                 filters.WishlistedMode = "include";
             }
 
@@ -778,6 +801,8 @@ namespace GamesRecap.ViewModels
                     database.RemoveFromCalendar(gameId);
                     calendarIds.Remove(gameId);
                     cardVm.NotifyCalendarChanged();
+                    if (IsCalendarFilterActive)
+                        _ = LoadCardsAsync(1);
                     playniteApi.Dialogs.ShowMessage(
                         string.Format(Loc.Get("CalendarRemoved"), cardVm.Title),
                         Loc.Get("SuccessAddTitle"));
@@ -800,6 +825,8 @@ namespace GamesRecap.ViewModels
                 database.AddToCalendar(gameId, cardVm.Title, cardVm.CoverUrl, cardVm.ReleaseDate);
                 calendarIds.Add(gameId);
                 cardVm.NotifyCalendarChanged();
+                if (IsCalendarFilterActive)
+                    _ = LoadCardsAsync(1);
                 playniteApi.Dialogs.ShowMessage(
                     string.Format(Loc.Get("CalendarAdded"), cardVm.Title),
                     Loc.Get("SuccessAddTitle"));

@@ -80,6 +80,9 @@
     <sys:String x:Key="RemoveFromCalendar">Quitar del calendario</sys:String>
     <sys:String x:Key="ConfirmAddCalendarMessage">¿Añadir "{0}" al calendario?</sys:String>
     <sys:String x:Key="ConfirmRemoveCalendarMessage">¿Quitar "{0}" del calendario?</sys:String>
+    <sys:String x:Key="CalendarSuffix"> en calendario</sys:String>
+    <sys:String x:Key="RemoveFromWishlist">Quitar de lista de deseos</sys:String>
+    <sys:String x:Key="InCalendar">En calendario</sys:String>
 
     <!-- Settings UI -->
     <sys:String x:Key="SettingsDefaultAction">Acción predeterminada de lista de deseos:</sys:String>

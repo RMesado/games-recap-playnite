@@ -26,3 +26,4 @@ C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.csproj.Up2Date
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.dll
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\GamesRecap.pdb
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Debug\Resources\SharedResources.baml

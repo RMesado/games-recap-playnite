@@ -410,132 +410,123 @@
                                                                            Foreground="{DynamicResource TextBrush}"
                                                                            HorizontalAlignment="Center" />
                                                             </Border>
-                                                            <!-- Empty card container for days without games -->
-                                                            <Border Background="{DynamicResource ControlBackgroundBrush}"
-                                                                    CornerRadius="4" MinHeight="200"
-                                                                    ClipToBounds="True">
-                                                                <Border.Style>
-                                                                    <Style TargetType="Border">
-                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding HasGames}" Value="False">
-                                                                                <Setter Property="Visibility" Value="Visible" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Border.Style>
-                                                            </Border>
-                                                            <!-- Games list -->
-                                                            <ListBox ItemsSource="{Binding Games}"
-                                                                     ItemContainerStyle="{StaticResource CalendarGridStyle}"
-                                                                     Background="Transparent" BorderThickness="0"
-                                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                                     IsSynchronizedWithCurrentItem="False">
-                                                                <ListBox.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <Border x:Name="GameCard"
-                                                                                CornerRadius="8" Width="180"
-                                                                                HorizontalAlignment="Center"
-                                                                                VerticalAlignment="Center"
-                                                                                Loaded="CalendarCard_OnLoaded"
-                                                                                RenderTransformOrigin="0.5, 0.85">
-                                                                            <Border.RenderTransform>
-                                                                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                                                                            </Border.RenderTransform>
-                                                                            <Grid ToolTipService.InitialShowDelay="0"
-                                                                                  ToolTipService.BetweenShowDelay="0">
-                                                                                <Grid.ToolTip>
-                                                                                    <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
-                                                                                        <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
-                                                                                    </ToolTip>
-                                                                                </Grid.ToolTip>
-                                                                                <Image x:Name="CoverImage" Source="{Binding CoverUrl}"
-                                                                                       Stretch="UniformToFill" />
-                                                                                <Button HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                                                        Width="22" Height="22" Margin="0,2,2,0"
-                                                                                        Background="#80000000" BorderThickness="0"
-                                                                                        Cursor="Hand"
-                                                                                        Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                                        CommandParameter="{Binding GameId}"
-                                                                                        ToolTip="{DynamicResource RemoveFromCalendar}">
-                                                                                    <Button.Template>
-                                                                                        <ControlTemplate TargetType="Button">
-                                                                                            <Border Background="{TemplateBinding Background}"
-                                                                                                    CornerRadius="3" Width="22" Height="22">
-                                                                                                <Grid>
-                                                                                                    <Path Data="{StaticResource IconCalendarClock}"
-                                                                                                          Stroke="#FF506e" StrokeThickness="1.5"
-                                                                                                          Fill="Transparent" Stretch="Uniform"
-                                                                                                          Width="12" Height="12" />
-                                                                                                    <Line X1="3" Y1="3" X2="19" Y2="19"
-                                                                                                          Stroke="#FF506e" StrokeThickness="2"
-                                                                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                                                                                                </Grid>
-                                                                                            </Border>
-                                                                                        </ControlTemplate>
-                                                                                    </Button.Template>
-                                                                                    <Button.Style>
-                                                                                        <Style TargetType="Button">
-                                                                                            <Setter Property="Opacity" Value="0" />
-                                                                                            <Style.Triggers>
-                                                                                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=GameCard}" Value="True">
-                                                                                                    <Setter Property="Opacity" Value="1" />
-                                                                                                </DataTrigger>
-                                                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                                                    <Setter Property="Background" Value="#33FFFFFF" />
-                                                                                                </Trigger>
-                                                                                            </Style.Triggers>
-                                                                                        </Style>
-                                                                                    </Button.Style>
-                                                                                </Button>
-                                                                            </Grid>
-                                                                            <Border.Triggers>
-                                                                                <EventTrigger RoutedEvent="MouseEnter">
-                                                                                    <BeginStoryboard>
-                                                                                        <Storyboard>
-                                                                                            <DoubleAnimation Duration="0:0:0.25"
-                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                                                                                             To="1.04">
-                                                                                                <DoubleAnimation.EasingFunction>
-                                                                                                    <QuadraticEase EasingMode="EaseOut" />
-                                                                                                </DoubleAnimation.EasingFunction>
-                                                                                            </DoubleAnimation>
-                                                                                            <DoubleAnimation Duration="0:0:0.25"
-                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                                                                                             To="1.04">
-                                                                                                <DoubleAnimation.EasingFunction>
-                                                                                                    <QuadraticEase EasingMode="EaseOut" />
-                                                                                                </DoubleAnimation.EasingFunction>
-                                                                                            </DoubleAnimation>
-                                                                                        </Storyboard>
-                                                                                    </BeginStoryboard>
-                                                                                </EventTrigger>
-                                                                                <EventTrigger RoutedEvent="MouseLeave">
-                                                                                    <BeginStoryboard>
-                                                                                        <Storyboard>
-                                                                                            <DoubleAnimation Duration="0:0:0.25"
-                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                                                                                             To="1">
-                                                                                                <DoubleAnimation.EasingFunction>
-                                                                                                    <QuadraticEase EasingMode="EaseOut" />
-                                                                                                </DoubleAnimation.EasingFunction>
-                                                                                            </DoubleAnimation>
-                                                                                            <DoubleAnimation Duration="0:0:0.25"
-                                                                                                             Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                                                                                             To="1">
-                                                                                                <DoubleAnimation.EasingFunction>
-                                                                                                    <QuadraticEase EasingMode="EaseOut" />
-                                                                                                </DoubleAnimation.EasingFunction>
-                                                                                            </DoubleAnimation>
-                                                                                        </Storyboard>
-                                                                                    </BeginStoryboard>
-                                                                                </EventTrigger>
-                                                                            </Border.Triggers>
-                                                                        </Border>
-                                                                    </DataTemplate>
-                                                                </ListBox.ItemTemplate>
-                                                            </ListBox>
+                                                             <!-- Card container (always visible, acts as placeholder when empty, wraps game cards when present) -->
+                                                             <Border Background="{DynamicResource ControlBackgroundBrush}"
+                                                                     CornerRadius="4" MinHeight="200"
+                                                                     ClipToBounds="True">
+                                                                 <ListBox ItemsSource="{Binding Games}"
+                                                                          ItemContainerStyle="{StaticResource CalendarGridStyle}"
+                                                                          Background="Transparent" BorderThickness="0"
+                                                                          Margin="0,12,0,12"
+                                                                          PreviewMouseWheel="ListBox_PreviewMouseWheel"
+                                                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                          IsSynchronizedWithCurrentItem="False">
+                                                                     <ListBox.ItemTemplate>
+                                                                         <DataTemplate>
+                                                                             <Border x:Name="GameCard"
+                                                                                     CornerRadius="8" Width="180"
+                                                                                     HorizontalAlignment="Center"
+                                                                                     VerticalAlignment="Center"
+                                                                                     Loaded="CalendarCard_OnLoaded"
+                                                                                     RenderTransformOrigin="0.5, 0.85">
+                                                                                 <Border.RenderTransform>
+                                                                                     <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                                                 </Border.RenderTransform>
+                                                                                 <Grid ToolTipService.InitialShowDelay="0"
+                                                                                       ToolTipService.BetweenShowDelay="0">
+                                                                                     <Grid.ToolTip>
+                                                                                         <ToolTip Template="{StaticResource CalendarTooltipTemplate}">
+                                                                                             <TextBlock Text="{Binding Title}" Foreground="White" FontSize="11" />
+                                                                                         </ToolTip>
+                                                                                     </Grid.ToolTip>
+                                                                                     <Image x:Name="CoverImage" Source="{Binding CoverUrl}"
+                                                                                            Stretch="UniformToFill" />
+                                                                                     <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                                                             Width="22" Height="22" Margin="0,2,2,0"
+                                                                                             Background="#80000000" BorderThickness="0"
+                                                                                             Cursor="Hand"
+                                                                                             Command="{Binding DataContext.RemoveFromCalendarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                             CommandParameter="{Binding GameId}"
+                                                                                             ToolTip="{DynamicResource RemoveFromCalendar}">
+                                                                                         <Button.Template>
+                                                                                             <ControlTemplate TargetType="Button">
+                                                                                                 <Border Background="{TemplateBinding Background}"
+                                                                                                         CornerRadius="3" Width="22" Height="22">
+                                                                                                     <Grid>
+                                                                                                         <Path Data="{StaticResource IconCalendarClock}"
+                                                                                                               Stroke="#FF506e" StrokeThickness="1.5"
+                                                                                                               Fill="Transparent" Stretch="Uniform"
+                                                                                                               Width="12" Height="12" />
+                                                                                                         <Line X1="3" Y1="3" X2="19" Y2="19"
+                                                                                                               Stroke="#FF506e" StrokeThickness="2"
+                                                                                                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                                                                                     </Grid>
+                                                                                                 </Border>
+                                                                                             </ControlTemplate>
+                                                                                         </Button.Template>
+                                                                                         <Button.Style>
+                                                                                             <Style TargetType="Button">
+                                                                                                 <Setter Property="Opacity" Value="0" />
+                                                                                                 <Style.Triggers>
+                                                                                                     <DataTrigger Binding="{Binding IsMouseOver, ElementName=GameCard}" Value="True">
+                                                                                                         <Setter Property="Opacity" Value="1" />
+                                                                                                     </DataTrigger>
+                                                                                                     <Trigger Property="IsMouseOver" Value="True">
+                                                                                                         <Setter Property="Background" Value="#33FFFFFF" />
+                                                                                                     </Trigger>
+                                                                                                 </Style.Triggers>
+                                                                                             </Style>
+                                                                                         </Button.Style>
+                                                                                     </Button>
+                                                                                 </Grid>
+                                                                                 <Border.Triggers>
+                                                                                     <EventTrigger RoutedEvent="MouseEnter">
+                                                                                         <BeginStoryboard>
+                                                                                             <Storyboard>
+                                                                                                 <DoubleAnimation Duration="0:0:0.25"
+                                                                                                                  Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                                                  To="1.04">
+                                                                                                     <DoubleAnimation.EasingFunction>
+                                                                                                         <QuadraticEase EasingMode="EaseOut" />
+                                                                                                     </DoubleAnimation.EasingFunction>
+                                                                                                 </DoubleAnimation>
+                                                                                                 <DoubleAnimation Duration="0:0:0.25"
+                                                                                                                  Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                                                  To="1.04">
+                                                                                                     <DoubleAnimation.EasingFunction>
+                                                                                                         <QuadraticEase EasingMode="EaseOut" />
+                                                                                                     </DoubleAnimation.EasingFunction>
+                                                                                                 </DoubleAnimation>
+                                                                                             </Storyboard>
+                                                                                         </BeginStoryboard>
+                                                                                     </EventTrigger>
+                                                                                     <EventTrigger RoutedEvent="MouseLeave">
+                                                                                         <BeginStoryboard>
+                                                                                             <Storyboard>
+                                                                                                 <DoubleAnimation Duration="0:0:0.25"
+                                                                                                                  Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                                                  To="1">
+                                                                                                     <DoubleAnimation.EasingFunction>
+                                                                                                         <QuadraticEase EasingMode="EaseOut" />
+                                                                                                     </DoubleAnimation.EasingFunction>
+                                                                                                 </DoubleAnimation>
+                                                                                                 <DoubleAnimation Duration="0:0:0.25"
+                                                                                                                  Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                                                  To="1">
+                                                                                                     <DoubleAnimation.EasingFunction>
+                                                                                                         <QuadraticEase EasingMode="EaseOut" />
+                                                                                                     </DoubleAnimation.EasingFunction>
+                                                                                                 </DoubleAnimation>
+                                                                                             </Storyboard>
+                                                                                         </BeginStoryboard>
+                                                                                     </EventTrigger>
+                                                                                 </Border.Triggers>
+                                                                             </Border>
+                                                                         </DataTemplate>
+                                                                     </ListBox.ItemTemplate>
+                                                                 </ListBox>
+                                                             </Border>
                                                         </StackPanel>
                                                     </Border>
                                                 </DataTemplate>

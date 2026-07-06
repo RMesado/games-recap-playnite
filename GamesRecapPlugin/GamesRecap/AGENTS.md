@@ -739,3 +739,38 @@ string err = string.Format(Loc.Get("ErrorAddMessage"), cardVm.Title, ex.Message)
 - Los placeholders de búsqueda (dentro de `VisualBrush`) también usan `{DynamicResource}` y funcionan correctamente porque las resources están a nivel de `Application`.
 - Los strings con espacios leading (como `WishlistedSuffix`: `" en lista de deseos"`, y los search placeholders: `" Buscar por..."`) incluyen el espacio intencionadamente para mantener el espaciado visual sin modificar el Margin de cada XAML.
 - `PaginationText` y `CardCountText` son propiedades computadas en `BrowserViewModel` (líneas 249-250) que se actualizan via `OnPropertyChanged` en los setters de `CurrentPage`, `TotalPages` y `TotalCards`.
+
+### ✅ Fase 9 — Calendar Auto-Refresh + Release Notifications (Sesión 2026-07-06)
+
+#### Timer de refresco (GamesRecap.cs)
+- `System.Timers.Timer` con intervalo fijo de 24h (86400000ms), iniciado en constructor
+- `CalendarRefreshElapsed()`: chequea `CalendarRefreshIntervalDays` vs `CalendarLastRefresh`; si no ha pasado el intervalo configurado, skipea (gate)
+- Logging de errores con `logger.Error` try/catch alrededor de todo el refresh
+- Llamadas a `PlayniteApi.Notifications` envueltas en `Dispatcher.BeginInvoke` (requerido porque ObservableCollection no es thread-safe)
+
+#### API batch fetch (GamesRecapApiClient.cs)
+- `FetchCardsByIdsAsync(List<int> ids)`: usa `ActiveFilters.WishlistedIds` + `WishlistedMode = "include"`, envía `X-Wishlisted-Ids` header
+- Paginación completa Inertia (sigue `LastPage`, mergea todas las páginas en una lista)
+- Manejo de versión Inertia (actualiza en DB si la versión cambia durante la paginación)
+
+#### Base de datos (LocalDatabase.cs)
+- Nueva tabla `CalendarNotifications` (GameId, Type, SentAt, PK compuesta)
+- `UpdateCalendarGameDate(int gameId, string releaseDate, string title, string coverUrl)`: UPDATE con `ClearCalendarNotifications` previo para resetear estado de notificación
+- `GetCalendarLastRefresh()` / `SetCalendarLastRefresh(DateTime)`: persiste timestamp en AppMeta
+- `WasCalendarNotified(int gameId, string type)`: COUNT check en CalendarNotifications
+- `MarkCalendarNotified(int gameId, string type)`: INSERT OR IGNORE
+- `ClearCalendarNotifications(int gameId)`: DELETE por GameId
+- `ClearPastCalendarNotifications()`: DELETE join con CalendarGames donde ReleaseDate < today (limpia notificaciones de juegos ya lanzados)
+- `RemoveFromCalendar()` ahora llama a `ClearCalendarNotifications(gameId)` antes del DELETE
+
+#### Settings (GamesRecapSettings.cs + GamesRecapSettingsView.xaml)
+- `CalendarRefreshIntervalDays`: int, clamped 1-365, default 30
+- Presets: Daily(1), Weekly(7), Monthly(30), Bimonthly(60), Quarterly(90) + Custom (TextBox manual)
+- `CalendarNotifyMonthBefore` (≤30 días), `CalendarNotifyWeekBefore` (≤7 días), `CalendarNotifyDayBefore` (1 día), `CalendarNotifySameDay` (0 días) — todos default true
+- `CalendarPresetItem` class con Id, Display, Days? (null para custom)
+- `SelectedCalendarPreset` property con auto-match al cargar settings + `MatchCalendarPreset()` en setter de `CalendarRefreshIntervalDays`
+- `IsCustomPreset` computed property para visibilidad del TextBox
+- UI: ComboBox + conditional TextBox + 4 CheckBoxes
+
+#### Localización
+- 13 nuevas claves en `es_ES.xaml` y `en_US.xaml`: presets (6), días label (1), header notificaciones (1), checkboxes (4), textos de notificación (4)

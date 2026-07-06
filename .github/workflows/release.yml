@@ -20,6 +20,13 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore GamesRecapPlugin/GamesRecap/GamesRecap.sln
 
+      - name: Patch extension.yaml version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          $yaml = "GamesRecapPlugin/GamesRecap/extension.yaml"
+          (Get-Content $yaml) -replace '^Version: .+', "Version: $version" | Set-Content $yaml
+
       - name: Build
         run: msbuild GamesRecapPlugin/GamesRecap/GamesRecap.csproj /t:Build /p:Configuration=Release /p:Platform=AnyCPU
 

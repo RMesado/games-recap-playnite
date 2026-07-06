@@ -36,17 +36,18 @@ jobs:
           $version = "${{ github.ref_name }}" -replace '^v', ''
           $src = "GamesRecapPlugin/GamesRecap/bin/Release"
           $pext = "GamesRecap_$version.pext"
-          $items = @(
-            "$src/GamesRecap.dll"
-            "$src/extension.yaml"
-            "$src/icon.png"
-            "$src/icon-calendar.png"
-            "$src/System.Data.SQLite.dll"
-          )
-          if (Test-Path "$src/GamesRecap.pdb") { $items += "$src/GamesRecap.pdb" }
-          $locFiles = Get-ChildItem "$src/Localization/*.xaml" -ErrorAction SilentlyContinue
-          if ($locFiles) { $items += $locFiles.FullName }
-          Compress-Archive -Path $items -DestinationPath $pext
+          $staging = "pext_staging"
+          if (Test-Path $staging) { Remove-Item $staging -Recurse -Force }
+          New-Item -ItemType Directory -Path $staging | Out-Null
+          Copy-Item "$src/GamesRecap.dll" $staging
+          Copy-Item "$src/extension.yaml" $staging
+          Copy-Item "$src/icon.png" $staging
+          Copy-Item "$src/icon-calendar.png" $staging
+          Copy-Item "$src/System.Data.SQLite.dll" $staging
+          if (Test-Path "$src/GamesRecap.pdb") { Copy-Item "$src/GamesRecap.pdb" $staging }
+          if (Test-Path "$src/Localization") { Copy-Item "$src/Localization" $staging -Recurse }
+          Compress-Archive -Path "$staging/*" -DestinationPath $pext
+          Remove-Item $staging -Recurse -Force
           "pext_path=$pext" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Extract changelog section

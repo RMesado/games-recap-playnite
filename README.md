@@ -39,7 +39,10 @@ A [Playnite](https://playnite.link) plugin that integrates [gamesrecap.io](https
 
 #### Manual Installation
 1. Download the latest `.pext` from the [Releases](https://github.com/RMesado/games-recap-playnite/releases) page
-2. Open the `.pext` file with Playnite
+2. Make sure Playnite is **closed** before installing or updating the plugin
+3. Open the `.pext` file with Playnite
+
+> ⚠️ **Important**: If Playnite is open during installation, Windows locks the plugin files and the installation will fail. Always close Playnite before installing or updating.
 
 ### Quick Start
 
@@ -102,11 +105,15 @@ Un plugin para [Playnite](https://playnite.link) que integra [gamesrecap.io](htt
 #### Desde el navegador de Addons de Playnite
 1. Abre Playnite → Addons → Examinar
 2. Busca "Games Recap"
-3. Haz clic en Instalar
+3. Asegúrate de que Playnite esté **cerrado** antes de instalar o actualizar el plugin
+4. Haz clic en Instalar
 
 #### Instalación manual
 1. Descarga el archivo `.pext` más reciente desde [Releases](https://github.com/RMesado/games-recap-playnite/releases)
-2. Abre el archivo `.pext` con Playnite
+2. Asegúrate de que Playnite esté **cerrado** antes de instalar o actualizar el plugin
+3. Abre el archivo `.pext` con Playnite
+
+> ⚠️ **Importante**: Si Playnite está abierto durante la instalación, Windows bloquea los archivos del plugin y la instalación falla. Siempre cierra Playnite antes de instalar o actualizar.
 
 ### Inicio rápido
 

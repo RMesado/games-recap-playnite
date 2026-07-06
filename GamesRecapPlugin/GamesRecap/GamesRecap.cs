@@ -64,18 +64,23 @@ namespace GamesRecap
                 if (File.Exists(targetPath)) return;
 
                 Directory.CreateDirectory(extractDir);
-
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                try {
+                    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                    {
+                        if (stream == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Missing embedded resource: {resourceName}");
+                            return;
+                        }
+                        using (var file = new FileStream(targetPath, FileMode.Create, FileAccess.Write))
+                        {
+                            stream.CopyTo(file);
+                        }
+                    }
+                } catch (IOException ex)
                 {
-                    if (stream == null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Missing embedded resource: {resourceName}");
-                        return;
-                    }
-                    using (var file = new FileStream(targetPath, FileMode.Create, FileAccess.Write))
-                    {
-                        stream.CopyTo(file);
-                    }
+                    System.Diagnostics.Debug.WriteLine($"Failed to extract native DLL: {ex.Message}");
+                    return;
                 }
 
                 SetDllDirectory(extractDir);

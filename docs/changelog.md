@@ -13,6 +13,14 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - `extension.yaml` ahora se parchea con la versión correcta del tag durante el build, solucionando que Playnite mostrara siempre `0.1.0` como versión del plugin
 
+## 0.1.6 - 2026-07-06
+
+### Changed
+- `SQLite.Interop.dll` ya no va en el `.pext`. Se incrusta como Embedded Resource en `GamesRecap.dll` y se extrae a `%TEMP%\GamesRecap\Native\{arch}\` al iniciar el plugin. Esto evita que Windows bloquee el DLL nativo al instalar/actualizar, permitiendo la instalación sin cerrar Playnite.
+
+### Fixed
+- Instalación/actualización del `.pext` ya no falla con conflicto de archivo en uso
+
 ## 0.1.5 - 2026-07-06
 
 ### Fixed

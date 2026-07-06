@@ -41,6 +41,8 @@ namespace GamesRecap
                 HasSettings = true
             };
 
+            ExtractNativeDllIfNeeded();
+
             var dbPath = Path.Combine(GetPluginUserDataPath(), "gamesrecap.db");
             Database = new LocalDatabase(dbPath);
             ApiClient = new GamesRecapApiClient(Database);
@@ -50,6 +52,43 @@ namespace GamesRecap
 
             logger.Info($"Games Recap initialized, DB at: {dbPath}");
         }
+
+        private static void ExtractNativeDllIfNeeded()
+        {
+            try
+            {
+                var arch = IntPtr.Size == 8 ? "x64" : "x86";
+                var resourceName = $"Native.{arch}.SQLite.Interop.dll";
+                var extractDir = Path.Combine(Path.GetTempPath(), "GamesRecap", "Native", arch);
+                var targetPath = Path.Combine(extractDir, "SQLite.Interop.dll");
+
+                if (File.Exists(targetPath)) return;
+
+                Directory.CreateDirectory(extractDir);
+
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Missing embedded resource: {resourceName}");
+                        return;
+                    }
+                    using (var file = new FileStream(targetPath, FileMode.Create, FileAccess.Write))
+                    {
+                        stream.CopyTo(file);
+                    }
+                }
+
+                SetDllDirectory(extractDir);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ExtractNativeDllIfNeeded failed: {ex.Message}");
+            }
+        }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetDllDirectory(string lpPathName);
 
         private void LoadLocalizationResources()
         {

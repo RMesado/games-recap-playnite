@@ -1,5 +1,30 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+## 0.1.1 - 2026-07-06
+
+### Fixed
+- Localización ahora se carga programáticamente en el constructor del plugin, solucionando textos vacíos y calendario sin renderizar en instalaciones via `.pext`
+- Archivos `.xaml` de localización ya no se pierden en build Release (removido `<Generator>` conflictivo del `.csproj`)
+
+## 0.1.0 - 2026-07-06
+
+### Added
+- Release inicial del plugin
+- Navegador de juegos con cuadrícula de cards, paginación y flip animation
+- Filtros avanzados: plataforma (incluir/excluir), género, etiqueta, showcase (con chips multi-año), fecha de lanzamiento, ordenación
+- Wishlist local en SQLite
+- Integración con biblioteca de Playnite: añadir juegos con descarga de metadatos por prioridad del usuario
+- Calendario de lanzamientos: 3 secciones (último mes, última semana, próximos)
+- Notificaciones de lanzamiento con intervalo configurable
+- Localización completa español/inglés
+- Settings: DefaultWishlistAction, ShowConfirmation, calendario
+- Validación HTTP HEAD para URLs de metadata (evita covers 404)
+- Cliente HTTP Inertia.js con manejo de 409/429
+- Barra de progreso animada, tooltips normalizados
+- Icono #ff506e y soporte para temas de Playnite
+
 ## Phase 9 — Calendar Auto-Refresh + Release Notifications (2026-07-06)
 
 - **Timer**: `System.Timers.Timer` with 24h interval, checks `CalendarRefreshIntervalDays` vs `CalendarLastRefresh` before refreshing

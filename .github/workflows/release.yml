@@ -44,8 +44,19 @@ jobs:
           Compress-Archive -Path $items -DestinationPath $pext
           "pext_path=$pext" | Out-File -FilePath $env:GITHUB_ENV -Append
 
+      - name: Extract changelog section
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          $content = Get-Content "docs/changelog.md" -Raw
+          $pattern = "(?ms)## $version .*?(?=## |\z)"
+          $match = [regex]::Match($content, $pattern)
+          if ($match.Success) {
+            $match.Value.Trim() | Out-File -FilePath "release_body.md" -Encoding UTF8
+          }
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.pext_path }}
-          generate_release_notes: true
+          body_path: release_body.md

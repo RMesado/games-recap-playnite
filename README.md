@@ -112,7 +112,7 @@ Un plugin para [Playnite](https://playnite.link) que integra [gamesrecap.io](htt
 
 1. Abre Playnite y haz clic en el icono de la barra lateral **Games Recap** (rosa `#ff506e`)
 2. Navega por los juegos en la cuadrícula principal
-3. Haz clic en ★ para añadir juegos a tu lista de deseos
+3. Haz clic en ❤️ para añadir juegos a tu lista de deseos
 4. Voltea las tarjetas para ver tráilers, añadir al calendario o añadir a la biblioteca
 5. Usa los filtros laterales para acotar por plataforma, género, showcase o fecha
 6. Cambia a la vista **Calendario** para seguir los próximos lanzamientos

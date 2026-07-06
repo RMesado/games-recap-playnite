@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - `extension.yaml` ahora se parchea con la versión correcta del tag durante el build, solucionando que Playnite mostrara siempre `0.1.0` como versión del plugin
 
+## 0.1.4 - 2026-07-06
+
+### Fixed
+- Eliminados `SQLite.Interop.dll` (x86/x64) del `.pext` — SQLite los extrae automáticamente, evitaba conflicto de archivo en uso al instalar
+
 ## 0.1.1 - 2026-07-06
 
 ### Fixed

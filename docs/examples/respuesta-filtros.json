@@ -1,0 +1,3770 @@
+{
+    "component": "home",
+    "props": {
+        "errors": {},
+        "name": "GamesRecap",
+        "auth": {
+            "user": null
+        },
+        "features": {
+            "userAccounts": false
+        },
+        "ziggy": {
+            "url": "https://gamesrecap.io",
+            "port": null,
+            "defaults": [],
+            "routes": {
+                "resend.webhook": {
+                    "uri": "resend/webhook",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "sitemap": {
+                    "uri": "sitemap.xml",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "feed": {
+                    "uri": "feed.xml",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "feedback.store": {
+                    "uri": "feedback",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "home": {
+                    "uri": "/",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "watch": {
+                    "uri": "watch",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "schedule": {
+                    "uri": "schedule",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "my-lists": {
+                    "uri": "my-lists",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "wishlist.games": {
+                    "uri": "wishlist/games",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "wishlist.export": {
+                    "uri": "wishlist/export",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "wishlist.showcases": {
+                    "uri": "wishlist/showcases",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "games.index": {
+                    "uri": "games",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "game.show": {
+                    "uri": "game/{slug}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "slug"
+                    ]
+                },
+                "event.show": {
+                    "uri": "event/{slug}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "slug"
+                    ]
+                },
+                "showcase.show": {
+                    "uri": "showcase/{slug}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "slug"
+                    ]
+                },
+                "profile.edit": {
+                    "uri": "settings/profile",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "profile.update": {
+                    "uri": "settings/profile",
+                    "methods": [
+                        "PATCH"
+                    ]
+                },
+                "profile.destroy": {
+                    "uri": "settings/profile",
+                    "methods": [
+                        "DELETE"
+                    ]
+                },
+                "password.edit": {
+                    "uri": "settings/password",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "password.update": {
+                    "uri": "settings/password",
+                    "methods": [
+                        "PUT"
+                    ]
+                },
+                "two-factor.show": {
+                    "uri": "settings/two-factor",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "two-factor.enable": {
+                    "uri": "settings/two-factor",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "two-factor.confirm": {
+                    "uri": "settings/two-factor/confirm",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "two-factor.destroy": {
+                    "uri": "settings/two-factor",
+                    "methods": [
+                        "DELETE"
+                    ]
+                },
+                "two-factor.recovery": {
+                    "uri": "settings/two-factor/recovery-codes",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "appearance": {
+                    "uri": "settings/appearance",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "login": {
+                    "uri": "login",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "password.email": {
+                    "uri": "forgot-password",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "password.request": {
+                    "uri": "forgot-password",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "password.reset": {
+                    "uri": "reset-password/{token}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "token"
+                    ]
+                },
+                "password.store": {
+                    "uri": "reset-password",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "two-factor.challenge": {
+                    "uri": "two-factor-challenge",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "verification.notice": {
+                    "uri": "verify-email",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "verification.verify": {
+                    "uri": "verify-email/{id}/{hash}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "id",
+                        "hash"
+                    ]
+                },
+                "verification.send": {
+                    "uri": "email/verification-notification",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "password.confirm": {
+                    "uri": "confirm-password",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "logout": {
+                    "uri": "logout",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.index": {
+                    "uri": "admin",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.taxonomy.index": {
+                    "uri": "admin/taxonomy",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.taxonomy.store": {
+                    "uri": "admin/taxonomy/{type}",
+                    "methods": [
+                        "POST"
+                    ],
+                    "wheres": {
+                        "type": "platforms|genres|tags"
+                    },
+                    "parameters": [
+                        "type"
+                    ]
+                },
+                "admin.taxonomy.quick-store": {
+                    "uri": "admin/taxonomy/{type}/quick",
+                    "methods": [
+                        "POST"
+                    ],
+                    "wheres": {
+                        "type": "platforms|genres|tags"
+                    },
+                    "parameters": [
+                        "type"
+                    ]
+                },
+                "admin.taxonomy.reorder": {
+                    "uri": "admin/taxonomy/{type}/reorder",
+                    "methods": [
+                        "POST"
+                    ],
+                    "wheres": {
+                        "type": "platforms|genres|tags"
+                    },
+                    "parameters": [
+                        "type"
+                    ]
+                },
+                "admin.taxonomy.update": {
+                    "uri": "admin/taxonomy/{type}/{id}",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "wheres": {
+                        "type": "platforms|genres|tags"
+                    },
+                    "parameters": [
+                        "type",
+                        "id"
+                    ]
+                },
+                "admin.taxonomy.destroy": {
+                    "uri": "admin/taxonomy/{type}/{id}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "wheres": {
+                        "type": "platforms|genres|tags"
+                    },
+                    "parameters": [
+                        "type",
+                        "id"
+                    ]
+                },
+                "admin.events.bulk-destroy": {
+                    "uri": "admin/events/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.showcases.bulk-destroy": {
+                    "uri": "admin/showcases/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.media.bulk-destroy": {
+                    "uri": "admin/media/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.games.bulk-destroy": {
+                    "uri": "admin/games/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.events.payload": {
+                    "uri": "admin/events/{event}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "event"
+                    ],
+                    "bindings": {
+                        "event": "id"
+                    }
+                },
+                "admin.events.showcases.attach": {
+                    "uri": "admin/events/{event}/showcases/{showcase}",
+                    "methods": [
+                        "POST"
+                    ],
+                    "parameters": [
+                        "event",
+                        "showcase"
+                    ],
+                    "bindings": {
+                        "event": "id",
+                        "showcase": "id"
+                    }
+                },
+                "admin.events.showcases.detach": {
+                    "uri": "admin/events/{event}/showcases/{showcase}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "event",
+                        "showcase"
+                    ],
+                    "bindings": {
+                        "event": "id",
+                        "showcase": "id"
+                    }
+                },
+                "admin.events.series.bulk-destroy": {
+                    "uri": "admin/events/series/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.events.series.destroy": {
+                    "uri": "admin/events/series/{key}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.events.series.rename": {
+                    "uri": "admin/events/series/{key}",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.events.series.label": {
+                    "uri": "admin/events/series/{key}/label",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.events.index": {
+                    "uri": "admin/events",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.events.store": {
+                    "uri": "admin/events",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.events.update": {
+                    "uri": "admin/events/{event}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "event"
+                    ],
+                    "bindings": {
+                        "event": "id"
+                    }
+                },
+                "admin.events.destroy": {
+                    "uri": "admin/events/{event}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "event"
+                    ],
+                    "bindings": {
+                        "event": "id"
+                    }
+                },
+                "admin.showcases.payload": {
+                    "uri": "admin/showcases/{showcase}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "showcase"
+                    ],
+                    "bindings": {
+                        "showcase": "id"
+                    }
+                },
+                "admin.showcases.series.bulk-destroy": {
+                    "uri": "admin/showcases/series/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.showcases.series.destroy": {
+                    "uri": "admin/showcases/series/{key}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.showcases.series.rename": {
+                    "uri": "admin/showcases/series/{key}",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.showcases.series.label": {
+                    "uri": "admin/showcases/series/{key}/label",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "wheres": {
+                        "key": "[A-Za-z0-9_-]+"
+                    },
+                    "parameters": [
+                        "key"
+                    ]
+                },
+                "admin.showcases.index": {
+                    "uri": "admin/showcases",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.showcases.store": {
+                    "uri": "admin/showcases",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.showcases.update": {
+                    "uri": "admin/showcases/{showcase}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "showcase"
+                    ],
+                    "bindings": {
+                        "showcase": "id"
+                    }
+                },
+                "admin.showcases.destroy": {
+                    "uri": "admin/showcases/{showcase}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "showcase"
+                    ],
+                    "bindings": {
+                        "showcase": "id"
+                    }
+                },
+                "admin.igdb.search": {
+                    "uri": "admin/igdb/search",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.igdb.fetch": {
+                    "uri": "admin/igdb/fetch",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.images.upload": {
+                    "uri": "admin/images/upload",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.games.quick-store": {
+                    "uri": "admin/games/quick",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.games.check-title": {
+                    "uri": "admin/games/check-title",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.games.cards": {
+                    "uri": "admin/games/{game}/cards",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.games.igdb-videos": {
+                    "uri": "admin/games/{game}/igdb-videos",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.games.quick-payload": {
+                    "uri": "admin/games/{game}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.games.quick-update": {
+                    "uri": "admin/games/{game}/quick",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.games.duplicates": {
+                    "uri": "admin/games/duplicates",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.games.merge": {
+                    "uri": "admin/games/merge",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.games.index": {
+                    "uri": "admin/games",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.games.store": {
+                    "uri": "admin/games",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.games.update": {
+                    "uri": "admin/games/{game}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.games.destroy": {
+                    "uri": "admin/games/{game}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "game"
+                    ],
+                    "bindings": {
+                        "game": "id"
+                    }
+                },
+                "admin.media.check-youtube": {
+                    "uri": "admin/media/check-youtube",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.media.check-youtube.status": {
+                    "uri": "admin/media/check-youtube/status",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.media.quick-store": {
+                    "uri": "admin/media/quick",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.media.quick-update": {
+                    "uri": "admin/media/{media}/quick",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "media"
+                    ],
+                    "bindings": {
+                        "media": "id"
+                    }
+                },
+                "admin.media.payload": {
+                    "uri": "admin/media/{media}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "media"
+                    ],
+                    "bindings": {
+                        "media": "id"
+                    }
+                },
+                "admin.media.index": {
+                    "uri": "admin/media",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.media.store": {
+                    "uri": "admin/media",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.media.update": {
+                    "uri": "admin/media/{media}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "media"
+                    ],
+                    "bindings": {
+                        "media": "id"
+                    }
+                },
+                "admin.media.destroy": {
+                    "uri": "admin/media/{media}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "media"
+                    ],
+                    "bindings": {
+                        "media": "id"
+                    }
+                },
+                "admin.cards.reorder": {
+                    "uri": "admin/cards/reorder",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.bulk-destroy": {
+                    "uri": "admin/cards/bulk-destroy",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.publish": {
+                    "uri": "admin/cards/publish",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.quick-payload": {
+                    "uri": "admin/cards/{card}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "card"
+                    ],
+                    "bindings": {
+                        "card": "id"
+                    }
+                },
+                "admin.cards.quick-update": {
+                    "uri": "admin/cards/{card}/quick",
+                    "methods": [
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "card"
+                    ],
+                    "bindings": {
+                        "card": "id"
+                    }
+                },
+                "admin.cards.import": {
+                    "uri": "admin/cards/import",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.cards.import.parse": {
+                    "uri": "admin/cards/import/parse",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.import.resolve": {
+                    "uri": "admin/cards/import/resolve",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.import.commit": {
+                    "uri": "admin/cards/import/commit",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.index": {
+                    "uri": "admin/cards",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.cards.store": {
+                    "uri": "admin/cards",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.cards.update": {
+                    "uri": "admin/cards/{card}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "card"
+                    ],
+                    "bindings": {
+                        "card": "id"
+                    }
+                },
+                "admin.cards.destroy": {
+                    "uri": "admin/cards/{card}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "card"
+                    ],
+                    "bindings": {
+                        "card": "id"
+                    }
+                },
+                "admin.ads.payload": {
+                    "uri": "admin/ads/{ad}/payload",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "parameters": [
+                        "ad"
+                    ],
+                    "bindings": {
+                        "ad": "id"
+                    }
+                },
+                "admin.ads.index": {
+                    "uri": "admin/ads",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ]
+                },
+                "admin.ads.store": {
+                    "uri": "admin/ads",
+                    "methods": [
+                        "POST"
+                    ]
+                },
+                "admin.ads.update": {
+                    "uri": "admin/ads/{ad}",
+                    "methods": [
+                        "PUT",
+                        "PATCH"
+                    ],
+                    "parameters": [
+                        "ad"
+                    ],
+                    "bindings": {
+                        "ad": "id"
+                    }
+                },
+                "admin.ads.destroy": {
+                    "uri": "admin/ads/{ad}",
+                    "methods": [
+                        "DELETE"
+                    ],
+                    "parameters": [
+                        "ad"
+                    ],
+                    "bindings": {
+                        "ad": "id"
+                    }
+                },
+                "storage.local": {
+                    "uri": "storage/{path}",
+                    "methods": [
+                        "GET",
+                        "HEAD"
+                    ],
+                    "wheres": {
+                        "path": ".*"
+                    },
+                    "parameters": [
+                        "path"
+                    ]
+                }
+            },
+            "location": "https://gamesrecap.io"
+        },
+        "topSpotlights": [
+            {
+                "id": 1,
+                "icon_url": "https://gamesrecap.io/storage/uploads/spotlights/KGUlHuUisNZaZzqYRxW7REhQG3jw7GE2Fp9RlJSW.webp",
+                "text": "Sponsored By: CheapShark - Find the best Game Deals!",
+                "link_url": "https://www.cheapshark.com/partner/gamesrecap",
+                "background_color": "#014576"
+            }
+        ],
+        "upcomingShowcases": [
+            {
+                "id": 300,
+                "name": "PC Gaming Show",
+                "slug": "pc-gaming-show-9",
+                "event_name": null,
+                "start_at": "2026-06-07T19:00:00+00:00",
+                "end_at": "2026-06-07T21:00:00+00:00",
+                "url": "https://www.youtube.com/watch?v=tRVxQ7VLmHI"
+            },
+            {
+                "id": 297,
+                "name": "Deutsche Indie Showcase",
+                "slug": "deutsche-indie-showcase",
+                "event_name": "Summer Game Fest",
+                "start_at": "2026-06-07T21:00:00+00:00",
+                "end_at": "2026-06-07T22:00:00+00:00",
+                "url": "https://www.youtube.com/watch?v=jkWt970tG44"
+            },
+            {
+                "id": 298,
+                "name": "India Games Showcase",
+                "slug": "india-games-showcase",
+                "event_name": "Summer Game Fest",
+                "start_at": "2026-06-08T17:00:00+00:00",
+                "end_at": "2026-06-08T18:00:00+00:00",
+                "url": null
+            },
+            {
+                "id": 299,
+                "name": "The UploadVR Showcase",
+                "slug": "the-uploadvr-showcase-2",
+                "event_name": null,
+                "start_at": "2026-06-12T17:00:00+00:00",
+                "end_at": "2026-06-12T18:00:00+00:00",
+                "url": null
+            }
+        ],
+        "googleAnalyticsId": "G-86HMPFYCLT",
+        "cards": {
+            "current_page": 1,
+            "data": [
+                {
+                    "id": 6268,
+                    "showcase_id": 300,
+                    "game_id": 4360,
+                    "custom_order": 1780859477,
+                    "created_at": "2026-06-07T19:11:17.000000Z",
+                    "updated_at": "2026-06-07T19:11:17.000000Z",
+                    "sort_at": "2026-06-07T19:00:00.000000Z",
+                    "is_draft": false,
+                    "game": {
+                        "id": 4360,
+                        "title": "Control Resonant",
+                        "slug": "control-resonant",
+                        "publisher_id": 61,
+                        "release_date": "2026-09-22",
+                        "created_at": "2026-06-02T21:43:24.000000Z",
+                        "updated_at": "2026-06-05T21:47:12.000000Z",
+                        "cover_image_url": "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coc64f.jpg",
+                        "screenshot_url": "https://images.igdb.com/igdb/image/upload/t_1080p/scuxut.jpg",
+                        "igdb_id": 225582,
+                        "last_igdb_refresh_at": null,
+                        "kind": "game",
+                        "is_draft": false,
+                        "publisher": {
+                            "id": 61,
+                            "name": "Remedy Entertainment",
+                            "slug": "remedy-entertainment-26xe",
+                            "created_at": "2026-05-22T08:01:34.000000Z",
+                            "updated_at": "2026-05-22T08:01:34.000000Z"
+                        },
+                        "developers": [
+                            {
+                                "id": 135,
+                                "name": "Remedy Entertainment",
+                                "slug": "remedy-entertainment",
+                                "created_at": "2026-05-22T03:42:03.000000Z",
+                                "updated_at": "2026-05-22T03:42:03.000000Z",
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "developer_id": 135
+                                }
+                            }
+                        ],
+                        "platforms": [
+                            {
+                                "id": 1,
+                                "name": "Windows",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "windows",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 0,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "platform_id": 1,
+                                    "release_date": "2026-09-24"
+                                }
+                            },
+                            {
+                                "id": 2,
+                                "name": "PS5",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "ps5",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 1,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "platform_id": 2,
+                                    "release_date": "2026-09-24"
+                                }
+                            },
+                            {
+                                "id": 3,
+                                "name": "Xbox Series X|S",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "xbox-series-xs",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 2,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "platform_id": 3,
+                                    "release_date": "2026-09-24"
+                                }
+                            },
+                            {
+                                "id": 10,
+                                "name": "macOS",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "macos",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 9,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "platform_id": 10,
+                                    "release_date": "2026-09-24"
+                                }
+                            }
+                        ],
+                        "genres": [
+                            {
+                                "id": 1,
+                                "name": "Action",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "action",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 0,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "genre_id": 1
+                                }
+                            },
+                            {
+                                "id": 2,
+                                "name": "Adventure",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "adventure",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 1,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "genre_id": 2
+                                }
+                            },
+                            {
+                                "id": 4,
+                                "name": "Beat 'em Up",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "beat-em-up",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 3,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "genre_id": 4
+                                }
+                            },
+                            {
+                                "id": 23,
+                                "name": "Role-Playing (RPG)",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-22T03:41:59.000000Z",
+                                "slug": "role-playing-rpg",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 22,
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "genre_id": 23
+                                }
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 1,
+                                "name": "Single Player",
+                                "created_at": "2026-05-22T03:41:59.000000Z",
+                                "updated_at": "2026-05-30T17:17:11.000000Z",
+                                "slug": "single-player",
+                                "icon": "User",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 0,
+                                "color": "text-sky-400",
+                                "auto_apply_rule": "single-player",
+                                "scope": "game",
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "tag_id": 1
+                                }
+                            },
+                            {
+                                "id": 14,
+                                "name": "Sequel",
+                                "created_at": "2026-05-30T17:17:04.000000Z",
+                                "updated_at": "2026-06-01T20:35:09.000000Z",
+                                "slug": "sequel",
+                                "icon": "Columns2",
+                                "active": true,
+                                "filterable": true,
+                                "display_order": 12,
+                                "color": "text-red-500",
+                                "auto_apply_rule": "sequel",
+                                "scope": "game",
+                                "pivot": {
+                                    "game_id": 4360,
+                                    "tag_id": 14
+                                }
+                            }
+                        ],
+                        "release_windows": [
+                            {
+                                "id": 2928,
+                                "game_id": 4360,
+                                "kind": "release",
+                                "date": "2026-09-22T00:00:00.000000Z",
+                                "label": null,
+                                "platform_ids": [
+                                    2
+                                ],
+                                "display_order": 0,
+                                "created_at": "2026-06-05T21:47:12.000000Z",
+                                "updated_at": "2026-06-05T21:47:12.000000Z",
+                                "label_start": null,
+                                "label_end": null
+                            },
+                            {
+                                "id": 2929,
+                                "game_id": 4360,
+                                "kind": "release",
+                                "date": "2026-09-24T00:00:00.000000Z",
+                                "label": null,
+                                "platform_ids": null,
+                                "display_order": 1,
+                                "created_at": "2026-06-05T21:47:12.000000Z",
+                                "updated_at": "2026-06-05T21:47:12.000000Z",
+                                "label_start": null,
+                                "label_end": null
+                            }
+                        ]
+                    },
+                    "tags": [],
+                    "showcase": {
+                        "id": 300,
+                        "event_id": null,
+                        "name": "PC Gaming Show",
+                        "slug": "pc-gaming-show-9",
+                        "start_at": "2026-06-07T19:00:00.000000Z",
+                        "end_at": "2026-06-07T21:00:00.000000Z",
+                        "url": "https://www.youtube.com/watch?v=tRVxQ7VLmHI",
+                        "created_at": "2026-05-23T23:06:27.000000Z",
+                        "updated_at": "2026-06-06T06:59:46.000000Z",
+                        "series_key": "pc-gaming-show",
+                        "event": null
+                    },
+                    "media": [
+                        {
+                            "id": 6790,
+                            "type": "trailer",
+                            "title": "Trailer & Dev Interview",
+                            "url": "https://www.youtube.com/watch?v=abHROlrtuG4&pp=0gcJCSgLAYcqIYzv",
+                            "created_at": "2026-06-07T19:15:50.000000Z",
+                            "updated_at": "2026-06-07T19:15:50.000000Z",
+                            "is_unavailable": false,
+                            "last_checked_at": null,
+                            "unavailable_reason": null,
+                            "pivot": {
+                                "card_id": 6268,
+                                "media_id": 6790
+                            }
+                        }
+                    ]
+                }
+            ],
+            "first_page_url": "https://gamesrecap.io?platforms=1&showcases=300&q=Contro&page=1",
+            "from": 1,
+            "last_page": 1,
+            "last_page_url": "https://gamesrecap.io?platforms=1&showcases=300&q=Contro&page=1",
+            "links": [
+                {
+                    "url": null,
+                    "label": "&laquo; Previous",
+                    "active": false
+                },
+                {
+                    "url": "https://gamesrecap.io?platforms=1&showcases=300&q=Contro&page=1",
+                    "label": "1",
+                    "active": true
+                },
+                {
+                    "url": null,
+                    "label": "Next &raquo;",
+                    "active": false
+                }
+            ],
+            "next_page_url": null,
+            "path": "https://gamesrecap.io?platforms=1&showcases=300&q=Contro",
+            "per_page": 60,
+            "prev_page_url": null,
+            "to": 1,
+            "total": 1
+        },
+        "hiddenMatchingCount": 0,
+        "filters": {
+            "q": "Contro",
+            "platforms": [
+                1
+            ],
+            "exclude_platforms": [],
+            "genres": [],
+            "exclude_genres": [],
+            "tags": [],
+            "exclude_tags": [],
+            "showcases": [
+                300
+            ],
+            "hidden_ids": [],
+            "seen_mode": null,
+            "seen_ids": [],
+            "wishlisted_mode": null,
+            "wishlisted_ids": [],
+            "release_from": null,
+            "release_to": null,
+            "sort": "newest",
+            "view": "cards"
+        },
+        "options": {
+            "platforms": [
+                {
+                    "id": 1,
+                    "name": "Windows",
+                    "slug": "windows"
+                },
+                {
+                    "id": 2,
+                    "name": "PS5",
+                    "slug": "ps5"
+                },
+                {
+                    "id": 3,
+                    "name": "Xbox Series X|S",
+                    "slug": "xbox-series-xs"
+                },
+                {
+                    "id": 4,
+                    "name": "Switch",
+                    "slug": "switch"
+                },
+                {
+                    "id": 5,
+                    "name": "Switch 2",
+                    "slug": "switch-2"
+                },
+                {
+                    "id": 6,
+                    "name": "iOS",
+                    "slug": "ios"
+                },
+                {
+                    "id": 7,
+                    "name": "Android",
+                    "slug": "android"
+                },
+                {
+                    "id": 8,
+                    "name": "PS4",
+                    "slug": "ps4"
+                },
+                {
+                    "id": 9,
+                    "name": "Xbox One",
+                    "slug": "xbox-one"
+                },
+                {
+                    "id": 10,
+                    "name": "macOS",
+                    "slug": "macos"
+                },
+                {
+                    "id": 11,
+                    "name": "Linux",
+                    "slug": "linux"
+                },
+                {
+                    "id": 12,
+                    "name": "Meta Quest",
+                    "slug": "meta-quest"
+                },
+                {
+                    "id": 13,
+                    "name": "PCVR",
+                    "slug": "pcvr"
+                },
+                {
+                    "id": 14,
+                    "name": "PSVR2",
+                    "slug": "psvr2"
+                }
+            ],
+            "genres": [
+                {
+                    "id": 1,
+                    "name": "Action",
+                    "slug": "action"
+                },
+                {
+                    "id": 2,
+                    "name": "Adventure",
+                    "slug": "adventure"
+                },
+                {
+                    "id": 3,
+                    "name": "Battle Royale",
+                    "slug": "battle-royale"
+                },
+                {
+                    "id": 4,
+                    "name": "Beat 'em Up",
+                    "slug": "beat-em-up"
+                },
+                {
+                    "id": 5,
+                    "name": "Card Battler",
+                    "slug": "card-battler"
+                },
+                {
+                    "id": 6,
+                    "name": "Deckbuilder",
+                    "slug": "deckbuilder"
+                },
+                {
+                    "id": 7,
+                    "name": "Dungeon Crawler",
+                    "slug": "dungeon-crawler"
+                },
+                {
+                    "id": 8,
+                    "name": "Exploration",
+                    "slug": "exploration"
+                },
+                {
+                    "id": 9,
+                    "name": "Fighting",
+                    "slug": "fighting"
+                },
+                {
+                    "id": 10,
+                    "name": "First-Person Shooter",
+                    "slug": "first-person-shooter"
+                },
+                {
+                    "id": 11,
+                    "name": "Hack n' Slash",
+                    "slug": "hack-n-slash"
+                },
+                {
+                    "id": 12,
+                    "name": "Horror",
+                    "slug": "horror"
+                },
+                {
+                    "id": 13,
+                    "name": "Management",
+                    "slug": "management"
+                },
+                {
+                    "id": 14,
+                    "name": "Metroidvania",
+                    "slug": "metroidvania"
+                },
+                {
+                    "id": 15,
+                    "name": "MMO",
+                    "slug": "mmo"
+                },
+                {
+                    "id": 16,
+                    "name": "Music/Rhythm",
+                    "slug": "musicrhythm"
+                },
+                {
+                    "id": 17,
+                    "name": "Narrative",
+                    "slug": "narrative"
+                },
+                {
+                    "id": 18,
+                    "name": "Party",
+                    "slug": "party"
+                },
+                {
+                    "id": 19,
+                    "name": "Platformer",
+                    "slug": "platformer"
+                },
+                {
+                    "id": 20,
+                    "name": "Puzzle",
+                    "slug": "puzzle"
+                },
+                {
+                    "id": 21,
+                    "name": "Racing",
+                    "slug": "racing"
+                },
+                {
+                    "id": 22,
+                    "name": "Roguelite/Roguelike",
+                    "slug": "rogueliteroguelike"
+                },
+                {
+                    "id": 23,
+                    "name": "Role-Playing (RPG)",
+                    "slug": "role-playing-rpg"
+                },
+                {
+                    "id": 24,
+                    "name": "Sandbox",
+                    "slug": "sandbox"
+                },
+                {
+                    "id": 25,
+                    "name": "Shoot 'em Up",
+                    "slug": "shoot-em-up"
+                },
+                {
+                    "id": 26,
+                    "name": "Simulation",
+                    "slug": "simulation"
+                },
+                {
+                    "id": 27,
+                    "name": "Souls-like",
+                    "slug": "souls-like"
+                },
+                {
+                    "id": 28,
+                    "name": "Sports",
+                    "slug": "sports"
+                },
+                {
+                    "id": 29,
+                    "name": "Stealth",
+                    "slug": "stealth"
+                },
+                {
+                    "id": 30,
+                    "name": "Strategy",
+                    "slug": "strategy"
+                },
+                {
+                    "id": 31,
+                    "name": "Survival",
+                    "slug": "survival"
+                },
+                {
+                    "id": 32,
+                    "name": "Tactical",
+                    "slug": "tactical"
+                },
+                {
+                    "id": 33,
+                    "name": "Third-Person Shooter",
+                    "slug": "third-person-shooter"
+                },
+                {
+                    "id": 34,
+                    "name": "Thriller",
+                    "slug": "thriller"
+                },
+                {
+                    "id": 35,
+                    "name": "Visual Novel",
+                    "slug": "visual-novel"
+                }
+            ],
+            "tags": [
+                {
+                    "id": 1,
+                    "name": "Single Player",
+                    "slug": "single-player",
+                    "icon": "User",
+                    "color": "text-sky-400"
+                },
+                {
+                    "id": 13,
+                    "name": "Virtual Reality",
+                    "slug": "virtual-reality",
+                    "icon": "RectangleGoggles",
+                    "color": "text-violet-400"
+                },
+                {
+                    "id": 2,
+                    "name": "Multiplayer",
+                    "slug": "multiplayer",
+                    "icon": "Users",
+                    "color": "text-emerald-400"
+                },
+                {
+                    "id": 3,
+                    "name": "Co-op",
+                    "slug": "co-op",
+                    "icon": "UserPlus",
+                    "color": "text-lime-400"
+                },
+                {
+                    "id": 4,
+                    "name": "Exclusive",
+                    "slug": "exclusive",
+                    "icon": "Star",
+                    "color": "text-amber-400"
+                },
+                {
+                    "id": 5,
+                    "name": "Free To Play",
+                    "slug": "free-to-play",
+                    "icon": "Unlock",
+                    "color": "text-green-400"
+                },
+                {
+                    "id": 6,
+                    "name": "Early Access",
+                    "slug": "early-access",
+                    "icon": "Hourglass",
+                    "color": "text-orange-400"
+                },
+                {
+                    "id": 7,
+                    "name": "Game Update",
+                    "slug": "game-update",
+                    "icon": "Newspaper",
+                    "color": "text-blue-400"
+                },
+                {
+                    "id": 8,
+                    "name": "DLC",
+                    "slug": "dlc",
+                    "icon": "Puzzle",
+                    "color": "text-fuchsia-400"
+                },
+                {
+                    "id": 9,
+                    "name": "Demo Available",
+                    "slug": "demo",
+                    "icon": "Gamepad2",
+                    "color": "text-cyan-400"
+                },
+                {
+                    "id": 10,
+                    "name": "Crossplay",
+                    "slug": "crossplay",
+                    "icon": "Shuffle",
+                    "color": "text-indigo-400"
+                },
+                {
+                    "id": 11,
+                    "name": "Remaster",
+                    "slug": "remaster",
+                    "icon": "Brush",
+                    "color": "text-rose-400"
+                },
+                {
+                    "id": 14,
+                    "name": "Sequel",
+                    "slug": "sequel",
+                    "icon": "Columns2",
+                    "color": "text-red-500"
+                }
+            ],
+            "showcases": [
+                {
+                    "id": 300,
+                    "name": "PC Gaming Show",
+                    "event_name": null,
+                    "start_at": "2026-06-07T19:00:00+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 280,
+                    "name": "Xbox Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-07T17:00:00+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 301,
+                    "name": "Ñ3 2026",
+                    "event_name": null,
+                    "start_at": "2026-06-07T15:30:00+00:00",
+                    "series_key": "n3",
+                    "series_label": null
+                },
+                {
+                    "id": 296,
+                    "name": "Frosty Games Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T22:00:00+00:00",
+                    "series_key": "frosty-games-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 308,
+                    "name": "FGS Live From Los Angeles",
+                    "event_name": null,
+                    "start_at": "2026-06-06T20:45:00+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 302,
+                    "name": "Future Games Show",
+                    "event_name": null,
+                    "start_at": "2026-06-06T19:00:00+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 295,
+                    "name": "Gayming Pride Parade",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T19:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 294,
+                    "name": "Green Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T18:00:00+00:00",
+                    "series_key": "green-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 293,
+                    "name": "Story Rich Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T17:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 292,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T16:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 291,
+                    "name": "Southeast Asian Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T15:00:00+00:00",
+                    "series_key": "southeast-asian-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 307,
+                    "name": "Virtua Fighter Crossroads Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-06T00:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 279,
+                    "name": "Day of the Devs",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-05T23:00:00+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 278,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-05T21:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 305,
+                    "name": "Access-Ability Summer Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-05T15:00:00+00:00",
+                    "series_key": "access-ability",
+                    "series_label": "Access-Ability"
+                },
+                {
+                    "id": 290,
+                    "name": "Women-Led Games",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-04T23:00:00+00:00",
+                    "series_key": "women-led-games",
+                    "series_label": "Women-Led Games"
+                },
+                {
+                    "id": 289,
+                    "name": "Latin American Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-04T21:00:00+00:00",
+                    "series_key": "latin-american-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 277,
+                    "name": "State of Play",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-02T21:00:00+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 288,
+                    "name": "Black Voices In Gaming",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-02T19:00:00+00:00",
+                    "series_key": "black-voices-in-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 306,
+                    "name": "Midsummer Night's Scream: A Horror Game Awards Showcase",
+                    "event_name": null,
+                    "start_at": "2026-06-01T18:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 287,
+                    "name": "The Mix Summer Game Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2026-06-01T16:00:00+00:00",
+                    "series_key": "the-mix-summer-game-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 286,
+                    "name": "Indie Quest 2026",
+                    "event_name": null,
+                    "start_at": "2026-05-29T00:00:00+00:00",
+                    "series_key": "indie-quest",
+                    "series_label": null
+                },
+                {
+                    "id": 285,
+                    "name": "Insider Gaming Showcase",
+                    "event_name": null,
+                    "start_at": "2026-05-28T19:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 284,
+                    "name": "Thinky Direct 2026",
+                    "event_name": null,
+                    "start_at": "2026-05-28T17:00:00+00:00",
+                    "series_key": "thinky-games-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 283,
+                    "name": "AG French Direct",
+                    "event_name": null,
+                    "start_at": "2026-05-27T16:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 304,
+                    "name": "Dragon Quest 40th Anniversary Stream",
+                    "event_name": null,
+                    "start_at": "2026-05-27T13:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 303,
+                    "name": "BitSummit Punch Mixtape",
+                    "event_name": null,
+                    "start_at": "2026-05-26T16:00:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 282,
+                    "name": "Warhammer Skulls 2026",
+                    "event_name": null,
+                    "start_at": "2026-05-21T16:00:00+00:00",
+                    "series_key": "warhammer-skulls",
+                    "series_label": null
+                },
+                {
+                    "id": 281,
+                    "name": "Six One Indie Showcase",
+                    "event_name": null,
+                    "start_at": "2026-05-21T15:45:00+00:00",
+                    "series_key": null,
+                    "series_label": null
+                },
+                {
+                    "id": 15,
+                    "name": "The UploadVR Summer Showcase",
+                    "event_name": null,
+                    "start_at": "2025-07-11T17:00:11+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 37,
+                    "name": "Ghost of Yōtei - State of Play",
+                    "event_name": null,
+                    "start_at": "2025-07-10T21:00:29+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 36,
+                    "name": "Bandai Namco Summer Showcase 2025",
+                    "event_name": null,
+                    "start_at": "2025-07-02T19:00:11+00:00",
+                    "series_key": "bandai-namco-summer-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 34,
+                    "name": "ARC System Works Showcase",
+                    "event_name": null,
+                    "start_at": "2025-06-27T01:00:17+00:00",
+                    "series_key": "arc-system-works-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 35,
+                    "name": "Capcom Spotlight",
+                    "event_name": null,
+                    "start_at": "2025-06-26T22:00:19+00:00",
+                    "series_key": "capcom-spotlight",
+                    "series_label": null
+                },
+                {
+                    "id": 33,
+                    "name": "Little Nightmares Showcase",
+                    "event_name": null,
+                    "start_at": "2025-06-24T19:00:45+00:00",
+                    "series_key": "little-nightmares-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 32,
+                    "name": "The Blood of Dawnwalker - Gameplay Reveal",
+                    "event_name": null,
+                    "start_at": "2025-06-21T19:00:14+00:00",
+                    "series_key": "the-blood-of-dawnwalker-gameplay-reveal",
+                    "series_label": null
+                },
+                {
+                    "id": 31,
+                    "name": "Donkey Kong Bananza Direct",
+                    "event_name": null,
+                    "start_at": "2025-06-18T13:00:16+00:00",
+                    "series_key": "donkey-kong-bananza-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 27,
+                    "name": "Konami Press Start",
+                    "event_name": null,
+                    "start_at": "2025-06-12T13:00:13+00:00",
+                    "series_key": "konami-press-start",
+                    "series_label": null
+                },
+                {
+                    "id": 28,
+                    "name": "Black Voices In Gaming",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-09T16:00:05+00:00",
+                    "series_key": "black-voices-in-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 8,
+                    "name": "PC Gaming Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-08T19:00:15+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 3,
+                    "name": "Xbox Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-08T17:00:29+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 23,
+                    "name": "N3 2025",
+                    "event_name": null,
+                    "start_at": "2025-06-08T15:00:26+00:00",
+                    "series_key": "n3",
+                    "series_label": null
+                },
+                {
+                    "id": 14,
+                    "name": "Frosty Games Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T23:00:15+00:00",
+                    "series_key": "frosty-games-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 25,
+                    "name": "FGS Live From Los Angeles",
+                    "event_name": null,
+                    "start_at": "2025-06-07T21:30:55+00:00",
+                    "series_key": "fgs-live-from-los-angeles",
+                    "series_label": null
+                },
+                {
+                    "id": 20,
+                    "name": "Green Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T20:00:53+00:00",
+                    "series_key": "green-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 6,
+                    "name": "Future Games Show",
+                    "event_name": null,
+                    "start_at": "2025-06-07T20:00:52+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 13,
+                    "name": "Southeast Asian Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T19:00:28+00:00",
+                    "series_key": "southeast-asian-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 12,
+                    "name": "Latin American Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T18:00:36+00:00",
+                    "series_key": "latin-american-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 11,
+                    "name": "Women-Led Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T17:00:51+00:00",
+                    "series_key": "women-led-games",
+                    "series_label": "Women-Led Games"
+                },
+                {
+                    "id": 5,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T16:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 7,
+                    "name": "Devolver Digital - BALL x PIT: The Kenny Sun Story",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-07T00:00:14+00:00",
+                    "series_key": "devolver-digital-ball-x-pit-the-kenny-sun-story",
+                    "series_label": null
+                },
+                {
+                    "id": 2,
+                    "name": "Day of the Devs",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-06T23:00:00+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 1,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-06T21:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 9,
+                    "name": "Access-Ability Summer Showcase",
+                    "event_name": null,
+                    "start_at": "2025-06-06T15:00:49+00:00",
+                    "series_key": "access-ability",
+                    "series_label": "Access-Ability"
+                },
+                {
+                    "id": 10,
+                    "name": "State of Play",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-04T21:00:16+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 4,
+                    "name": "The MIX Summer Game Showcase",
+                    "event_name": null,
+                    "start_at": "2025-06-03T16:00:58+00:00",
+                    "series_key": "the-mix-summer-game-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 22,
+                    "name": "State of Unreal",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2025-06-03T13:30:49+00:00",
+                    "series_key": "state-of-unreal",
+                    "series_label": null
+                },
+                {
+                    "id": 19,
+                    "name": "Indie Quest",
+                    "event_name": null,
+                    "start_at": "2025-05-29T23:00:57+00:00",
+                    "series_key": "indie-quest",
+                    "series_label": null
+                },
+                {
+                    "id": 18,
+                    "name": "Thinky Games Direct",
+                    "event_name": null,
+                    "start_at": "2025-05-29T17:00:32+00:00",
+                    "series_key": "thinky-games-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 17,
+                    "name": "TinyBuild Connect",
+                    "event_name": null,
+                    "start_at": "2025-05-27T17:00:08+00:00",
+                    "series_key": "tinybuild-connect",
+                    "series_label": null
+                },
+                {
+                    "id": 71,
+                    "name": "UploadVR",
+                    "event_name": null,
+                    "start_at": "2024-06-26T17:00:23+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 68,
+                    "name": "LRG3 2024",
+                    "event_name": null,
+                    "start_at": "2024-06-20T18:00:14+00:00",
+                    "series_key": "lrg3",
+                    "series_label": null
+                },
+                {
+                    "id": 72,
+                    "name": "Games Baked in Germany",
+                    "event_name": null,
+                    "start_at": "2024-06-20T17:30:55+00:00",
+                    "series_key": "games-baked-in-germany",
+                    "series_label": null
+                },
+                {
+                    "id": 70,
+                    "name": "Nintendo Direct",
+                    "event_name": null,
+                    "start_at": "2024-06-18T14:00:00+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 69,
+                    "name": "Yacht Club Games Presents",
+                    "event_name": null,
+                    "start_at": "2024-06-14T18:30:01+00:00",
+                    "series_key": "yacht-club-games-presents",
+                    "series_label": null
+                },
+                {
+                    "id": 62,
+                    "name": "Black Voices In Gaming",
+                    "event_name": null,
+                    "start_at": "2024-06-12T17:00:40+00:00",
+                    "series_key": "black-voices-in-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 46,
+                    "name": "Ubisoft Forward",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-10T19:00:10+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 45,
+                    "name": "PC Gaming Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-09T20:00:44+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 44,
+                    "name": "Xbox Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-09T17:00:07+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 67,
+                    "name": "IGN Live Day 3",
+                    "event_name": null,
+                    "start_at": "2024-06-09T16:30:19+00:00",
+                    "series_key": "ign-live-day-3",
+                    "series_label": null
+                },
+                {
+                    "id": 64,
+                    "name": "N3 Conference",
+                    "event_name": null,
+                    "start_at": "2024-06-09T15:00:43+00:00",
+                    "series_key": "n3-conference",
+                    "series_label": null
+                },
+                {
+                    "id": 66,
+                    "name": "IGN Live Day 2",
+                    "event_name": null,
+                    "start_at": "2024-06-08T20:30:33+00:00",
+                    "series_key": "ign-live-day-2",
+                    "series_label": null
+                },
+                {
+                    "id": 43,
+                    "name": "Future Games Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T19:00:32+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 54,
+                    "name": "Women-Led Games",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T18:30:10+00:00",
+                    "series_key": "women-led-games",
+                    "series_label": "Women-Led Games"
+                },
+                {
+                    "id": 53,
+                    "name": "Latin American Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T17:00:44+00:00",
+                    "series_key": "latin-american-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 42,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T16:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 52,
+                    "name": "Future Of Play Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T15:00:10+00:00",
+                    "series_key": "future-of-play-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 51,
+                    "name": "Devolver Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-08T00:00:31+00:00",
+                    "series_key": "devolver-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 41,
+                    "name": "Day of the Devs",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-07T23:00:34+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 40,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2024-06-07T21:00:45+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 65,
+                    "name": "IGN Live Day 1",
+                    "event_name": null,
+                    "start_at": "2024-06-07T20:00:56+00:00",
+                    "series_key": "ign-live-day-1",
+                    "series_label": null
+                },
+                {
+                    "id": 39,
+                    "name": "Access-Ability Showcase",
+                    "event_name": null,
+                    "start_at": "2024-06-07T15:00:06+00:00",
+                    "series_key": "access-ability",
+                    "series_label": "Access-Ability"
+                },
+                {
+                    "id": 38,
+                    "name": "Guerrilla Collective",
+                    "event_name": null,
+                    "start_at": "2024-06-06T17:00:51+00:00",
+                    "series_key": "guerrilla-collective",
+                    "series_label": null
+                },
+                {
+                    "id": 49,
+                    "name": "OTK Games Expo",
+                    "event_name": null,
+                    "start_at": "2024-06-04T19:00:35+00:00",
+                    "series_key": "otk-games-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 61,
+                    "name": "Next Indie Direct",
+                    "event_name": null,
+                    "start_at": "2024-06-01T17:00:54+00:00",
+                    "series_key": "next-indie-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 56,
+                    "name": "Silent Hill Transmission",
+                    "event_name": null,
+                    "start_at": "2024-05-30T23:00:43+00:00",
+                    "series_key": "silent-hill-transmission",
+                    "series_label": null
+                },
+                {
+                    "id": 55,
+                    "name": "State of Play",
+                    "event_name": null,
+                    "start_at": "2024-05-30T22:00:51+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 60,
+                    "name": "Marvelous Games Showcase 2024",
+                    "event_name": null,
+                    "start_at": "2024-05-30T22:00:00+00:00",
+                    "series_key": "marvelous-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 47,
+                    "name": "Warhammer Skulls 2024",
+                    "event_name": null,
+                    "start_at": "2024-05-23T16:00:00+00:00",
+                    "series_key": "warhammer-skulls",
+                    "series_label": null
+                },
+                {
+                    "id": 96,
+                    "name": "Annapurna Interactive Showcase 2023",
+                    "event_name": null,
+                    "start_at": "2023-06-29T19:00:16+00:00",
+                    "series_key": "annapurna-interactive-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 101,
+                    "name": "Sonic Central",
+                    "event_name": null,
+                    "start_at": "2023-06-23T15:00:41+00:00",
+                    "series_key": "sonic-central",
+                    "series_label": null
+                },
+                {
+                    "id": 100,
+                    "name": "Nintendo Direct",
+                    "event_name": null,
+                    "start_at": "2023-06-21T14:00:25+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 91,
+                    "name": "RGG Summit Summer 2023",
+                    "event_name": null,
+                    "start_at": "2023-06-16T03:00:59+00:00",
+                    "series_key": "rgg-summit-summer",
+                    "series_label": null
+                },
+                {
+                    "id": 97,
+                    "name": "The UploadVR Showcase",
+                    "event_name": null,
+                    "start_at": "2023-06-14T18:00:10+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 95,
+                    "name": "Black Voices In Gaming",
+                    "event_name": null,
+                    "start_at": "2023-06-13T22:00:54+00:00",
+                    "series_key": "black-voices-in-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 89,
+                    "name": "Dames 4 Games",
+                    "event_name": null,
+                    "start_at": "2023-06-13T20:00:23+00:00",
+                    "series_key": "dames-4-games",
+                    "series_label": null
+                },
+                {
+                    "id": 99,
+                    "name": "Guerrilla Collective Presents 2023",
+                    "event_name": null,
+                    "start_at": "2023-06-13T19:30:46+00:00",
+                    "series_key": "guerrilla-collective-presents",
+                    "series_label": null
+                },
+                {
+                    "id": 93,
+                    "name": "Xbox Games Showcase Extended",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-13T17:00:38+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 94,
+                    "name": "Capcom Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-12T22:00:51+00:00",
+                    "series_key": "capcom-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 78,
+                    "name": "Ubisoft Forward",
+                    "event_name": null,
+                    "start_at": "2023-06-12T17:00:01+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 80,
+                    "name": "PC Gaming Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-11T20:00:45+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 77,
+                    "name": "Xbox Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-11T17:00:12+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 88,
+                    "name": "OTK Games Expo",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-10T18:00:22+00:00",
+                    "series_key": "otk-games-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 79,
+                    "name": "Future Games Show",
+                    "event_name": null,
+                    "start_at": "2023-06-10T17:00:00+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 74,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-10T16:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 87,
+                    "name": "Future of Play Direct",
+                    "event_name": null,
+                    "start_at": "2023-06-10T15:00:27+00:00",
+                    "series_key": "future-of-play-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 86,
+                    "name": "Tribeca Games Spotlight",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-09T19:00:10+00:00",
+                    "series_key": "tribeca-games-spotlight",
+                    "series_label": null
+                },
+                {
+                    "id": 85,
+                    "name": "Access-Ability Summer Showcase",
+                    "event_name": null,
+                    "start_at": "2023-06-09T15:00:00+00:00",
+                    "series_key": "access-ability",
+                    "series_label": "Access-Ability"
+                },
+                {
+                    "id": 92,
+                    "name": "Devolver Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-08T22:00:03+00:00",
+                    "series_key": "devolver-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 76,
+                    "name": "Day Of The Devs",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-08T21:00:31+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 75,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2023-06-08T19:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 84,
+                    "name": "Guerrilla Collective Online Showcase",
+                    "event_name": null,
+                    "start_at": "2023-06-07T16:00:49+00:00",
+                    "series_key": "guerrilla-collective-online-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 83,
+                    "name": "Meta Quest Gaming Showcase",
+                    "event_name": null,
+                    "start_at": "2023-06-01T17:00:12+00:00",
+                    "series_key": "meta-quest-gaming-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 82,
+                    "name": "Marvelous Game Showcase 2023",
+                    "event_name": null,
+                    "start_at": "2023-05-25T22:00:41+00:00",
+                    "series_key": "marvelous-game-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 90,
+                    "name": "Warhammer Skulls 2023",
+                    "event_name": null,
+                    "start_at": "2023-05-25T16:00:29+00:00",
+                    "series_key": "warhammer-skulls",
+                    "series_label": null
+                },
+                {
+                    "id": 73,
+                    "name": "PlayStation Showcase",
+                    "event_name": null,
+                    "start_at": "2023-05-24T20:00:08+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 81,
+                    "name": "Humble Games Showcase 2023",
+                    "event_name": null,
+                    "start_at": "2023-05-18T17:00:35+00:00",
+                    "series_key": "humble-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 132,
+                    "name": "Annapurna Interactive Showcase",
+                    "event_name": null,
+                    "start_at": "2022-07-28T19:00:16+00:00",
+                    "series_key": "annapurna-interactive-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 131,
+                    "name": "Tenno Live 2022",
+                    "event_name": null,
+                    "start_at": "2022-07-16T21:00:16+00:00",
+                    "series_key": "tenno-live",
+                    "series_label": null
+                },
+                {
+                    "id": 140,
+                    "name": "Ubisoft Forward Spotlight (Skulls and Bones)",
+                    "event_name": null,
+                    "start_at": "2022-07-07T18:00:33+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 138,
+                    "name": "Nintendo Direct Mini",
+                    "event_name": null,
+                    "start_at": "2022-06-28T13:00:03+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 137,
+                    "name": "Xenoblade Chronicles 3 Direct",
+                    "event_name": null,
+                    "start_at": "2022-06-22T13:00:58+00:00",
+                    "series_key": "xenoblade-chronicles-3-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 135,
+                    "name": "FINAL FANTASY VII 25th Anniversary Celebration",
+                    "event_name": null,
+                    "start_at": "2022-06-16T22:00:54+00:00",
+                    "series_key": "final-fantasy-vii-25th-anniversary-celebration",
+                    "series_label": null
+                },
+                {
+                    "id": 136,
+                    "name": "10 Years of Dragon's Dogma",
+                    "event_name": null,
+                    "start_at": "2022-06-16T22:00:01+00:00",
+                    "series_key": "10-years-of-dragons-dogma",
+                    "series_label": null
+                },
+                {
+                    "id": 127,
+                    "name": "Xbox Games Showcase Extended",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-14T17:00:11+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 134,
+                    "name": "Assassin's Creed Celebration Livestream",
+                    "event_name": null,
+                    "start_at": "2022-06-14T16:00:25+00:00",
+                    "series_key": "assassins-creed-celebration-livestream",
+                    "series_label": null
+                },
+                {
+                    "id": 128,
+                    "name": "Capcom Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-13T22:00:04+00:00",
+                    "series_key": "capcom-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 118,
+                    "name": "Guerrilla Collective 3.5",
+                    "event_name": null,
+                    "start_at": "2022-06-13T20:00:32+00:00",
+                    "series_key": "guerrilla-collective-35",
+                    "series_label": null
+                },
+                {
+                    "id": 109,
+                    "name": "PC Gaming Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-12T19:00:45+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 108,
+                    "name": "Xbox & Bethesda Games Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-12T17:00:01+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 110,
+                    "name": "Future Games Show",
+                    "event_name": null,
+                    "start_at": "2022-06-11T19:00:31+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 114,
+                    "name": "NetEase Games Livestream",
+                    "event_name": null,
+                    "start_at": "2022-06-11T18:30:15+00:00",
+                    "series_key": "netease-games-livestream",
+                    "series_label": null
+                },
+                {
+                    "id": 113,
+                    "name": "Future of Play Direct",
+                    "event_name": null,
+                    "start_at": "2022-06-11T17:30:41+00:00",
+                    "series_key": "future-of-play-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 106,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-11T16:30:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 107,
+                    "name": "Guerrilla Collective 3",
+                    "event_name": null,
+                    "start_at": "2022-06-11T15:00:08+00:00",
+                    "series_key": "guerrilla-collective-3",
+                    "series_label": null
+                },
+                {
+                    "id": 112,
+                    "name": "Freedom Games Showcase",
+                    "event_name": null,
+                    "start_at": "2022-06-10T20:00:30+00:00",
+                    "series_key": "freedom-games-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 105,
+                    "name": "Tribeca Games Spotlight",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-10T19:00:47+00:00",
+                    "series_key": "tribeca-games-spotlight",
+                    "series_label": null
+                },
+                {
+                    "id": 130,
+                    "name": "Outriders Broadcast",
+                    "event_name": null,
+                    "start_at": "2022-06-10T18:45:50+00:00",
+                    "series_key": "outriders-broadcast",
+                    "series_label": null
+                },
+                {
+                    "id": 133,
+                    "name": "Epic Games Store Summer Showcase 2022",
+                    "event_name": null,
+                    "start_at": "2022-06-10T18:00:31+00:00",
+                    "series_key": "epic-games-store-summer-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 123,
+                    "name": "Netflix Geeked Week: Gaming",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-10T17:00:44+00:00",
+                    "series_key": "netflix-geeked-week-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 120,
+                    "name": "IGN Expo",
+                    "event_name": null,
+                    "start_at": "2022-06-10T16:00:23+00:00",
+                    "series_key": "ign-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 121,
+                    "name": "Devolver Digital Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-09T22:00:04+00:00",
+                    "series_key": "devolver-digital-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 104,
+                    "name": "Day of the Devs",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-09T20:00:02+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 103,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2022-06-09T18:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 111,
+                    "name": "Upload VR Showcase",
+                    "event_name": null,
+                    "start_at": "2022-06-09T15:00:13+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 125,
+                    "name": "OTK Games Expo",
+                    "event_name": null,
+                    "start_at": "2022-06-08T18:00:23+00:00",
+                    "series_key": "otk-games-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 124,
+                    "name": "Black Voices in Gaming 2022",
+                    "event_name": null,
+                    "start_at": "2022-06-08T17:00:25+00:00",
+                    "series_key": "black-voices-in-gaming",
+                    "series_label": null
+                },
+                {
+                    "id": 126,
+                    "name": "Call of Duty Modern Warfare 2 Reveal",
+                    "event_name": null,
+                    "start_at": "2022-06-08T17:00:19+00:00",
+                    "series_key": "call-of-duty-modern-warfare-2-reveal",
+                    "series_label": null
+                },
+                {
+                    "id": 122,
+                    "name": "Soul Hackers 2 Special Broadcast",
+                    "event_name": null,
+                    "start_at": "2022-06-08T11:00:31+00:00",
+                    "series_key": "soul-hackers-2-special-broadcast",
+                    "series_label": null
+                },
+                {
+                    "id": 129,
+                    "name": "Sonic Central",
+                    "event_name": null,
+                    "start_at": "2022-06-07T16:00:54+00:00",
+                    "series_key": "sonic-central",
+                    "series_label": null
+                },
+                {
+                    "id": 115,
+                    "name": "Limited Run Games 2022",
+                    "event_name": null,
+                    "start_at": "2022-06-06T20:00:28+00:00",
+                    "series_key": "limited-run-games",
+                    "series_label": null
+                },
+                {
+                    "id": 117,
+                    "name": "Acquire Game Show",
+                    "event_name": null,
+                    "start_at": "2022-06-05T11:00:19+00:00",
+                    "series_key": "acquire-game-show",
+                    "series_label": null
+                },
+                {
+                    "id": 102,
+                    "name": "Playstation: State of Play",
+                    "event_name": null,
+                    "start_at": "2022-06-02T22:00:39+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 119,
+                    "name": "Warhammer Skulls 2022",
+                    "event_name": null,
+                    "start_at": "2022-06-01T17:00:00+00:00",
+                    "series_key": "warhammer-skulls",
+                    "series_label": null
+                },
+                {
+                    "id": 175,
+                    "name": "Annapurna Interactive Showcase",
+                    "event_name": null,
+                    "start_at": "2021-07-29T19:00:39+00:00",
+                    "series_key": "annapurna-interactive-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 156,
+                    "name": "EA Play Live",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-07-22T17:00:35+00:00",
+                    "series_key": "ea-play-live",
+                    "series_label": null
+                },
+                {
+                    "id": 178,
+                    "name": "State of Play",
+                    "event_name": null,
+                    "start_at": "2021-07-08T21:00:40+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 157,
+                    "name": "Nacon Connect",
+                    "event_name": null,
+                    "start_at": "2021-07-06T17:00:24+00:00",
+                    "series_key": "nacon-connect",
+                    "series_label": null
+                },
+                {
+                    "id": 161,
+                    "name": "GameSpot Play For All Showcase",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-15T22:35:12+00:00",
+                    "series_key": "gamespot-play-for-all-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 163,
+                    "name": "Yooreka Games",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-15T22:20:41+00:00",
+                    "series_key": "yooreka-games",
+                    "series_label": null
+                },
+                {
+                    "id": 162,
+                    "name": "Bandai Namco",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-15T21:25:49+00:00",
+                    "series_key": "bandai-namco",
+                    "series_label": null
+                },
+                {
+                    "id": 158,
+                    "name": "Nintendo Direct",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-15T16:00:51+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 166,
+                    "name": "Capcom",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-14T21:30:47+00:00",
+                    "series_key": "capcom",
+                    "series_label": null
+                },
+                {
+                    "id": 153,
+                    "name": "Limited Run Games",
+                    "event_name": null,
+                    "start_at": "2021-06-14T20:00:00+00:00",
+                    "series_key": "limited-run-games",
+                    "series_label": null
+                },
+                {
+                    "id": 169,
+                    "name": "Freedom Games",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-14T19:30:11+00:00",
+                    "series_key": "freedom-games",
+                    "series_label": null
+                },
+                {
+                    "id": 173,
+                    "name": "Indie Showcase",
+                    "event_name": null,
+                    "start_at": "2021-06-14T19:00:06+00:00",
+                    "series_key": "indie-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 172,
+                    "name": "Mythical Games",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-14T18:10:51+00:00",
+                    "series_key": "mythical-games",
+                    "series_label": null
+                },
+                {
+                    "id": 155,
+                    "name": "Future Games Show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-13T23:00:10+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 154,
+                    "name": "PC Gaming Show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-13T21:30:09+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 164,
+                    "name": "Warner Bros. Games",
+                    "event_name": null,
+                    "start_at": "2021-06-13T21:00:21+00:00",
+                    "series_key": "warner-bros-games",
+                    "series_label": null
+                },
+                {
+                    "id": 160,
+                    "name": "Square Enix Presents",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-13T19:15:55+00:00",
+                    "series_key": "square-enix-presents",
+                    "series_label": null
+                },
+                {
+                    "id": 152,
+                    "name": "Xbox & Bethesda Games Showcase",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-13T17:00:02+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 168,
+                    "name": "NARAKA: BLADEPOINT (24 Entertainment)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-13T16:30:55+00:00",
+                    "series_key": "naraka-bladepoint-24-entertainment",
+                    "series_label": null
+                },
+                {
+                    "id": 176,
+                    "name": "Upload VR Showcase",
+                    "event_name": null,
+                    "start_at": "2021-06-12T21:45:00+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 165,
+                    "name": "Gearbox Showcase",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-12T21:00:23+00:00",
+                    "series_key": "gearbox-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 159,
+                    "name": "Devolver Digital Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-12T20:30:49+00:00",
+                    "series_key": "devolver-digital-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 151,
+                    "name": "Ubisoft Forward",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-12T19:00:03+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 167,
+                    "name": "Ubisoft Forward Pre-show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2021-06-12T18:00:00+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 150,
+                    "name": "Wholesome Direct",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-12T17:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 149,
+                    "name": "Guerrilla Collective Day 2",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-12T15:00:50+00:00",
+                    "series_key": "guerrilla-collective-day-2",
+                    "series_label": null
+                },
+                {
+                    "id": 147,
+                    "name": "IGN Expo",
+                    "event_name": null,
+                    "start_at": "2021-06-11T20:00:27+00:00",
+                    "series_key": "ign-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 146,
+                    "name": "Koch Primetime",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-11T19:00:01+00:00",
+                    "series_key": "koch-primetime",
+                    "series_label": null
+                },
+                {
+                    "id": 171,
+                    "name": "Tribeca Games Spotlight",
+                    "event_name": null,
+                    "start_at": "2021-06-11T18:00:50+00:00",
+                    "series_key": "tribeca-games-spotlight",
+                    "series_label": null
+                },
+                {
+                    "id": 170,
+                    "name": "New World Deep Dive",
+                    "event_name": null,
+                    "start_at": "2021-06-11T15:00:09+00:00",
+                    "series_key": "new-world-deep-dive",
+                    "series_label": null
+                },
+                {
+                    "id": 174,
+                    "name": "Day of the Devs",
+                    "event_name": null,
+                    "start_at": "2021-06-10T19:30:17+00:00",
+                    "series_key": "day-of-the-devs",
+                    "series_label": null
+                },
+                {
+                    "id": 145,
+                    "name": "Summer Game Fest Kickoff Live!",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-10T18:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 148,
+                    "name": "Guerrilla Collective Day 1",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2021-06-05T15:00:01+00:00",
+                    "series_key": "guerrilla-collective-day-1",
+                    "series_label": null
+                },
+                {
+                    "id": 211,
+                    "name": "Xbox 20/20 July",
+                    "event_name": null,
+                    "start_at": "2020-07-23T16:00:31+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 196,
+                    "name": "Summer Game Fest",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-07-20T15:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 213,
+                    "name": "Nintendo Direct Mini July 2020",
+                    "event_name": null,
+                    "start_at": "2020-07-20T14:00:31+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 212,
+                    "name": "Stadia Connect",
+                    "event_name": null,
+                    "start_at": "2020-07-14T17:00:56+00:00",
+                    "series_key": "stadia-connect",
+                    "series_label": null
+                },
+                {
+                    "id": 194,
+                    "name": "Ubisoft Forward",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-07-12T19:00:31+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 210,
+                    "name": "Devolver Direct",
+                    "event_name": null,
+                    "start_at": "2020-07-11T19:00:44+00:00",
+                    "series_key": "devolver-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 207,
+                    "name": "Nacon Connect",
+                    "event_name": null,
+                    "start_at": "2020-07-07T17:00:39+00:00",
+                    "series_key": "nacon-connect",
+                    "series_label": null
+                },
+                {
+                    "id": 192,
+                    "name": "Night City Wire (Cyberpunk 2077)",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-25T16:00:22+00:00",
+                    "series_key": "night-city-wire-cyberpunk-2077",
+                    "series_label": null
+                },
+                {
+                    "id": 197,
+                    "name": "Marvel’s Avengers War Table",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-24T17:00:49+00:00",
+                    "series_key": "marvels-avengers-war-table",
+                    "series_label": null
+                },
+                {
+                    "id": 204,
+                    "name": "IGN Expo Day 6",
+                    "event_name": null,
+                    "start_at": "2020-06-24T17:00:11+00:00",
+                    "series_key": "ign-expo-day-6",
+                    "series_label": null
+                },
+                {
+                    "id": 193,
+                    "name": "New Game+ Expo",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-23T15:00:25+00:00",
+                    "series_key": "new-game-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 195,
+                    "name": "Summer Game Fest Developer Showcase: June",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-22T15:00:00+00:00",
+                    "series_key": "summer-game-fest",
+                    "series_label": null
+                },
+                {
+                    "id": 202,
+                    "name": "EA Play",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-18T23:00:21+00:00",
+                    "series_key": "ea-play",
+                    "series_label": null
+                },
+                {
+                    "id": 203,
+                    "name": "IGN Expo Day 5",
+                    "event_name": null,
+                    "start_at": "2020-06-18T17:00:27+00:00",
+                    "series_key": "ign-expo-day-5",
+                    "series_label": null
+                },
+                {
+                    "id": 190,
+                    "name": "Upload VR Showcase",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-16T16:00:55+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 201,
+                    "name": "IGN Expo Day 4",
+                    "event_name": null,
+                    "start_at": "2020-06-15T19:30:00+00:00",
+                    "series_key": "ign-expo-day-4",
+                    "series_label": null
+                },
+                {
+                    "id": 188,
+                    "name": "Guerilla Collective Day 3",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-15T16:00:36+00:00",
+                    "series_key": "guerilla-collective-day-3",
+                    "series_label": null
+                },
+                {
+                    "id": 187,
+                    "name": "Guerilla Collective Day 2",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-14T16:00:20+00:00",
+                    "series_key": "guerilla-collective-day-2",
+                    "series_label": null
+                },
+                {
+                    "id": 189,
+                    "name": "Future Games Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-13T21:00:30+00:00",
+                    "series_key": "future-games-show",
+                    "series_label": null
+                },
+                {
+                    "id": 185,
+                    "name": "PC Gaming Show",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-13T18:00:53+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 186,
+                    "name": "Guerilla Collective Day 1",
+                    "event_name": "Summer Game Fest",
+                    "start_at": "2020-06-13T16:00:10+00:00",
+                    "series_key": "guerilla-collective-day-1",
+                    "series_label": null
+                },
+                {
+                    "id": 200,
+                    "name": "IGN Expo Day 3",
+                    "event_name": null,
+                    "start_at": "2020-06-12T21:30:20+00:00",
+                    "series_key": "ign-expo-day-3",
+                    "series_label": null
+                },
+                {
+                    "id": 205,
+                    "name": "The Future of Gaming on PlayStation 5",
+                    "event_name": null,
+                    "start_at": "2020-06-11T20:00:09+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 199,
+                    "name": "IGN Expo Day 2",
+                    "event_name": null,
+                    "start_at": "2020-06-11T18:30:32+00:00",
+                    "series_key": "ign-expo-day-2",
+                    "series_label": null
+                },
+                {
+                    "id": 191,
+                    "name": "The Escapist Indie Showcase",
+                    "event_name": null,
+                    "start_at": "2020-06-11T16:00:40+00:00",
+                    "series_key": "the-escapist-indie-showcase",
+                    "series_label": null
+                },
+                {
+                    "id": 198,
+                    "name": "IGN Expo Day 1",
+                    "event_name": null,
+                    "start_at": "2020-06-10T20:30:27+00:00",
+                    "series_key": "ign-expo-day-1",
+                    "series_label": null
+                },
+                {
+                    "id": 206,
+                    "name": "Indie Live Expo",
+                    "event_name": null,
+                    "start_at": "2020-06-06T10:50:50+00:00",
+                    "series_key": "indie-live-expo",
+                    "series_label": null
+                },
+                {
+                    "id": 184,
+                    "name": "Wholesome Direct",
+                    "event_name": null,
+                    "start_at": "2020-05-26T17:00:00+00:00",
+                    "series_key": "wholesome-direct",
+                    "series_label": null
+                },
+                {
+                    "id": 183,
+                    "name": "Xbox 20/20 May",
+                    "event_name": null,
+                    "start_at": "2020-05-07T15:00:10+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 235,
+                    "name": "Nintendo",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-11T16:00:26+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 234,
+                    "name": "Square Enix",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-11T01:00:43+00:00",
+                    "series_key": "square-enix",
+                    "series_label": null
+                },
+                {
+                    "id": 233,
+                    "name": "Kinda Funny Games",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T23:30:06+00:00",
+                    "series_key": "kinda-funny-games",
+                    "series_label": null
+                },
+                {
+                    "id": 231,
+                    "name": "Ubisoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T20:00:00+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 229,
+                    "name": "The PC Gaming Show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T17:00:45+00:00",
+                    "series_key": "the-pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 228,
+                    "name": "UploadVR",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T16:00:59+00:00",
+                    "series_key": "uploadvr",
+                    "series_label": "UploadVR"
+                },
+                {
+                    "id": 227,
+                    "name": "Devolver Digital",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T02:00:24+00:00",
+                    "series_key": "devolver-digital",
+                    "series_label": null
+                },
+                {
+                    "id": 226,
+                    "name": "Bethesda",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-10T00:30:43+00:00",
+                    "series_key": "bethesda",
+                    "series_label": null
+                },
+                {
+                    "id": 225,
+                    "name": "Microsoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-09T20:00:27+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 224,
+                    "name": "Electronic Arts",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-08T16:15:49+00:00",
+                    "series_key": "electronic-arts",
+                    "series_label": null
+                },
+                {
+                    "id": 223,
+                    "name": "Google Stadia",
+                    "event_name": "E3 Expo",
+                    "start_at": "2019-06-06T16:00:57+00:00",
+                    "series_key": "google-stadia",
+                    "series_label": null
+                },
+                {
+                    "id": 222,
+                    "name": "The Pokémon Company",
+                    "event_name": null,
+                    "start_at": "2019-06-05T13:00:37+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 251,
+                    "name": "Nintendo",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-12T16:00:00+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 250,
+                    "name": "Sony",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-12T01:00:00+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 249,
+                    "name": "PC Gaming Show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-11T22:00:00+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 248,
+                    "name": "Ubisoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-11T20:00:00+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 247,
+                    "name": "Square Enix",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-11T17:00:47+00:00",
+                    "series_key": "square-enix",
+                    "series_label": null
+                },
+                {
+                    "id": 246,
+                    "name": "Devolver Digital",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-11T03:00:06+00:00",
+                    "series_key": "devolver-digital",
+                    "series_label": null
+                },
+                {
+                    "id": 245,
+                    "name": "Bethesda",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-11T01:30:41+00:00",
+                    "series_key": "bethesda",
+                    "series_label": null
+                },
+                {
+                    "id": 244,
+                    "name": "Microsoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-10T20:00:56+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 243,
+                    "name": "Electronic Arts",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-09T18:00:54+00:00",
+                    "series_key": "electronic-arts",
+                    "series_label": null
+                },
+                {
+                    "id": 242,
+                    "name": "Other",
+                    "event_name": "E3 Expo",
+                    "start_at": "2018-06-08T23:35:20+00:00",
+                    "series_key": "other",
+                    "series_label": null
+                },
+                {
+                    "id": 263,
+                    "name": "Nintendo",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-13T16:00:00+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 262,
+                    "name": "Sony",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-13T01:00:00+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 261,
+                    "name": "Ubisoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-12T20:00:00+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 260,
+                    "name": "PC Gaming Show",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-12T17:00:00+00:00",
+                    "series_key": "pc-gaming-show",
+                    "series_label": null
+                },
+                {
+                    "id": 259,
+                    "name": "Devolver Digital",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-12T05:00:00+00:00",
+                    "series_key": "devolver-digital",
+                    "series_label": null
+                },
+                {
+                    "id": 258,
+                    "name": "Bethesda",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-12T02:00:00+00:00",
+                    "series_key": "bethesda",
+                    "series_label": null
+                },
+                {
+                    "id": 257,
+                    "name": "Microsoft",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-11T21:00:00+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 264,
+                    "name": "E3 2017 Other Reveals",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-10T19:00:00+00:00",
+                    "series_key": "e3-2017-other-reveals",
+                    "series_label": null
+                },
+                {
+                    "id": 256,
+                    "name": "Electronic Arts",
+                    "event_name": "E3 Expo",
+                    "start_at": "2017-06-10T19:00:00+00:00",
+                    "series_key": "electronic-arts",
+                    "series_label": null
+                },
+                {
+                    "id": 276,
+                    "name": "E3 2016 Other Reveals",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "e3-2016-other-reveals",
+                    "series_label": null
+                },
+                {
+                    "id": 275,
+                    "name": "Nintendo (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "nintendo",
+                    "series_label": "Nintendo"
+                },
+                {
+                    "id": 274,
+                    "name": "Sony (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "state-of-play",
+                    "series_label": "State of Play"
+                },
+                {
+                    "id": 273,
+                    "name": "Ubisoft (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "ubisoft",
+                    "series_label": "Ubisoft"
+                },
+                {
+                    "id": 272,
+                    "name": "PC Gaming Show (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "pc-gaming-show-e3-2016",
+                    "series_label": null
+                },
+                {
+                    "id": 271,
+                    "name": "Microsoft (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "xbox",
+                    "series_label": "Xbox"
+                },
+                {
+                    "id": 270,
+                    "name": "Bethesda (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "bethesda-e3-2016",
+                    "series_label": null
+                },
+                {
+                    "id": 269,
+                    "name": "EA (E3 2016)",
+                    "event_name": "E3 Expo",
+                    "start_at": "2016-06-14T16:00:00+00:00",
+                    "series_key": "ea-e3-2016",
+                    "series_label": null
+                }
+            ],
+            "sorts": [
+                {
+                    "value": "newest",
+                    "label": "Newest"
+                },
+                {
+                    "value": "oldest",
+                    "label": "Oldest"
+                },
+                {
+                    "value": "title_asc",
+                    "label": "Title A→Z"
+                },
+                {
+                    "value": "title_desc",
+                    "label": "Title Z→A"
+                },
+                {
+                    "value": "media_desc",
+                    "label": "Most media"
+                },
+                {
+                    "value": "media_asc",
+                    "label": "Least media"
+                },
+                {
+                    "value": "random",
+                    "label": "Random"
+                }
+            ]
+        }
+    },
+    "url": "/?platforms=1&q=Contro&showcases=300",
+    "version": "91c5bce49007757d62740bf9f1aacac6",
+    "clearHistory": false,
+    "encryptHistory": false
+}

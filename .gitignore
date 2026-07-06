@@ -1,0 +1,56 @@
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+*.userosscache
+UpgradeLog*.htm
+
+# Build
+[Bb]in/
+[Dd]ebug*/
+[Rr]elease*/
+obj/
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.lib
+*.sbr
+*.aps
+*.pch
+*.ncb
+*.cache
+*.log
+*_i.c
+*_p.c
+
+# NuGet
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Playnite plugin build artifact
+*.pext
+
+# IDE config
+.idea/
+*.swp
+*.swo
+
+# Tool configuration
+opencode.json
+.cursor/
+.opencode/
+
+# ReSharper
+_ReSharper*/
+
+# Test results
+[Tt]est[Rr]esult*

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.7 - 2026-07-06
+
+### Changed
+- Localización ahora usa el sistema automático de Playnite en vez de carga programática manual
+- `LoadLocalizationResources()` eliminado de `GamesRecap.cs`
+- Añadido `PostBuildEvent` xcopy para copiar archivos de localización a `$(TargetDir)\Localization`
+- `.pext` packaging ahora usa staging directory para preservar la estructura de carpetas (especialmente `Localization/`)
+
+### Fixed
+- Archivos `.xaml` de localización ahora se incluyen correctamente dentro de la subcarpeta `Localization/` en el `.pext`
+- Playnite puede descubrir automáticamente los archivos de idioma según la cultura del sistema
+
 ## 0.1.2 - 2026-07-06
 
 ### Changed

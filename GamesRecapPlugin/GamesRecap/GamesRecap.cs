@@ -45,9 +45,34 @@ namespace GamesRecap
             Database = new LocalDatabase(dbPath);
             ApiClient = new GamesRecapApiClient(Database);
 
+            LoadLocalizationResources();
             StartCalendarRefreshTimer();
 
             logger.Info($"Games Recap initialized, DB at: {dbPath}");
+        }
+
+        private void LoadLocalizationResources()
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var app = System.Windows.Application.Current;
+                if (app == null || dir == null) return;
+
+                foreach (var file in new[] { "es_ES.xaml", "en_US.xaml" })
+                {
+                    var path = Path.Combine(dir, "Localization", file);
+                    if (File.Exists(path))
+                    {
+                        var rd = new ResourceDictionary { Source = new Uri(path, UriKind.Absolute) };
+                        app.Resources.MergedDictionaries.Add(rd);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to load localization resources");
+            }
         }
 
         private void StartCalendarRefreshTimer()

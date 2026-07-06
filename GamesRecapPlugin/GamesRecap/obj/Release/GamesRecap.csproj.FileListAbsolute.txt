@@ -22,3 +22,8 @@ C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\GamesRecap.csproj.Up2Date
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\GamesRecap.dll
 C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\GamesRecap.pdb
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Release\icon-calendar.png
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\bin\Release\Localization\es_ES.xaml
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\Resources\SharedResources.baml
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\Views\CalendarView.g.cs
+C:\Users\rafae\PycharmProjects\games-recap-playnite\GamesRecapPlugin\GamesRecap\obj\Release\Views\CalendarView.baml

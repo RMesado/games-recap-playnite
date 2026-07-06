@@ -156,6 +156,13 @@ Ver [docs/building.md](docs/building.md).
 - `develop` — active development
 - `main` — stable releases
 
+### Screenshots / Capturas de pantalla
+
+<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/eab964e5-f26a-4f79-84c8-f6a48b5e0b2c" />
+<img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/c3169155-c946-4ede-8f1b-ce6124c649a5" />
+
+
+
 ---
 
 *Made with ❤️ by RMesado*

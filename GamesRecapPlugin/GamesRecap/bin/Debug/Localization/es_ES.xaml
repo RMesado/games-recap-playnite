@@ -90,4 +90,25 @@
     <sys:String x:Key="SettingsActionAddLibrary">Añadir a la biblioteca de Playnite</sys:String>
     <sys:String x:Key="SettingsNote">Cuando está seleccionado "Añadir a la biblioteca de Playnite", el icono de corazón añade el juego sin confirmación.</sys:String>
     <sys:String x:Key="SettingsShowConfirmation">Mostrar confirmación antes de añadir a la biblioteca</sys:String>
+
+    <!-- Calendar refresh settings -->
+    <sys:String x:Key="SettingsCalendarRefreshInterval">Intervalo de actualización del calendario</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetDaily">Diario</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetWeekly">Semanal</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetMonthly">Mensual</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetBimonthly">Bimensual</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetQuarterly">Trimestral</sys:String>
+    <sys:String x:Key="SettingsCalendarPresetCustom">Personalizado</sys:String>
+    <sys:String x:Key="SettingsCalendarDaysLabel">días</sys:String>
+
+    <!-- Calendar notifications -->
+    <sys:String x:Key="SettingsCalendarNotificationsHeader">Notificaciones de lanzamiento</sys:String>
+    <sys:String x:Key="SettingsCalendarNotifyMonth">Avisar con 1 mes de antelación</sys:String>
+    <sys:String x:Key="SettingsCalendarNotifyWeek">Avisar con 1 semana de antelación</sys:String>
+    <sys:String x:Key="SettingsCalendarNotifyDay">Avisar el día antes</sys:String>
+    <sys:String x:Key="SettingsCalendarNotifySameDay">Avisar el mismo día</sys:String>
+    <sys:String x:Key="CalendarNotifyMonthText">"{0}" se lanza en menos de 1 mes</sys:String>
+    <sys:String x:Key="CalendarNotifyWeekText">"{0}" se lanza esta semana</sys:String>
+    <sys:String x:Key="CalendarNotifyDayText">"{0}" se lanza mañana</sys:String>
+    <sys:String x:Key="CalendarNotifyTodayText">"{0}" se lanza HOY</sys:String>
 </ResourceDictionary>

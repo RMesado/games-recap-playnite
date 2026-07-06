@@ -66,6 +66,13 @@ namespace GamesRecap.Services
                     CoverUrl    TEXT,
                     ReleaseDate TEXT NOT NULL,
                     AddedAt     TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS CalendarNotifications (
+                    GameId INTEGER NOT NULL,
+                    Type   TEXT NOT NULL,
+                    SentAt TEXT NOT NULL,
+                    PRIMARY KEY (GameId, Type)
                 );";
 
             cmd.ExecuteNonQuery();
@@ -264,6 +271,7 @@ namespace GamesRecap.Services
         public void RemoveFromCalendar(int gameId)
         {
             using var conn = GetConnection();
+            ClearCalendarNotifications(gameId);
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "DELETE FROM CalendarGames WHERE GameId = @gid";
             cmd.Parameters.AddWithValue("@gid", gameId);
@@ -298,6 +306,87 @@ namespace GamesRecap.Services
             cmd.CommandText = "SELECT COUNT(*) FROM CalendarGames WHERE GameId = @gid";
             cmd.Parameters.AddWithValue("@gid", gameId);
             return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+
+        public void UpdateCalendarGameDate(int gameId, string releaseDate, string title, string coverUrl)
+        {
+            ClearCalendarNotifications(gameId);
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE CalendarGames SET ReleaseDate = @rdate, Title = @title, CoverUrl = @cover
+                WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.Parameters.AddWithValue("@rdate", releaseDate);
+            cmd.Parameters.AddWithValue("@title", title);
+            cmd.Parameters.AddWithValue("@cover", coverUrl ?? (object)DBNull.Value);
+            cmd.ExecuteNonQuery();
+        }
+
+        public DateTime? GetCalendarLastRefresh()
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT Value FROM AppMeta WHERE Key = 'calendar_last_refresh'";
+            var result = cmd.ExecuteScalar() as string;
+            if (result != null && DateTime.TryParse(result, out var dt))
+                return dt;
+            return null;
+        }
+
+        public void SetCalendarLastRefresh(DateTime timestamp)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT OR REPLACE INTO AppMeta (Key, Value) VALUES ('calendar_last_refresh', @v)";
+            cmd.Parameters.AddWithValue("@v", timestamp.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
+
+        public bool WasCalendarNotified(int gameId, string type)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM CalendarNotifications WHERE GameId = @gid AND Type = @type";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.Parameters.AddWithValue("@type", type);
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+
+        public void MarkCalendarNotified(int gameId, string type)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT OR IGNORE INTO CalendarNotifications (GameId, Type, SentAt) VALUES (@gid, @type, @sent)";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.Parameters.AddWithValue("@type", type);
+            cmd.Parameters.AddWithValue("@sent", DateTime.UtcNow.ToString("O"));
+            cmd.ExecuteNonQuery();
+        }
+
+        public void ClearCalendarNotifications(int gameId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM CalendarNotifications WHERE GameId = @gid";
+            cmd.Parameters.AddWithValue("@gid", gameId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void ClearPastCalendarNotifications()
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                DELETE FROM CalendarNotifications
+                WHERE (GameId, Type) IN (
+                    SELECT cn.GameId, cn.Type
+                    FROM CalendarNotifications cn
+                    INNER JOIN CalendarGames cg ON cg.GameId = cn.GameId
+                    WHERE cg.ReleaseDate < @today
+                )";
+            cmd.Parameters.AddWithValue("@today", DateTime.Today.ToString("yyyy-MM-dd"));
+            cmd.ExecuteNonQuery();
         }
 
         private List<int> QueryIntList(string sql)

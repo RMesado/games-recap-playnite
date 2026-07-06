@@ -39,6 +39,52 @@ namespace GamesRecap.Services
             };
         }
 
+        public async Task<List<Card>> FetchCardsByIdsAsync(List<int> ids)
+        {
+            if (ids == null || ids.Count == 0) return new List<Card>();
+
+            var filters = new ActiveFilters
+            {
+                WishlistedIds = ids,
+                WishlistedMode = "include"
+            };
+
+            var allCards = new List<Card>();
+            var page = 1;
+            var version = db.GetInertiaVersion() ?? DefaultInertiaVersion;
+            var wishlistedIds = string.Join(",", ids);
+
+            while (true)
+            {
+                var query = BuildQuery(filters);
+                if (page > 1)
+                    query = (string.IsNullOrEmpty(query) ? "?" : query + "&") + "page=" + page;
+
+                var response = await SendWithVersionAsync(query, version, wishlistedIds, "include");
+                if (response == null) break;
+
+                var json = await response.Content.ReadAsStringAsync();
+                var fullResponse = Deserialize<InertiaResponse>(json);
+
+                if (fullResponse?.Version != null && fullResponse.Version != version)
+                {
+                    version = fullResponse.Version;
+                    db.SetInertiaVersion(version);
+                }
+
+                var cards = fullResponse?.Props?.Pages?.Data;
+                if (cards == null || cards.Count == 0) break;
+
+                allCards.AddRange(cards);
+
+                var lastPage = fullResponse.Props.Pages.LastPage;
+                if (page >= lastPage) break;
+                page++;
+            }
+
+            return allCards;
+        }
+
         public async Task<HomeProps> FetchCardsAsync(ActiveFilters filters)
         {
             var url = BuildQuery(filters);

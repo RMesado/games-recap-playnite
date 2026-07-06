@@ -22,8 +22,8 @@
                    Margin="0,8,0,4"/>
 
         <CheckBox IsChecked="{Binding Settings.ShowConfirmation}"
-                  Content="{DynamicResource SettingsShowConfirmation}"
-                  Margin="0,12,0,0">
+                   Content="{DynamicResource SettingsShowConfirmation}"
+                   Margin="0,12,0,0">
             <CheckBox.Style>
                 <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                     <Setter Property="IsEnabled" Value="True"/>
@@ -35,5 +35,26 @@
                 </Style>
             </CheckBox.Style>
         </CheckBox>
+
+        <TextBlock Text="{DynamicResource SettingsCalendarRefreshInterval}" Style="{StaticResource BaseTextBlockStyle}" Margin="0,16,0,4"/>
+        <ComboBox ItemsSource="{Binding CalendarRefreshPresets}"
+                  SelectedItem="{Binding SelectedCalendarPreset}"
+                  DisplayMemberPath="Display"
+                  Margin="0,0,0,4"/>
+        <StackPanel Orientation="Horizontal" Visibility="{Binding IsCustomPreset, Converter={StaticResource BoolToVis}}">
+            <TextBox Text="{Binding CalendarCustomDaysText, UpdateSourceTrigger=PropertyChanged}"
+                     Width="60" Margin="0,0,6,0"/>
+            <TextBlock Text="{DynamicResource SettingsCalendarDaysLabel}" Style="{StaticResource BaseTextBlockStyle}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <TextBlock Text="{DynamicResource SettingsCalendarNotificationsHeader}" Style="{StaticResource BaseTextBlockStyle}" Margin="0,16,0,4"/>
+        <CheckBox IsChecked="{Binding Settings.CalendarNotifyMonthBefore}"
+                  Content="{DynamicResource SettingsCalendarNotifyMonth}" Margin="0,2,0,0"/>
+        <CheckBox IsChecked="{Binding Settings.CalendarNotifyWeekBefore}"
+                  Content="{DynamicResource SettingsCalendarNotifyWeek}" Margin="0,2,0,0"/>
+        <CheckBox IsChecked="{Binding Settings.CalendarNotifyDayBefore}"
+                  Content="{DynamicResource SettingsCalendarNotifyDay}" Margin="0,2,0,0"/>
+        <CheckBox IsChecked="{Binding Settings.CalendarNotifySameDay}"
+                  Content="{DynamicResource SettingsCalendarNotifySameDay}" Margin="0,2,0,0"/>
     </StackPanel>
 </UserControl>

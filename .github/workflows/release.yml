@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore GamesRecapPlugin/GamesRecap/GamesRecap.sln
+
+      - name: Build
+        run: msbuild GamesRecapPlugin/GamesRecap/GamesRecap.csproj /t:Build /p:Configuration=Release /p:Platform=AnyCPU
+
+      - name: Package .pext
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          $src = "GamesRecapPlugin/GamesRecap/bin/Release"
+          $pext = "GamesRecap_$version.pext"
+          $items = @(
+            "$src/GamesRecap.dll"
+            "$src/extension.yaml"
+            "$src/icon.png"
+            "$src/icon-calendar.png"
+            "$src/System.Data.SQLite.dll"
+            "$src/x86/SQLite.Interop.dll"
+            "$src/x64/SQLite.Interop.dll"
+          )
+          if (Test-Path "$src/GamesRecap.pdb") { $items += "$src/GamesRecap.pdb" }
+          $locFiles = Get-ChildItem "$src/Localization/*.xaml" -ErrorAction SilentlyContinue
+          if ($locFiles) { $items += $locFiles.FullName }
+          Compress-Archive -Path $items -DestinationPath $pext
+          "pext_path=$pext" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.pext_path }}
+          generate_release_notes: true

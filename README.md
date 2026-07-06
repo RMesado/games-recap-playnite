@@ -45,7 +45,7 @@ A [Playnite](https://playnite.link) plugin that integrates [gamesrecap.io](https
 
 1. Open Playnite and click the **Games Recap** sidebar icon (pink `#ff506e`)
 2. Browse games from the main grid
-3. Click ★ to add games to your wishlist
+3. Click ❤️ to add games to your wishlist
 4. Flip cards to view trailers, add to calendar, or add to library
 5. Use the sidebar filters to narrow down by platform, genre, showcase, or date
 6. Switch to the **Calendar** view to track upcoming releases
@@ -154,7 +154,7 @@ Ver [docs/building.md](docs/building.md).
 ### Branch strategy
 
 - `develop` — active development
-- `master` — stable releases
+- `main` — stable releases
 
 ---
 

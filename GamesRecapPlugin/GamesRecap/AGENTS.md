@@ -15,33 +15,49 @@ Plugin de biblioteca para Playnite que integra gamesrecap.io vía API Inertia.js
 ## Estructura del Proyecto
 ```
 GamesRecapPlugin/GamesRecap/
-├── GamesRecap.cs              # Entry point, menús, Test API
+├── GamesRecap.cs              # Entry point, sidebar views (browser + calendar)
 ├── GamesRecap.csproj          # Target v4.8.1, LangVersion 12.0
-├── GamesRecapSettings.cs      # Settings viewmodel
+├── GamesRecapSettings.cs      # Settings viewmodel + Loc helper
 ├── GamesRecapSettingsView.xaml/.cs  # UI de settings
-├── extension.yaml             # Metadatos del plugin
+├── extension.yaml             # Metadatos del plugin (Type: GenericPlugin)
 ├── icon.svg / icon.png        # Icono #ff506e
+├── icon-calendar.svg / icon-calendar.png  # Icono calendario naranja
 ├── AGENTS.md                  # ← ESTE ARCHIVO
 ├── Models/
 │   ├── InertiaModels.cs       # 20 DTOs con DataContract/DataMember
 │   └── MetadataFieldConfig.cs # Configuración de fuentes de metadata
 ├── Services/
 │   ├── GamesRecapApiClient.cs # Cliente HTTP Inertia con headers
-│   ├── LocalDatabase.cs       # SQLite: UserGameState + AppMeta + PromotedGames
-│   └── PlayniteLibrarySync.cs # Sync con librería de Playnite
+│   ├── LocalDatabase.cs       # SQLite: UserGameState + AppMeta + PromotedGames + CalendarGames
+│   └── PlayniteLibrarySync.cs # Sync con librería de Playnite (metadata por prioridad)
+├── ViewModels/
+│   ├── BrowserViewModel.cs    # Lógica browser: filtros, grid, wishlist, calendario
+│   └── CalendarViewModel.cs   # Lógica calendario: 3 secciones, grid semanal
+├── Views/
+│   ├── BrowserView.xaml/.cs   # Vista principal (cards, filtros, paginación)
+│   └── CalendarView.xaml/.cs  # Vista calendario (último mes, semana, próximos)
+├── Resources/
+│   ├── BadgeIcons.xaml        # Iconos SVG para badges
+│   └── SharedResources.xaml   # Plantillas compartidas (tooltip estándar)
+├── Localization/
+│   ├── es_ES.xaml             # Localización español (primario)
+│   └── en_US.xaml             # Localización inglés (fallback)
 └── Data/schema.sql            # Schema de referencia
 ```
 
 ## Estado Actual
 
-### ✅ Completado (Fase 0 y 1)
+### ✅ Completado (Fases 0-8)
 - Scaffolding del proyecto, compilación, Playnite carga el plugin
 - 20 DTOs en `InertiaModels.cs` mapeando la respuesta Inertia completa
-- `LocalDatabase.cs`: 3 tablas (UserGameState + AppMeta + PromotedGames)
+- `LocalDatabase.cs`: 4 tablas (UserGameState + AppMeta + PromotedGames + CalendarGames)
 - `GamesRecapApiClient.cs`: HTTP client con headers Inertia, query builder, manejo de 409/429
-- Menús de prueba: "Test API", "Ver estado de wishlist"
 - Icono actualizado a #ff506e
 - `GenericPlugin` en vez de `LibraryPlugin`: no tiene `GetGames()`, `HasCustomizedGameImport` ni `LibraryClient`. El plugin añade juegos exclusivamente vía `ImportGame(GameMetadata)` + `Games.Update()` desde `AddToLibrary()`. Al no haber `PluginId`, otros plugins (HLTB, ProtonDB, etc.) se disparan en el mismo ciclo de importación al detectar juegos nuevos por timestamp.
+- **Release Calendar**: vista sidebar con 3 secciones (último mes, última semana, próximos lanzamientos)
+- **Localización**: español como primario, inglés como fallback, 63 claves traducidas
+- **Settings**: DefaultWishlistAction (SqliteOnly/AddToLibrary) + ShowConfirmation
+- **Metadata download**: por prioridad del usuario desde config.json, HTTP HEAD validation
 
 ### 🛠️ Changelog Completo — Fase 3 (Sesiones 2026-06-11 al 2026-06-30)
 
@@ -144,8 +160,114 @@ GamesRecapPlugin/GamesRecap/
 6. Si la validación falla, se loggea un warning con la URL y se retorna `false`, permitiendo que el siguiente provider en la lista de prioridades intente con su propia imagen.
 7. Archivos modificados: `PlayniteLibrarySync.cs` (lines 10, 20-23, 267-287, 427-444).
 
+### ✅ Fase 7 — Release Calendar (Sesiones 2026-07-03 al 2026-07-06)
+1. **Tabla `CalendarGames`** en SQLite: GameId, Title, CoverUrl, ReleaseDate, AddedAt
+2. **CRUD en `LocalDatabase.cs`**:
+   - `AddToCalendar(int gameId, string title, string coverUrl, string releaseDate)`: INSERT OR IGNORE
+   - `RemoveFromCalendar(int gameId)`: DELETE
+   - `GetAllCalendarGames()`: SELECT con `CalendarGameEntry` DTO
+   - `IsInCalendar(int gameId)`: COUNT check
+   - `CalendarGameEntry` class (GameId, Title, CoverUrl, ReleaseDate, AddedAt)
+3. **`CalendarViewModel.cs`** (nuevo):
+   - `RefreshGames()`: carga todos los juegos del calendario, los clasifica en 3 colecciones observables
+   - `LastMonthGames`: 30-7 días atrás, orden descendente
+   - `LastWeekGames`: 7 días atrás hasta hoy, orden descendente
+   - `UpcomingWeeks`: grid semanal con 6 columnas (lunes-sábado), 8 semanas hacia adelante
+   - `DayHeaders`: nombres de día localizados (ej. "LUNES", "MARTES")
+   - `RemoveFromCalendarCommand`: eliminación con confirmación + refresh
+   - `TryParseDate(string, out DateTime)`: parsea `yyyy-MM-dd` estricto
+   - `BuildWeeks()`: agrupa juegos por semana y día, genera `CalendarDay` con `DateLabel` localizado (formato "d 'de' MMMM" para español)
+4. **`CalendarView.xaml`** (nuevo, 569 líneas):
+   - Header con botón volver + título dinámico `{DynamicResource ReleaseCalendar}`
+   - 3 secciones con `Visibility` condicional
+   - Secciones 1 y 2: `ListBox` horizontal con `PreviewMouseWheel` forwarding al `ScrollViewer` padre
+   - Section 3: grid de 6 columnas vía `UniformGrid`, cada día con borde + fecha + cards
+   - Card grid: `ListBox` con estilo minimalista `CalendarGridStyle` (solo `ContentPresenter`)
+   - Hover scale 1.04x con animación `QuadraticEase EaseOut` 250ms
+   - Botón quitar con cross icon (IconCalendarClock + Line diagonal), opacity 0→1 en hover
+   - Tooltips normalizados con `StandardTooltipTemplate`
+   - Corner-radius clipping vía `RectangleGeometry` en `CalendarCard_OnLoaded`
+5. **`CalendarView.xaml.cs`** (nuevo, 53 líneas):
+   - `ListBox_PreviewMouseWheel`: forwards scroll al ScrollViewer padre
+   - `FindParent<T>()`: generic visual tree walker
+   - `CalendarCard_OnLoaded`: hook `SizeChanged` + `BeginInvoke(Loaded)` para clipping dinámico
+   - `UpdateCardClip(Border)`: aplica `RectangleGeometry` con el `CornerRadius` actual del Border
+6. **`icon-calendar.svg`** (nuevo): reloj con outline, stroke #D9D9D9
+7. **`icon-calendar.png`**: PNG 128×128 exportado del SVG
+
+### ✅ Fase 8 — Localización (Sesiones 2026-07-04 al 2026-07-06)
+1. **`Localization/es_ES.xaml`** (nuevo, 93 líneas): 47+ claves traducidas al español
+2. **`Localization/en_US.xaml`**: ampliado con ~15 nuevas claves (calendar, settings, card labels)
+3. **`App.xaml`**: `es_ES.xaml` añadido como primer `MergedDictionary` (orden determina prioridad)
+4. **Clase helper `Loc.Get(string key)`**: definida en `GamesRecapSettings.cs`, busca en `Application.Current.TryFindResource`, fallback al key name
+5. **Todas las strings hardcodeadas reemplazadas**: ~30 lugares en XAML con `{DynamicResource}`, ~15 en C# con `Loc.Get()`
+6. **Paginación localizada**: `PaginationText` y `CardCountText` como propiedades computadas con `string.Format`
+7. **Tooltips normalizados**: ~20 tooltips migrados a `StandardTooltipTemplate` (SharedResources.xaml)
+8. **SharedResources.xaml** (nuevo): `ControlTemplate x:Key="StandardTooltipTemplate"` con fondo #1a1a2e, borde #333, corner 4px, padding 12x6
+
+### ✅ Integración Calendario ↔ Browser
+1. **BrowserViewModel**:
+   - `calendarIds` (HashSet<int>): precargado desde DB al abrir
+   - `IsCalendarFilterActive` toggle: filtra cards mostrando solo juegos en calendario
+   - `AddToCalendarCommand` + `ToggleCalendarFilterCommand`
+   - `AddToCalendar(int gameId)`: confirmación → DB → notifica cambio → refresca si filtro activo
+   - `RefreshCalendarIds()`: recarga desde DB
+   - Filtro combinado wishlist+calendar: ambos sets se unen en `X-Wishlisted-Ids`
+2. **CardViewModel**:
+   - `IsInCalendar` property (computed desde parent)
+   - `NotifyCalendarChanged()`: refresca `OnPropertyChanged(nameof(IsInCalendar))`
+   - ReleaseWindows display: cambiado de `Kind`/`Label` a `Date`/`Platforms`
+   - `TrailerTitle` property: primer media title o fallback localizado "Trailer"
+   - `FormatReleaseDate()`: parsea fecha y devuelve formato "d MMM yyyy" en mayúsculas
+   - Eliminado `ShowcaseBadgeWidth`: ya no se usa (badge auto-sizing)
+3. **BrowserView.xaml**:
+   - Botón calendario en header junto al de wishlist (Path IconCalendarClock, stroke #FF9800)
+   - Badge "In Calendar" naranja en WrapPanel (junto a In Library)
+   - Botón calendario en backface con toggle tooltip add/remove + cross line cuando ya está
+   - `ClipToBounds="True"` eliminado del Grid de card (reemplazado por RectangleGeometry clipping)
+   - Release windows: Date + Platforms en vez de Kind + Label
+   - ScrollViewer añadido al backface para contenido largo
+4. **`IsCompleteDateConverter`** (Converters.cs): retorna `Visibility.Visible` solo si la fecha es formato `yyyy-MM-dd` completo
+5. **`YearToDisplayConverter`** (Converters.cs): ahora usa `Loc.Get("AllYears")` para localización
+
+### ✅ Files modificados en Fase 7+8
+- `GamesRecap.cs`:
+  - Añadido `calendarView` / `calendarViewModel` fields
+  - Segundo `SidebarItem` para Release Calendar con icono `icon-calendar.png`
+  - `Opened` callback: crea lazy CalendarView, llama `calendarViewModel.RefreshGames()`
+  - Constructor BrowserViewModel: pasa `GamesRecapSettings settings` en vez de `LibraryPlugin plugin`
+  - Eliminados menús debug (`TestApiFetch`, "Ver estado de wishlist" — `GetMainMenuItems` vacío)
+- `LocalDatabase.cs`:
+  - Añadido `Description` column a `PromotedGames` (con ALTER TABLE migration)
+  - Añadidos `AddToCalendar`, `RemoveFromCalendar`, `GetAllCalendarGames`, `IsInCalendar`
+  - Añadido `CalendarGameEntry` class
+  - `UpsertPromotedGame`: nuevo parámetro `description`
+  - `GetAllPromotedGames`: incluye `Description` en SELECT
+- `PlayniteLibrarySync.cs`:
+  - `AddToLibrary()`: sin parámetro plugin (GenericPlugin)
+  - `DownloadMetadataForGame()` reescrito: lee `config.json` → `MetadataSettings`, procesa campos por prioridad
+  - `TryApplyField()`: procesa un campo de un provider, retorna bool
+  - `IsImageUrlValid()`: HEAD request para validar URLs de cover/background
+  - `GetLocalizedProgress()`: usa `Loc.Get("DownloadingMetadata")`
+  - Eliminado `MapToGameMetadata()` (ya no se usa — no hay GetGames())
+- `BrowserViewModel.cs`:
+  - Constructor: `LibraryPlugin plugin` → `GamesRecapSettings settings`
+  - Nuevos: `calendarIds`, `IsCalendarFilterActive`, `AddToCalendarCommand`, `ToggleCalendarFilterCommand`
+  - `ToggleWishlist()`: chequea `settings.DefaultWishlistAction` para auto-add
+  - `AddToLibrary()`: parámetro `silent`, chequea `settings.ShowConfirmation`
+  - `AddToCalendar()` / `RemoveFromCalendar()` con diálogos de confirmación
+  - Nuevas propiedades: `PaginationText`, `CardCountText`, `CalendarCount`, `TrailerTitle`
+  - `ReleaseWindows` display: Date + Platforms, agrupado, ordenado por DisplayOrder
+- `GamesRecapSettings.cs`: nuevo `WishlistAction` enum, `WishlistActionItem`, `Loc` helper
+- `GamesRecapSettingsView.xaml`: ComboBox + CheckBox + nota condicional
+- `GamesRecap.csproj`: referencias `System.Web.Extensions`, nuevos Compile/Page/None includes
+- `Converters.cs`: `IsCompleteDateConverter`, localización en `YearToDisplayConverter`
+- `InertiaModels.cs`: `ReleaseWindowDisplay` cambiado de `Kind`/`Label` a `Date`/`Platforms`
+- `extension.yaml`: `Type: GameLibrary` → `Type: GenericPlugin`
+- Eliminado `GamesRecapClient.cs`
+
 ### ⚠️ Pendiente
-- Fase 7: Packaging (build .pext + README)
+- Fase 9: Packaging (build .pext + README)
 
 ## API: gamesrecap.io
 
@@ -154,7 +276,7 @@ GamesRecapPlugin/GamesRecap/
 - **Headers requeridos**: `X-Inertia: true`, `Accept: application/json`, `X-Inertia-Version: <hash>`
 - **Versión actual**: `fe5cfce8e2cfdd6009a9f870a43fdbc1` (MD5 hash, cambia con cada deploy)
 - **Versión por defecto** (código): `91c5bce49007757d62740bf9f1aacac6` (obsoleta)
-- **409 Conflict**: ocurre cuando `X-Inertia-Version` no coincide con el servidor. El servidor NO devuelve la versión nueva en ningún header. Solo se puede obtener haciendo scraping del HTML.
+- **409 Conflict**: ocurre cuando `X-Inertia-Version` no coincide con el servidor. La nueva versión se obtiene del campo `version` de la respuesta JSON, no de headers HTTP.
 - **429 Too Many Requests**: rate limiting, esperar 5s y reintentar.
 - **Almacenamiento de versión**: tabla `AppMeta` clave `inertia_version`.
 
@@ -249,6 +371,15 @@ Los datos de juegos y catálogo vienen exclusivamente de la respuesta HTTP de ga
 | ReleaseDate | TEXT | Fecha de lanzamiento |
 | Description | TEXT | Descripción del juego |
 | PlayniteId | TEXT UNIQUE | GUID del juego en librería Playnite (NULL si no ha sido añadido) |
+
+### CalendarGames
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| GameId | INTEGER PK | ID del juego en gamesrecap.io |
+| Title | TEXT NOT NULL | Título del juego |
+| CoverUrl | TEXT | URL de la cover (IGDB) |
+| ReleaseDate | TEXT NOT NULL | Fecha yyyy-MM-dd (completa) |
+| AddedAt | TEXT NOT NULL | UTC ISO8601 |
 
 ## Reglas de Compilación y Deploy
 
@@ -492,7 +623,7 @@ Cada clave es un `sys:String` con `x:Key` único:
 - Prefijo por contexto: `Filter*`, `Search*`, `Pagination*`, `Settings*`, `Error*`, etc.
 - Las claves con `{0}`, `{1}` (placeholders para `string.Format`) lleván sufijo `*Format` o se documentan en el nombre (ej. `ConfirmAddMessage`, `ErrorAddMessage`)
 
-### Tabla de claves (47 total)
+### Tabla de claves (63 total)
 
 | Clave | Contexto | Placeholders |
 |-------|----------|-------------|
@@ -501,29 +632,32 @@ Cada clave es un `sys:String` con `x:Key` único:
 | `Refresh` | Tooltip botón actualizar | — |
 | `WishlistedSuffix` | Sufijo contador wishlist (incluye espacio leading: `" en lista de deseos"`) | — |
 | `SearchByGame` | Placeholder búsqueda principal | — |
+| `SearchByPlatform` | Placeholder búsqueda de plataforma | — |
+| `SearchByGenre` | Placeholder búsqueda de género | — |
+| `SearchByTag` | Placeholder búsqueda de etiqueta | — |
+| `SearchByShowcase` | Placeholder búsqueda de showcase | — |
 | `FilterSort` | Etiqueta filtro Sort | — |
 | `FilterPlatforms` | Etiqueta filtro Platforms | — |
-| `SearchByPlatform` | Placeholder búsqueda de plataforma | — |
 | `FilterExclude` | Tooltip botón Exclude | — |
 | `FilterGenres` | Etiqueta filtro Genres | — |
-| `SearchByGenre` | Placeholder búsqueda de género | — |
 | `FilterTags` | Etiqueta filtro Tags | — |
-| `SearchByTag` | Placeholder búsqueda de etiqueta | — |
 | `FilterShowcases` | Etiqueta filtro Showcases | — |
-| `SearchByShowcase` | Placeholder búsqueda de showcase | — |
 | `FilterSelectAllInYear` | Checkbox "Select all in year" | — |
 | `FilterReleaseDate` | Etiqueta Release Date + fallback `FormatReleaseKind` | — |
 | `ClearDate` | Tooltip botón limpiar fecha | — |
 | `FilterClearFilters` | Botón "Clear Filters" | — |
 | `InPlayniteLibrary` | Tooltip badge de biblioteca | — |
 | `AddToWishlist` | Tooltip botón wishlist | — |
-| `FlipCard` | Tooltip botón girar | — |
-| `AddToCalendar` | Tooltip botón calendario | — |
-| `Trailer` | Botón "Trailer" | — |
-| `AddToLibrary` | Botón "Add to library" | — |
+| `RemoveFromWishlist` | Tooltip botón quitar wishlist | — |
+| `FlipCard` | Tooltip botón girar tarjeta | — |
+| `AddToCalendar` | Tooltip botón añadir calendario | — |
+| `RemoveFromCalendar` | Tooltip botón quitar calendario | — |
+| `InCalendar` | Tooltip badge "En calendario" | — |
+| `Trailer` | Botón "Tráiler" | — |
+| `AddToLibrary` | Botón "Añadir a la biblioteca" | — |
 | `FlipBack` | Tooltip botón volver a girar | — |
-| `PaginationPrevious` | Botón "◀ Previous" | — |
-| `PaginationNext` | Botón "Next ▶" | — |
+| `PaginationPrevious` | Botón "◀ Anterior" | — |
+| `PaginationNext` | Botón "Siguiente ▶" | — |
 | `PaginationPageFormat` | Texto "Página {0} de {1}" | `{0}` = current page, `{1}` = total pages |
 | `PaginationCardCount` | Texto "  ({0} tarjetas)" | `{0}` = total cards |
 | `AllShowcasesInYear` | Chip "Todas las presentaciones de {0}" | `{0}` = year |
@@ -542,6 +676,18 @@ Cada clave es un `sys:String` con `x:Key` único:
 | `SettingsActionAddLibrary` | Item ComboBox | — |
 | `SettingsNote` | Nota explicativa settings | — |
 | `SettingsShowConfirmation` | CheckBox settings | — |
+| `ReleaseCalendar` | Título vista calendario | — |
+| `LastMonthReleases` | Sección "Lanzados último mes" | — |
+| `LastWeekReleases` | Sección "Lanzados última semana" | — |
+| `UpcomingReleases` | Sección "Próximos lanzamientos" | — |
+| `CalendarToday` | Label "Hoy" | — |
+| `NoGamesOnDay` | Placeholder día sin juegos | — |
+| `CalendarAdded` | Mensaje ""{0}" añadido al calendario" | `{0}` = título del juego |
+| `CalendarAlreadyAdded` | Mensaje ""{0}" ya está en el calendario" | `{0}` = título del juego |
+| `CalendarRemoved` | Mensaje ""{0}" eliminado del calendario" | `{0}` = título del juego |
+| `CalendarSuffix` | Sufijo contador calendario (incluye espacio leading: `" en calendario"`) | — |
+| `ConfirmAddCalendarMessage` | Mensaje "¿Añadir "{0}" al calendario?" | `{0}` = título del juego |
+| `ConfirmRemoveCalendarMessage` | Mensaje "¿Quitar "{0}" del calendario?" | `{0}` = título del juego |
 
 ### Uso en XAML: `{DynamicResource Key}`
 ```xml

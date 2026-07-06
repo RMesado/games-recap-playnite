@@ -233,15 +233,16 @@ Todos los filtros son query parameters del endpoint raíz `/`.
 | `seen_mode` | string | | `only` o `exclude` |
 | `release_from` | date | `release_from=2026-01-01` | Fecha de lanzamiento desde |
 | `release_to` | date | | Fecha de lanzamiento hasta |
+| `hidden_ids` | int[] | | IDs marcados como ocultos |
 
 ### Headers HTTP especiales
 
 | Header | Tipo | Descripción |
 |---|---|---|
-| `X-Wishlisted-Ids` | string | IDs en wishlist (desde SQLite local), separados por coma |
+| `X-Wishlisted-Ids` | string | IDs en wishlist desdel SQLite local, separados por coma. También incluye IDs del calendario cuando el filtro calendar está activo |
 | `X-Wishlisted-Mode` | string | `only` o `exclude` |
 
-> **Nota:** `wishlisted_ids` y `wishlisted_mode` se envían como headers HTTP, no como query parameters.
+> **Nota:** `wishlisted_ids` y `wishlisted_mode` se envían como headers HTTP, no como query parameters. El filtro de calendario combina IDs de wishlist + calendario en un mismo header.
 
 ### Valores de `sort`
 
@@ -279,46 +280,101 @@ Accept: application/json
 ## Flujo de usuario
 
 ```
-Plugin abierto (vista principal)
+Plugin abierto (vista principal: browser)
 │
-├── Filtros laterales
+├── Header
+│   ├── Botón Volver (&#xE72B;)
+│   ├── Título "Games Recap"
+│   ├── Botón Refresh (&#xE72C;)
+│   ├── Botón filtro wishlist (♥ N wishlisted)
+│   └── Botón filtro calendario (🕐 N in calendar)
+│
+├── Filtros laterales (sidebar)
 │   ├── Búsqueda por texto
-│   ├── Showcase / Serie      (agrupado por series_key + año)
-│   ├── Plataforma            (incluir / excluir)
-│   ├── Género                (incluir / excluir)
-│   ├── Tags                  (Single Player, Co-op, Demo, DLC...)
-│   ├── Fecha de lanzamiento  (desde / hasta)
+│   ├── Showcase / Serie      (agrupado por series_key + año + chips multi-año)
+│   ├── Plataforma            (incluir / excluir, con búsqueda)
+│   ├── Género                (incluir / excluir, con búsqueda)
+│   ├── Tags                  (incluir / excluir, con búsqueda)
+│   ├── Fecha de lanzamiento  (desde / hasta DatePicker)
 │   ├── Ordenación            (newest, title_asc, random...)
-│   └── Estado                (Todos / Solo wishlist / Solo vistos / Ocultos)
+│   └── Clear Filters
 │
-└── Grid de cards (24 por página)
-    ├── Cover (IGDB)
+├── Barra de progreso (animada, #ff506e, durante carga de API)
+│
+└── Grid de cards (24 por página, WrapPanel)
+    ├── Cover / Screenshot (IGDB)
+    ├── Tags con iconos y colores (top-left)
+    ├── Badge "In Library" (icono verde)
+    ├── Badge "In Calendar" (icono naranja)
+    ├── Showcase de origen + fecha
     ├── Título + kind badge (DLC, Update...)
     ├── Fecha de lanzamiento (por plataforma si hay release_windows)
-    ├── Showcase de origen + series_key
-    ├── Plataformas
-    ├── Tags con iconos y colores
-    ├── Botón ▶ trailer (si hay media)
-    └── Botón ★ Wishlist
-            │
-            ▼
-        Diálogo de acción
-        ┌──────────────────────────────────────┐
-        │  ★ "Control Resonant"                │
-        │                                      │
-        │  ○ Solo guardar en wishlist          │
-        │    (SQLite del plugin)               │
-        │                                      │
-        │  ● Añadir a librería Playnite        │
-        │    Fuente:  [Games Recap]            │
-        │    Tags:    [☑ Wishlist]             │
-        │             [☑ PC Gaming Show]       │
-        │             [☐ Action]              │
-        │             [☐ Sequel]              │
-        │                                      │
-        │         [Cancelar]  [Añadir]         │
-        └──────────────────────────────────────┘
+    ├── FRONT: Botón ★ Wishlist / FLIP: Botón girar
+    └── BACK: Botón ▶ trailer, Botón 🕐 Calendario, Botón Add to Library
+    
+    Toggle Wishlist (★)
+    → SQLite toggle + opcional AddToLibrary (según settings)
+    → Si DefaultWishlistAction = AddToLibrary: añade a Playnite sin confirmación
+    
+    Botón Add to Calendar (🕐 en backface)
+    → Diálogo de confirmación → SQLite CalendarGames
+    → Badge naranja "In Calendar" en frontface
+
+Vista calendario (sidebar item independiente)
+│
+├── Sección 1: Lanzados último mes (30-7 días atrás, scroll horizontal)
+├── Sección 2: Lanzados última semana (7 días atrás, scroll horizontal)
+└── Sección 3: Próximos lanzamientos (grid semana a semana, 6 columnas)
+    ├── Cabecera con nombres de día (localizados)
+    ├── Cada día: tarjeta con fecha + cover cards
+    └── Hover: botón quitar del calendario + escala 1.04x
 ```
+
+---
+
+## Vista Calendario de Lanzamientos
+
+El plugin incluye un **calendario de lanzamientos** accesible desde un segundo sidebar item (icono calendario naranja). Los juegos se añaden al calendario desde el backface de las cards del browser.
+
+### Vista de calendario
+
+La vista se divide en 3 secciones:
+
+1. **Lanzados último mes** (30-7 días atrás): horizontal scroll con covers + botón quitar
+2. **Lanzados última semana** (7 días atrás): horizontal scroll con covers + botón quitar
+3. **Próximos lanzamientos**: grid semanal con 6 columnas (lunes-sábado), cada día tiene fecha localizada + covers en vertical
+
+### Modelo de datos
+
+```csharp
+public class CalendarGameItem
+{
+    public int GameId { get; }
+    public string Title { get; }
+    public string CoverUrl { get; }
+    public DateTime ReleaseDate { get; }
+}
+public class CalendarWeek { public ObservableCollection<CalendarDay> Days { get; } }
+public class CalendarDay
+{
+    public DateTime Date { get; set; }
+    public string DateLabel { get; set; }  // "1 DE JULIO" / "1 July"
+    public ObservableCollection<CalendarGameItem> Games { get; set; }
+}
+```
+
+### Interacción con el browser
+
+- El botón 🕐 en el **backface** de cada card añade/quita el juego del calendario (solo si tiene fecha de lanzamiento completa `yyyy-MM-dd`)
+- Se muestra un **badge naranja** "In Calendar" en el frontface de cada card que está en el calendario
+- El **filtro de calendario** (toggle button en el header) filtra el grid mostrando solo juegos en el calendario; se combina con el filtro wishlist (ambos IDs se envían juntos en `X-Wishlisted-Ids`)
+- Los juegos se añaden solo si tienen una fecha de lanzamiento parseable (`IsCompleteDateConverter` valida formato `yyyy-MM-dd`)
+
+### Animaciones
+
+- Hover en cards del calendario: escala 1.04x con `QuadraticEase EaseOut` 250ms
+- Botón quitar: aparece en hover (opacity 0→1)
+- Clipping de esquinas redondeadas vía `RectangleGeometry` dinámico en `CalendarCard_OnLoaded`
 
 ---
 
@@ -417,6 +473,18 @@ CREATE TABLE PromotedGames (
     ReleaseDate   TEXT,
     Description   TEXT,
     PlayniteId    TEXT UNIQUE            -- GUID del juego en librería Playnite
+);
+
+-- -------------------------------------------------------
+-- Juegos añadidos al calendario de lanzamientos
+-- -------------------------------------------------------
+
+CREATE TABLE CalendarGames (
+    GameId      INTEGER PRIMARY KEY,
+    Title       TEXT NOT NULL,
+    CoverUrl    TEXT,
+    ReleaseDate TEXT NOT NULL,           -- fecha yyyy-MM-dd (completa, no parcial)
+    AddedAt     TEXT NOT NULL            -- UTC ISO8601
 );
 ```
 
@@ -560,11 +628,26 @@ return true;
 - `ShowConfirmation` (bool): muestra diálogo de confirmación antes de añadir a biblioteca vía botón manual; se omite cuando viene del toggle de wishlist
 - UI de Settings con ComboBox y nota informativa condicional
 
-### Fase 7 — Empaquetado (1 día)
+### Fase 7 — Calendario de lanzamientos (completada)
+- Tabla `CalendarGames` en SQLite con CRUD (AddToCalendar, RemoveFromCalendar, GetAllCalendarGames, IsInCalendar)
+- `CalendarViewModel`: 3 secciones (último mes, última semana, próximos lanzamientos), grid semanal, día localizado
+- `CalendarView.xaml`: scroll horizontal en secciones recientes, grid 6-columnas en próximos, animación hover escala 1.04x, clipping corner-radius
+- Botón 🕐 en backface de cards del browser para añadir/quitar
+- Badge "In Calendar" naranja en frontface
+- Filtro combinado wishlist+calendario en el header
+- `IsCompleteDateConverter` que solo permite añadir fechas completas `yyyy-MM-dd`
+
+### Fase 8 — Localización (completada)
+- `es_ES.xaml` con 47+ claves traducidas
+- `en_US.xaml` ampliado con claves de calendario y settings
+- Clase helper `Loc.Get()` para acceso programático desde C#
+- Tooltips normalizados vía `StandardTooltipTemplate` en `SharedResources.xaml`
+
+### Fase 9 — Empaquetado (1 día)
 - Generar `.pext`
 - README con instrucciones
 
-**Estimación total: 14-20 días** (Fases 4-6 completadas, Fase 7 pendiente)
+**Estimación total: 18-24 días** (Fases 4-8 completadas, Fase 9 pendiente)
 
 ---
 

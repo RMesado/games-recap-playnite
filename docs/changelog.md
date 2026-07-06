@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.2 - 2026-07-06
+
+### Changed
+- Release notes ahora se extraen automáticamente de `docs/changelog.md` en lugar de generarse de commits
+- Formato del changelog reorganizado con secciones por versión
+
 ## 0.1.1 - 2026-07-06
 
 ### Fixed

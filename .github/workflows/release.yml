@@ -44,25 +44,16 @@ jobs:
           Copy-Item "$src/icon.png" $staging
           Copy-Item "$src/icon-calendar.png" $staging
           Copy-Item "$src/System.Data.SQLite.dll" $staging
+          Copy-Item "$src/x86" "$staging/x86" -Recurse
+          Copy-Item "$src/x64" "$staging/x64" -Recurse
           if (Test-Path "$src/GamesRecap.pdb") { Copy-Item "$src/GamesRecap.pdb" $staging }
           if (Test-Path "$src/Localization") { Copy-Item "$src/Localization" $staging -Recurse }
           Compress-Archive -Path "$staging/*" -DestinationPath $pext
           Remove-Item $staging -Recurse -Force
           "pext_path=$pext" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Extract changelog section
-        shell: pwsh
-        run: |
-          $version = "${{ github.ref_name }}" -replace '^v', ''
-          $content = Get-Content "docs/changelog.md" -Raw
-          $pattern = "(?ms)## $version .*?(?=## |\z)"
-          $match = [regex]::Match($content, $pattern)
-          if ($match.Success) {
-            $match.Value.Trim() | Out-File -FilePath "release_body.md" -Encoding UTF8
-          }
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.pext_path }}
-          body_path: release_body.md
+          generate_release_notes: true

@@ -1,22 +1,25 @@
 name: Tag Release
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types:
+      - closed
 
 permissions:
   contents: write
 
 jobs:
   tag:
-    if: contains(github.event.head_commit.message, 'Merge')
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Get latest tag
         id: tag
@@ -39,7 +42,8 @@ jobs:
 
       - name: Create tag
         run: |
-          git config user.name "bot-releaseador"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git tag ${{ steps.tag.outputs.next }}
           git push origin ${{ steps.tag.outputs.next }}

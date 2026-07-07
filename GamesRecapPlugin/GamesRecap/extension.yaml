@@ -1,7 +1,10 @@
 ﻿Id: GamesRecap_01af564c-edf6-49ba-b6e1-32a12fb28bec
 Name: Games Recap
 Author: RMesado
-Version: 0.2.0
+Version: 0.2.2
 Module: GamesRecap.dll
 Type: GenericPlugin
 Icon: icon.png
+Links:
+  - Name: GitHub
+    Url: https://github.com/RMesado/games-recap-playnite
